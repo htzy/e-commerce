@@ -1,7 +1,7 @@
 ### 更新时间
 2017-11-26 初始化
 2017-11-26 增加分支说明
-2017-11-30 增加计量等TODO内容
+2017-11-30 增加计量等TODO、项目结构及加入llt（low level test）
 
 # e-commerce需求
 1. 通过写一个电商类的数据分析项目来学习Spark的数据汇聚内容
@@ -15,7 +15,21 @@
 
 说明：目前分支b_0_0_1，待当前版本开发完之后，完全测试后，合并到主线master，并增加tag；新版本代码在新分支上开发。
 
+# 项目结构
+- com.huangshihe.<product_name>
+    - business-services
+        - <module_name>
+
 # TODO
 1. 规范化项目结构
 2. 增加license文件
 3. 相关、回归（一元线性回归、多元线性回归、截面线性回归、时间序列回归<MA/AR/ARMA/ARIMA/GARCH/VAR>、面板线性回归、Copula。
+4. 完善配置pom
+5. 完善java自动生成的javadoc模板
+6. 完善llt的配置文件和启动器
+
+# 参考
+[git 合并与创建分支](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840038939c291467cc7c747b1810aab2fb8863508000)  
+[sfj4j文档](https://www.slf4j.org/manual.html)  
+[cucumber java](https://cucumber.io/docs/reference/jvm#java)  
+[cucumber java idea](https://www.jetbrains.com/help/idea/cucumber.html)

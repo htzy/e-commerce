@@ -2,18 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>e-commerce</artifactId>
+        <groupId>com.huangshihe</groupId>
+        <version>0.0.1</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.huangshihe</groupId>
-    <artifactId>e-commerce</artifactId>
+    <artifactId>business-services</artifactId>
+
     <packaging>pom</packaging>
-    <version>0.0.1</version>
     <modules>
-        <module>business-services</module>
+        <module>ecommerce-spark</module>
+        <module>ecommerce-llt</module>
     </modules>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
 </project>
