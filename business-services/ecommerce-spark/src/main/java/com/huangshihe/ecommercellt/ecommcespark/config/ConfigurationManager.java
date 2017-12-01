@@ -9,7 +9,10 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
- * Created by huangshihe on 30/11/2017.
+ * 配置管理类
+ *
+ * @author huangshihe
+ * Create Date: 2017-12-01 23:02
  */
 public class ConfigurationManager {
     /**

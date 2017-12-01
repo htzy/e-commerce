@@ -7,7 +7,10 @@ import cucumber.api.java.en.When;
 import org.junit.Assert;
 
 /**
- * Created by huangshihe on 30/11/2017.
+ * 配置管理测试类
+ *
+ * @author huangshihe
+ * Create Date: 2017-12-01 23:02
  */
 public class ConfigurationTest {
     private static String author;
