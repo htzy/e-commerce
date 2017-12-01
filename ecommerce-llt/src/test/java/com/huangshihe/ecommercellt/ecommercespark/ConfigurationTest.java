@@ -1,4 +1,4 @@
-package com.huangshihe.ecommercellt;
+package com.huangshihe.ecommercellt.ecommercespark;
 
 import com.huangshihe.ecommercellt.ecommcespark.config.ConfigurationManager;
 import cucumber.api.java.en.Given;

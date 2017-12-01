@@ -27,7 +27,7 @@
 2. 相关、回归（一元线性回归、多元线性回归、截面线性回归、时间序列回归<MA/AR/ARMA/ARIMA/GARCH/VAR>、面板线性回归、Copula。
 3. 完善配置pom
 4. 完善java自动生成的javadoc模板
-5. 完善llt的配置文件和启动器
+5. 完善llt的配置文件
 6. 可利用Spring进行技术整合
 
 # 参考
