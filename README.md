@@ -1,7 +1,8 @@
 ### 更新时间
-2017-11-26 初始化
-2017-11-26 增加分支说明
-2017-11-30 增加计量等TODO、项目结构及加入llt（low level test）
+2017-11-26 初始化  
+2017-11-26 增加分支说明  
+2017-11-30 增加计量等TODO、项目结构及加入llt（low level test）  
+2017-12-1 更新项目结构
 
 # e-commerce需求
 1. 通过写一个电商类的数据分析项目来学习Spark的数据汇聚内容
@@ -19,6 +20,7 @@
 - com.huangshihe.<product_name>
     - business-services
         - <module_name>
+    - <product_name>-llt
 
 # TODO
 1. 规范化项目结构
