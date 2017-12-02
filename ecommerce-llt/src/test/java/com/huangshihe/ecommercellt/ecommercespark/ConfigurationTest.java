@@ -21,7 +21,7 @@ public class ConfigurationTest {
 
     @When("^查询\"([^\"]*)\"的配置值$")
     public void 查询的配置值(String arg0) throws Throwable {
-        author = ConfigurationManager.getProperties(arg0);
+        author = ConfigurationManager.getBasicConfiguration().getProperty(arg0);
     }
 
     @Then("^查询结果不为空$")
