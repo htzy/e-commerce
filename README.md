@@ -35,3 +35,4 @@
 [sfj4j文档](https://www.slf4j.org/manual.html)  
 [cucumber java](https://cucumber.io/docs/reference/jvm#java)  
 [cucumber java idea](https://www.jetbrains.com/help/idea/cucumber.html)
+[Linux 软件安装到 /usr，/usr/local/ 还是 /opt 目录？](http://blog.csdn.net/aqxin/article/details/48324377)
