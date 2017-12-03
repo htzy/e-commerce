@@ -37,3 +37,4 @@
 [cucumber java](https://cucumber.io/docs/reference/jvm#java)  
 [cucumber java idea](https://www.jetbrains.com/help/idea/cucumber.html)
 [Linux 软件安装到 /usr，/usr/local/ 还是 /opt 目录？](http://blog.csdn.net/aqxin/article/details/48324377)
+[日志错误](http://zhangzhenyihi.blog.163.com/blog/static/13548809420141015055383/)

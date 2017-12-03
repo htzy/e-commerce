@@ -5,3 +5,5 @@ build/
 *.jar
 *.class
 target/
+*.log
+logs/
