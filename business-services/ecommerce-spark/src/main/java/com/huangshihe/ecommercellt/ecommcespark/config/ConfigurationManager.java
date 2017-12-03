@@ -29,8 +29,13 @@ public class ConfigurationManager {
      */
     public static Configuration load(String fileName) {
         Configuration result = map.get(fileName);
+        // 两步检查机制
         if (result == null) {
+            // 同一时间，只能有一个线程获取到ConfigurationManager对象的锁
+            // 这里需要注意的是"同步"若加在方法上，则造成load成功之后，再次执行load，
+            // 则每次都需要进行无用的"同步"，因为配置已存在，不需要再次"同步"新建配置
             synchronized (ConfigurationManager.class) {
+                // 这里仍需检查是否为空，如果为空，则新建
                 result = map.computeIfAbsent(fileName, k -> new Configuration(fileName));
             }
         }
