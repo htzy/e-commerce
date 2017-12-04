@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Properties;
 
 /**
@@ -17,12 +18,16 @@ import java.util.Properties;
  */
 public class Configuration {
 
+    /**
+     * 日志
+     */
     private static Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
     private Properties properties = null;
 
     public Configuration(String fileName) {
         InputStream inputStream = null;
+        Reader reader = null;
         try {
             inputStream = getClassLoader().getResourceAsStream(fileName);
             if (inputStream == null) {
@@ -30,10 +35,18 @@ public class Configuration {
                 throw new IllegalArgumentException("Properties file not found in classpath: " + fileName);
             }
             properties = new Properties();
-            properties.load(new InputStreamReader(inputStream, "UTF-8"));
+            reader = new InputStreamReader(inputStream, "UTF-8");
+            properties.load(reader);
         } catch (IOException e) {
             throw new RuntimeException("Error loading properties file.", e);
         } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error close reader, {}", e);
+                }
+            }
             if (inputStream != null) {
                 try {
                     inputStream.close();

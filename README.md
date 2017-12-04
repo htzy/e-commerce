@@ -4,6 +4,7 @@
 2017-11-30 增加计量等TODO、项目结构及加入llt（low level test）  
 2017-12-1 更新项目结构
 2017-12-2 增加日志相关的TODO
+2017-12-4 增加白盒检查工具
 
 # e-commerce需求
 1. 通过写一个电商类的数据分析项目来学习Spark的数据汇聚内容
@@ -22,6 +23,13 @@
     - business-services
         - <module_name>
     - <product_name>-llt
+    
+# 白盒检查工具
+- 白盒覆盖率：cucumber-llt
+- PMD
+- FindBugs
+- SourceMonitor（暂时不考虑）
+
 
 # TODO
 1. 规范化项目结构
@@ -36,6 +44,7 @@
 [git 合并与创建分支](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840038939c291467cc7c747b1810aab2fb8863508000)  
 [sfj4j文档](https://www.slf4j.org/manual.html)  
 [cucumber java](https://cucumber.io/docs/reference/jvm#java)  
-[cucumber java idea](https://www.jetbrains.com/help/idea/cucumber.html)
-[Linux 软件安装到 /usr，/usr/local/ 还是 /opt 目录？](http://blog.csdn.net/aqxin/article/details/48324377)
-[日志错误](http://zhangzhenyihi.blog.163.com/blog/static/13548809420141015055383/)
+[cucumber java idea](https://www.jetbrains.com/help/idea/cucumber.html)  
+[Linux 软件安装到 /usr，/usr/local/ 还是 /opt 目录？](http://blog.csdn.net/aqxin/article/details/48324377)  
+[日志错误](http://zhangzhenyihi.blog.163.com/blog/static/13548809420141015055383/)  
+[IDEA中代码检查工具的安装和使用（PMD，FindBugs，CheckStyle）以及SourceMonitor](http://www.saecn.com/?p=231)  

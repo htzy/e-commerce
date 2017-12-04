@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author huangshihe
  */
-public class ConfigurationManager {
+public final class ConfigurationManager {
 
     private static Logger LOGGER = LoggerFactory.getLogger(ConfigurationManager.class);
 
