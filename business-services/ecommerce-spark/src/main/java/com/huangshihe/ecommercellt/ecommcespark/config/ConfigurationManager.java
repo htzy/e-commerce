@@ -15,8 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ConfigurationManager {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ConfigurationManager.class);
+    /**
+     * 日志
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationManager.class);
 
+    /**
+     * 存放所有的配置信息
+     */
     private static ConcurrentHashMap<String, Configuration> map = new ConcurrentHashMap<String, Configuration>();
 
     private ConfigurationManager() {
@@ -27,7 +33,7 @@ public final class ConfigurationManager {
      * @param fileName 配置文件名
      * @return 配置信息类
      */
-    public static Configuration load(String fileName) {
+    public static Configuration load(final String fileName) {
         Configuration result = map.get(fileName);
         // 两步检查机制
         if (result == null) {
@@ -36,7 +42,7 @@ public final class ConfigurationManager {
             // 则每次都需要进行无用的"同步"，因为配置已存在，不需要再次"同步"新建配置
             synchronized (ConfigurationManager.class) {
                 // 这里仍需检查是否为空，如果为空，则新建
-                result = map.computeIfAbsent(fileName, k -> new Configuration(fileName));
+                result = map.computeIfAbsent(fileName, key -> new Configuration(fileName));
             }
         }
         return result;
@@ -50,10 +56,19 @@ public final class ConfigurationManager {
         LOGGER.info("load basic.properties end...");
     }
 
-    public static Configuration getConfiguration(String fileName) {
+    /**
+     * 根据文件名获取配置类
+     * @param fileName 文件名
+     * @return 配置信息
+     */
+    public static Configuration getConfiguration(final String fileName) {
         return map.get(fileName);
     }
 
+    /**
+     * 获取基本配置
+     * @return 基本配置
+     */
     public static Configuration getBasicConfiguration() {
         return getConfiguration("basic.properties");
     }

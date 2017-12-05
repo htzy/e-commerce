@@ -48,3 +48,4 @@
 [Linux 软件安装到 /usr，/usr/local/ 还是 /opt 目录？](http://blog.csdn.net/aqxin/article/details/48324377)  
 [日志错误](http://zhangzhenyihi.blog.163.com/blog/static/13548809420141015055383/)  
 [IDEA中代码检查工具的安装和使用（PMD，FindBugs，CheckStyle）以及SourceMonitor](http://www.saecn.com/?p=231)  
+[常见的几种RuntimeException](http://blog.csdn.net/qq635785620/article/details/7781026)  

@@ -11,9 +11,9 @@ import org.junit.runner.RunWith;
  *
  * @author huangshihe
  */
-
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = {"pretty", "html:target/ecommercetest"}, features = "src/test/resources")
 //        ,tags = {"@TestngScenario"})
-public class ECommerceTest {
+public class ECommerceTest {//NOPMD
+
 }

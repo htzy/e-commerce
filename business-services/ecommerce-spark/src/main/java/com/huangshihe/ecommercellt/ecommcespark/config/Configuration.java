@@ -1,13 +1,13 @@
 package com.huangshihe.ecommercellt.ecommcespark.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 配置信息类
@@ -21,11 +21,19 @@ public class Configuration {
     /**
      * 日志
      */
-    private static Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
-    private Properties properties = null;
+    /**
+     * 配置
+     */
+    private final Properties properties;//NOPMD
 
-    public Configuration(String fileName) {
+    /**
+     * 根据放在resources目录下的配置文件生成配置信息类
+     *
+     * @param fileName 配置文件名
+     */
+    public Configuration(final String fileName) {
         InputStream inputStream = null;
         Reader reader = null;
         try {
@@ -38,7 +46,9 @@ public class Configuration {
             reader = new InputStreamReader(inputStream, "UTF-8");
             properties.load(reader);
         } catch (IOException e) {
-            throw new RuntimeException("Error loading properties file.", e);
+            // 可能是文件格式或字符编码不对
+            LOGGER.error("Error loading properties file, {}", e);
+            throw new IllegalArgumentException("Error loading properties file.", e);
         } finally {
             if (reader != null) {
                 try {
@@ -58,11 +68,16 @@ public class Configuration {
     }
 
     private ClassLoader getClassLoader() {
-        ClassLoader ret = Thread.currentThread().getContextClassLoader();
-        return ret != null ? ret : getClass().getClassLoader();
+        return Thread.currentThread().getContextClassLoader();//NOPMD
     }
 
-    public String getProperty(String key) {
+    /**
+     * 获取配置值
+     *
+     * @param key 配置名
+     * @return 配置值
+     */
+    public String getProperty(final String key) {
         return properties.getProperty(key);
     }
 }
