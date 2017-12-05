@@ -1,4 +1,4 @@
-package com.huangshihe.ecommercellt.ecommcespark.config;
+package com.huangshihe.ecommerce.ecommercespark.config;
 
 import java.io.IOException;
 import java.io.InputStream;

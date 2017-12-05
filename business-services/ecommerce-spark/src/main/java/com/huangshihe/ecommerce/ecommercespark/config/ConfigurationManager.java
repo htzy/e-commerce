@@ -1,9 +1,9 @@
-package com.huangshihe.ecommercellt.ecommcespark.config;
+package com.huangshihe.ecommerce.ecommercespark.config;
 
+import com.huangshihe.ecommerce.ecommercespark.constants.Constants;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 配置管理类，这里不像框架，这里的配置文件是规定的。
@@ -52,7 +52,7 @@ public final class ConfigurationManager {
     // 这里不使用单例模式的原因是：使用单例模式还需要被动调用执行，而加载配置是必须的，因此不如直接让它自己主动执行。
     static {
         LOGGER.info("load basic.properties begin...");
-        load("basic.properties");
+        load(Constants.BASIC_CONFIGURATION);
         LOGGER.info("load basic.properties end...");
     }
 
@@ -70,7 +70,7 @@ public final class ConfigurationManager {
      * @return 基本配置
      */
     public static Configuration getBasicConfiguration() {
-        return getConfiguration("basic.properties");
+        return getConfiguration(Constants.BASIC_CONFIGURATION);
     }
 
 }

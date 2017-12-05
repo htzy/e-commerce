@@ -1,6 +1,6 @@
 package com.huangshihe.ecommercellt.ecommercespark;
 
-import com.huangshihe.ecommercellt.ecommcespark.config.ConfigurationManager;
+import com.huangshihe.ecommerce.ecommercespark.config.ConfigurationManager;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
