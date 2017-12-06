@@ -1,7 +1,7 @@
 package com.huangshihe.ecommerce.ecommercespark.constants;
 
 /**
- * 常量类
+ * 常量类.
  * <p>
  * Create Date: 2017-12-06 01:04
  *
@@ -9,11 +9,14 @@ package com.huangshihe.ecommerce.ecommercespark.constants;
  */
 public final class Constants {
     /**
-     * 基本配置
+     * 基本配置.
      */
-    public static final String BASIC_CONFIGURATION = "basic.properties";
+    public static final String BASIC_CONFIG = "basic.properties";
 
-    private Constants(){
+    /**
+     * 私有构造方法.
+     */
+    private Constants() {
 
     }
 

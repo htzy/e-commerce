@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 配置信息类
+ * 配置信息类.
  * <p>
  * Create Date: 2017-12-02 23:24
  *
@@ -19,17 +19,17 @@ import org.slf4j.LoggerFactory;
 public class Configuration {
 
     /**
-     * 日志
+     * 日志.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
     /**
-     * 配置
+     * 配置.
      */
-    private final Properties properties;//NOPMD
+    private final Properties properties; //NOPMD
 
     /**
-     * 根据放在resources目录下的配置文件生成配置信息类
+     * 根据放在resources目录下的配置文件生成配置信息类.
      *
      * @param fileName 配置文件名
      */
@@ -67,12 +67,16 @@ public class Configuration {
         }
     }
 
+    /**
+     * 获取class loader.
+     * @return 当前线程的class loader
+     */
     private ClassLoader getClassLoader() {
-        return Thread.currentThread().getContextClassLoader();//NOPMD
+        return Thread.currentThread().getContextClassLoader(); //NOPMD
     }
 
     /**
-     * 获取配置值
+     * 获取配置值.
      *
      * @param key 配置名
      * @return 配置值
