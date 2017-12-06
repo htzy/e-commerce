@@ -6,6 +6,7 @@
         <groupId>com.huangshihe</groupId>
         <artifactId>e-commerce</artifactId>
         <version>0.0.1</version>
+        <relativePath></relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,18 +14,15 @@
 
     <packaging>jar</packaging>
 
-    <properties>
-        <slf4j.version>1.7.25</slf4j.version>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
+            <groupId>com.huangshihe</groupId>
+            <artifactId>ecommerce-common</artifactId>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 
+    <!--TODO 下面这个应该可以继承才对，增加版本号-->
     <build>
         <plugins>
             <plugin>

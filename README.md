@@ -48,3 +48,4 @@
 [日志错误](http://zhangzhenyihi.blog.163.com/blog/static/13548809420141015055383/)  
 [IDEA中代码检查工具的安装和使用（PMD，FindBugs，CheckStyle）以及SourceMonitor](http://www.saecn.com/?p=231)  
 [常见的几种RuntimeException](http://blog.csdn.net/qq635785620/article/details/7781026)  
+[Maven创建多模块项目（包括依赖版本号的统一更新）](https://www.cnblogs.com/EasonJim/p/6863987.html)
