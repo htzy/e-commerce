@@ -5,6 +5,7 @@
 2017-12-1 更新项目结构
 2017-12-2 增加日志相关的TODO
 2017-12-4 增加白盒检查工具
+2017-12-7 完善项目结构
 
 # e-commerce需求
 1. 通过写一个电商类的数据分析项目来学习Spark的数据汇聚内容
@@ -19,15 +20,22 @@
 说明：目前分支b_0_0_1，待当前版本开发完之后，完全测试后，合并到主线master，并增加tag；新版本代码在新分支上开发。
 
 # 项目结构
-- com.huangshihe.<product_name>
-    - business-services
-        - <module_name>
-    - <product_name>-llt
-    
+- com.huangshihe.<product_name>      // 项目名
+    - business-services              // 下面放组件
+        - <component_name>           // 组件
+            - <component_name>-api   // 对外暴露的API
+            - <component_name>-config        // 配置
+            - <component_name>-database      // 数据库
+            - <component_name>-llt           // low level test
+            - <component_name>-privilege     // 
+            - <component_name>-module        // 下面放模块，如ui、service、dao、entity等
+
+
 # 白盒检查工具
 - 白盒覆盖率：cucumber-llt
 - PMD
 - FindBugs
+- CheckStyle（Sun Checks）
 - SourceMonitor（暂时不考虑）
 
 
