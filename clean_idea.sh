@@ -1,3 +1,3 @@
 find . -name *.iml | xargs rm -f
-rm -rf idea
+find . -name .idea | xargs rm -rf
 
