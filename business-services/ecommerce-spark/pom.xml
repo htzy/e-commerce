@@ -4,35 +4,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.huangshihe</groupId>
-        <artifactId>e-commerce</artifactId>
+        <artifactId>ecommerce</artifactId>
         <version>0.0.1</version>
-        <relativePath></relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.huangshihe.ecommerce</groupId>
     <artifactId>ecommerce-spark</artifactId>
+    <version>0.0.1</version>
 
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.huangshihe</groupId>
-            <artifactId>ecommerce-common</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>ecommerce-spark-module</module>
+        <module>ecommerce-spark-llt</module>
+    </modules>
 
-    <!--TODO 下面这个应该可以继承才对，增加版本号-->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

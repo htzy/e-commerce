@@ -4,13 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.huangshihe</groupId>
-        <artifactId>e-commerce</artifactId>
+        <artifactId>ecommerce</artifactId>
         <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.huangshihe.ecommerce</groupId>
     <artifactId>ecommerce-common</artifactId>
+    <version>0.0.1</version>
 
     <packaging>jar</packaging>
 
