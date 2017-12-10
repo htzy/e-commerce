@@ -24,16 +24,11 @@
         </dependency>
     </dependencies>
 
-    <!--TODO 下面这个应该可以继承才对，增加版本号-->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>
