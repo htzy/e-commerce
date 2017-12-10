@@ -6,6 +6,8 @@
 2017-12-2 增加日志相关的TODO
 2017-12-4 增加白盒检查工具
 2017-12-7 完善项目结构
+2017-12-10 增加工具说明
+
 
 # e-commerce需求
 1. 通过写一个电商类的数据分析项目来学习Spark的数据汇聚内容
@@ -30,6 +32,12 @@
             - <component_name>-privilege     // 
             - <component_name>-module        // 下面放模块，如ui、service、dao、entity等
 
+# 工具说明
+- 公式编辑——macOS Grapher
+    - 将公式在Grapher中编辑好，拷贝成LaTex格式
+    - 将公式粘贴在"http://latex.codecogs.com/gif.latex?"的后面
+    - 拷贝到markdown中
+
 
 # 白盒检查工具
 - 白盒覆盖率：cucumber-llt
@@ -40,12 +48,10 @@
 
 
 # TODO
-1. 规范化项目结构
-2. 相关、回归（一元线性回归、多元线性回归、截面线性回归、时间序列回归<MA/AR/ARMA/ARIMA/GARCH/VAR>、面板线性回归、Copula。
-3. 完善日志的配置信息
-4. 完善java自动生成的javadoc模板
-5. 完善llt的配置文件
-6. 可利用Spring进行技术整合
+1. 相关、回归（一元线性回归、多元线性回归、截面线性回归、时间序列回归<MA/AR/ARMA/ARIMA/GARCH/VAR>、面板线性回归、Copula。
+2. 完善日志的配置信息
+3. 完善llt的配置文件
+4. 可利用Spring进行技术整合
 
 # 参考
 [git 合并与创建分支](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840038939c291467cc7c747b1810aab2fb8863508000)  
@@ -57,4 +63,5 @@
 [IDEA中代码检查工具的安装和使用（PMD，FindBugs，CheckStyle）以及SourceMonitor](http://www.saecn.com/?p=231)  
 [常见的几种RuntimeException](http://blog.csdn.net/qq635785620/article/details/7781026)  
 [Maven创建多模块项目（包括依赖版本号的统一更新）](https://www.cnblogs.com/EasonJim/p/6863987.html)  
-[Maven详解之聚合与继承](http://blog.csdn.net/wanghantong/article/details/36427411)
+[Maven详解之聚合与继承](http://blog.csdn.net/wanghantong/article/details/36427411)  
+[Equation Editor](http://latex.codecogs.com/eqneditor/integration/htmlequations.php)
