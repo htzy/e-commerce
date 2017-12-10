@@ -35,7 +35,7 @@
 # 工具说明
 - 公式编辑——macOS Grapher
     - 将公式在Grapher中编辑好，拷贝成LaTex格式
-    - 将公式粘贴在"http://latex.codecogs.com/gif.latex?"的后面
+    - 将公式粘贴在"http://latex.codecogs.com/gif.latex?\\" 的后面
     - 拷贝到markdown中
 
 
