@@ -64,4 +64,5 @@
 [常见的几种RuntimeException](http://blog.csdn.net/qq635785620/article/details/7781026)  
 [Maven创建多模块项目（包括依赖版本号的统一更新）](https://www.cnblogs.com/EasonJim/p/6863987.html)  
 [Maven详解之聚合与继承](http://blog.csdn.net/wanghantong/article/details/36427411)  
-[Equation Editor](http://latex.codecogs.com/eqneditor/integration/htmlequations.php)
+[Equation Editor](http://latex.codecogs.com/eqneditor/integration/htmlequations.php)  
+[github-jackson](https://github.com/FasterXML/jackson-core)
