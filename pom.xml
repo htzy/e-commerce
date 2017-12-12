@@ -19,14 +19,41 @@
         <java.version>1.8</java.version>
         <maven.compiler.version>3.3</maven.compiler.version>
         <slf4j.version>1.7.25</slf4j.version>
+        <cucumber.version>1.2.5</cucumber.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!--日志-->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <!--测试-->
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-jvm</artifactId>
+                <version>${cucumber.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-junit</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
