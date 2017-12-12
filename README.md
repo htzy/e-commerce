@@ -65,4 +65,5 @@
 [Maven创建多模块项目（包括依赖版本号的统一更新）](https://www.cnblogs.com/EasonJim/p/6863987.html)  
 [Maven详解之聚合与继承](http://blog.csdn.net/wanghantong/article/details/36427411)  
 [Equation Editor](http://latex.codecogs.com/eqneditor/integration/htmlequations.php)  
-[github-jackson](https://github.com/FasterXML/jackson-core)
+[github-jackson](https://github.com/FasterXML/jackson-core)  
+[Mac下安装HBase及详解](http://www.jianshu.com/p/510e1d599123)

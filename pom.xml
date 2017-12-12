@@ -11,6 +11,7 @@
     <modules>
         <module>ecommerce-common</module>
         <module>business-services</module>
+        <module>ecommerce-llt</module>
     </modules>
 
     <properties>

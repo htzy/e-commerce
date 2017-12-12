@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  * Json工具类.
  * <p>
@@ -41,6 +43,24 @@ public final class JsonUtil {
      */
     private JsonUtil() {
 
+    }
+
+    /**
+     * 字符串转对象.
+     *
+     * @param json   字符串
+     * @param tClass 类
+     * @param <T>    类
+     * @return 对象
+     */
+    public static <T> T strToObj(final String json, final Class<T> tClass) {
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(json, tClass);
+        } catch (IOException e) {
+            LOGGER.error("String to object fail, json: {}, error: {}", json, e);
+            throw new IllegalArgumentException(e);
+        }
     }
 
 }
