@@ -37,8 +37,8 @@
             <artifactId>junit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.huangshihe.ecommerce.ecommerce-spark</groupId>
-            <artifactId>ec-spark-common-config</artifactId>
+            <groupId>com.huangshihe.ecommerce.ecommerce-hbase</groupId>
+            <artifactId>ec-hbase-dao</artifactId>
             <version>0.0.1</version>
         </dependency>
     </dependencies>
