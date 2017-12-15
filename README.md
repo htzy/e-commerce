@@ -66,4 +66,6 @@
 [Maven详解之聚合与继承](http://blog.csdn.net/wanghantong/article/details/36427411)  
 [Equation Editor](http://latex.codecogs.com/eqneditor/integration/htmlequations.php)  
 [github-jackson](https://github.com/FasterXML/jackson-core)  
-[Mac下安装HBase及详解](http://www.jianshu.com/p/510e1d599123)
+[Mac下安装HBase及详解](http://www.jianshu.com/p/510e1d599123)  
+[PMD DataflowAnomalyAnalysis之DU - Anomaly](https://www.cnblogs.com/cookie3ms/p/4364666.html)  
+[Java for each loop being flagged as UR anomaly by PMD](https://stackoverflow.com/questions/21592497/java-for-each-loop-being-flagged-as-ur-anomaly-by-pmd)  

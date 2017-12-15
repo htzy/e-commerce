@@ -17,3 +17,15 @@ brew install hbase
 # 进入shell
   hbase shell
 ```
+
+# HBase连接池
+例子
+```java
+Configuration conf = HBaseConfiguration.create();
+Connection connnect = ConnectionFactory.createConnection(conf);
+Table table = connection.getTable(TableName.valueOf(tablename));
+// use table as needed, the table returned is lightweight
+
+```
+HTablePool is Deprecated! HConnection, which is deprecated in HBase 1.0 by Connection. Please use Connection instead.
+HTableInterface is Deprecated! use Table instead.
