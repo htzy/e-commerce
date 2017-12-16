@@ -84,7 +84,15 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void deleteTable(final String tableNameStr) {
-
+        try (Admin admin = connection.getAdmin()) {
+            TableName tableName = TableName.valueOf(tableNameStr);
+            // 禁用该表
+            admin.disableTable(tableName);
+            // 删除该表
+            admin.deleteTable(tableName);
+        } catch (IOException e) {
+            LOGGER.error("delete table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+        }
     }
 
     /**

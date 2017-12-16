@@ -46,4 +46,14 @@ public class HBaseDaoTest {
     public void 创建表成功(String tableNameStr) throws Throwable {
         Assert.assertTrue(hBaseDao.isExists(tableNameStr));
     }
+
+    @And("^删除\"([^\"]*)\"表$")
+    public void 删除表(String tableNameStr) throws Throwable {
+        hBaseDao.deleteTable(tableNameStr);
+    }
+
+    @Then("^删除\"([^\"]*)\"表成功$")
+    public void 删除表成功(String tableNameStr) throws Throwable {
+        Assert.assertFalse(hBaseDao.isExists(tableNameStr));
+    }
 }
