@@ -30,7 +30,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     /**
      * HBase数据的连接对象.
      */
-    private Connection connection;
+    private final Connection connection;
 
     /**
      * 构造方法.
@@ -90,4 +90,33 @@ public class HBaseDaoImpl implements IHBaseDao {
         }
         return result;
     }
+
+    /**
+     * 删除表.
+     *
+     * @param tableNameStr 表名
+     */
+    @Override
+    public void deleteTable(final String tableNameStr) {
+
+    }
+
+    /**
+     * 检查表是否存在.
+     *
+     * @param tableNameStr 表名
+     * @return 是否存在
+     */
+    @Override
+    public boolean isExists(final String tableNameStr) {
+        boolean result = false;
+        try (Admin admin = connection.getAdmin()) {
+            result = admin.tableExists(TableName.valueOf(tableNameStr));
+            // admin继承了AutoCloseable，在try-with-resources中不需要手动关闭。
+        } catch (IOException e) {
+            LOGGER.error("check table isExists failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+        }
+        return result;
+    }
+
 }

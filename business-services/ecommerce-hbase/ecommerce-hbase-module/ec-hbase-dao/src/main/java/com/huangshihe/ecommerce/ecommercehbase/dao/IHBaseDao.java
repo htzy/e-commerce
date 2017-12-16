@@ -24,10 +24,25 @@ public interface IHBaseDao {
 //    public void queryTableByRowKey();
 //
 //    public void queryTableByCondition();
-//Ò
+//
 //    public void truncateTable();
 //
-//    public void deleteTable();
+
+    /**
+     * 删除表.
+     *
+     * @param tableNameStr 表名
+     */
+    void deleteTable(String tableNameStr);
+
+
+    /**
+     * 检查表是否存在.
+     *
+     * @param tableNameStr 表名
+     * @return 是否存在
+     */
+    boolean isExists(String tableNameStr);
 //
 //    public void deleteByRowKey();
 //
