@@ -47,6 +47,11 @@ public final class ConfigurationManager {
             // 这里需要注意的是"同步"若加在方法上，则造成load成功之后，再次执行load，
             // 则每次都需要进行无用的"同步"，因为配置已存在，不需要再次"同步"新建配置
             synchronized (ConfigurationManager.class) {
+//                result = map.get(fileName);
+//                if (result == null) {
+//                    result = new Configuration(fileName);
+//                    map.put(fileName, result);
+//                }
                 // 这里仍需检查是否为空，如果为空，则新建
                 result = map.computeIfAbsent(fileName, key -> new Configuration(fileName));
             }
