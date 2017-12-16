@@ -30,7 +30,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     /**
      * HBase数据的连接对象.
      */
-    private final Connection connection;
+    private final Connection connection; //NOPMD
 
     /**
      * 构造方法.
@@ -60,7 +60,7 @@ public class HBaseDaoImpl implements IHBaseDao {
                 final HTableDescriptor tableDesc = new HTableDescriptor(tableName);
                 // 列族描述对象
                 for (final String familyName : familyNames) {
-                    final HColumnDescriptor column = new HColumnDescriptor(familyName);
+                    final HColumnDescriptor column = new HColumnDescriptor(familyName); //NOPMD
                     column.setTimeToLive(ttl);
                     tableDesc.addFamily(column);
                 }
@@ -85,7 +85,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public void deleteTable(final String tableNameStr) {
         try (Admin admin = connection.getAdmin()) {
-            TableName tableName = TableName.valueOf(tableNameStr);
+            final TableName tableName = TableName.valueOf(tableNameStr);
             // 禁用该表
             admin.disableTable(tableName);
             // 删除该表
@@ -103,7 +103,7 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public boolean isExists(final String tableNameStr) {
-        boolean result = false;
+        boolean result = false; //NOPMD
         try (Admin admin = connection.getAdmin()) {
             result = admin.tableExists(TableName.valueOf(tableNameStr));
             // admin继承了AutoCloseable，在try-with-resources中不需要手动关闭。

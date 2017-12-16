@@ -28,7 +28,7 @@ public final class HBaseConnectionManager {
     /**
      * 静态配置对象.
      */
-    private static Configuration conf = createConfiguration();
+    private static Configuration configuration = createConfiguration();
 
     /**
      * 静态连接对象.
@@ -42,13 +42,14 @@ public final class HBaseConnectionManager {
      */
     private static Configuration createConfiguration() {
         // 创建一个数据库配置对象
-        Configuration c = HBaseConfiguration.create();
+        final Configuration conf = new Configuration();
         // TODO 以下配置放入配置文件中，如果取不到则使用默认值
+        // TODO 是否有必要手动指定默认值？？
         // 配置HBase数据库主机IP，即zookeeper主机地址，默认值为127.0.0.1
-        c.set(HConstants.ZOOKEEPER_QUORUM, HConstants.LOCALHOST_IP);
+        conf.set(HConstants.ZOOKEEPER_QUORUM, HConstants.LOCALHOST_IP);
         // HBase客户端连接端口，即zookeeper端口，默认值为2181
-        c.set(HConstants.ZOOKEEPER_CLIENT_PORT, String.valueOf(HConstants.DEFAULT_ZOOKEPER_CLIENT_PORT));
-        return c;
+        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, String.valueOf(HConstants.DEFAULT_ZOOKEPER_CLIENT_PORT));
+        return HBaseConfiguration.create(conf);
     }
 
     /**
@@ -57,7 +58,7 @@ public final class HBaseConnectionManager {
      * @return 配置对象
      */
     public static Configuration getConfiguration() {
-        return conf;
+        return configuration;
     }
 
     /**
@@ -66,13 +67,13 @@ public final class HBaseConnectionManager {
      * @return 连接对象
      */
     private static Connection createConnection() {
-        // 获取数据库连接对象
         try {
+            // 获取数据库连接对象
             return ConnectionFactory.createConnection(getConfiguration());
         } catch (IOException e) {
             LOGGER.error("create hbase connection failed! {}", e);
+            throw new IllegalArgumentException("create hbase connection failed! {}", e);
         }
-        return null;
     }
 
     /**
