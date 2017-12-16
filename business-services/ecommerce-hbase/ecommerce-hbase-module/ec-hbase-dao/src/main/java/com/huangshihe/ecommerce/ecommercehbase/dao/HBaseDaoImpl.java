@@ -48,12 +48,9 @@ public class HBaseDaoImpl implements IHBaseDao {
      * @param ttl          老化时间
      */
     @Override
-    public boolean createTable(final String tableNameStr, final String[] familyNames, final int ttl) { //NOPMD
-        boolean result = false; //NOPMD
+    public void createTable(final String tableNameStr, final String[] familyNames, final int ttl) { //NOPMD
         // 数据库元数据操作对象
-        Admin admin = null;
-        try {
-            admin = connection.getAdmin();
+        try (Admin admin = connection.getAdmin()) {
             // 检查表是否存在
             final TableName tableName = TableName.valueOf(tableNameStr);
             if (admin.tableExists(tableName)) {
@@ -68,7 +65,6 @@ public class HBaseDaoImpl implements IHBaseDao {
                     tableDesc.addFamily(column);
                 }
                 admin.createTable(tableDesc);
-                result = true;
             }
         } catch (IllegalArgumentException e) {
             LOGGER.error("create table '{}' failed! this table name is reserved, detail: {}", tableNameStr, e);
@@ -78,17 +74,7 @@ public class HBaseDaoImpl implements IHBaseDao {
             LOGGER.error("create table '{}' failed! the table is exists, detail: {}", tableNameStr, e);
         } catch (IOException e) {
             LOGGER.error("create table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
-        } finally {
-            try {
-                if (admin != null) {
-                    admin.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("close admin table and connection failed!, network exception occurs? detail: {}", e);
-            }
-
         }
-        return result;
     }
 
     /**

@@ -34,41 +34,22 @@ public class Configuration {
      * @param fileName 配置文件名
      */
     public Configuration(final String fileName) {
-        InputStream inputStream = null;
-        Reader reader = null;
-        try {
-            inputStream = getClassLoader().getResourceAsStream(fileName);
-            if (inputStream == null) {
-                LOGGER.error("Properties file not found in classpath: {}", fileName);
-                throw new IllegalArgumentException("Properties file not found in classpath: " + fileName);
-            }
+
+        try (InputStream inputStream = getClassLoader().getResourceAsStream(fileName);
+             Reader reader = new InputStreamReader(inputStream, "UTF-8")) {
             properties = new Properties();
-            reader = new InputStreamReader(inputStream, "UTF-8");
+
             properties.load(reader);
         } catch (IOException e) {
             // 可能是文件格式或字符编码不对
-            LOGGER.error("Error loading properties file, {}", e);
-            throw new IllegalArgumentException("Error loading properties file.", e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    LOGGER.error("Error close reader, {}", e);
-                }
-            }
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    LOGGER.error("Error close inputStream, {}", e);
-                }
-            }
+            LOGGER.error("Properties file not found in classpath or loading properties file error, {}", e);
+            throw new IllegalArgumentException("Properties file not found in classpath or loading properties file error", e);
         }
     }
 
     /**
      * 获取class loader.
+     *
      * @return 当前线程的class loader
      */
     private ClassLoader getClassLoader() {

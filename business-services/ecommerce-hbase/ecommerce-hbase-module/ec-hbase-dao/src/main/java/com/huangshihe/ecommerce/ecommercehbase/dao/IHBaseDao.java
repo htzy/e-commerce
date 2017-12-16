@@ -15,9 +15,8 @@ public interface IHBaseDao {
      * @param tableNameStr 表名
      * @param familyNames  列族名
      * @param ttl          老化时间
-     * @return 是否创建成功
      */
-    boolean createTable(String tableNameStr, String[] familyNames, int ttl);
+    void createTable(String tableNameStr, String[] familyNames, int ttl);
 
 //    public void queryTable();
 //
