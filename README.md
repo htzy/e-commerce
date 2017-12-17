@@ -54,6 +54,9 @@
 2. 完善日志的配置信息
 3. 完善llt的配置文件
 4. 可利用Spring进行技术整合
+5. HBase查询优化
+6. HBase org.apache.hadoop.conf.Configuration 的配置原理
+
 
 # 参考
 [git 合并与创建分支](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840038939c291467cc7c747b1810aab2fb8863508000)  

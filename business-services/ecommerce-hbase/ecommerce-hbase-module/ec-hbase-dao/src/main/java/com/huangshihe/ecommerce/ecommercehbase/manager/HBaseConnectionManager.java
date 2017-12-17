@@ -3,7 +3,6 @@ package com.huangshihe.ecommerce.ecommercehbase.manager;
 import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.slf4j.Logger;
@@ -41,15 +40,9 @@ public final class HBaseConnectionManager {
      * @return 静态配置对象
      */
     private static Configuration createConfiguration() {
-        // 创建一个数据库配置对象
-        final Configuration conf = new Configuration();
-        // TODO 以下配置放入配置文件中，如果取不到则使用默认值
-        // TODO 是否有必要手动指定默认值？？
-        // 配置HBase数据库主机IP，即zookeeper主机地址，默认值为127.0.0.1
-        conf.set(HConstants.ZOOKEEPER_QUORUM, HConstants.LOCALHOST_IP);
-        // HBase客户端连接端口，即zookeeper端口，默认值为2181
-        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, String.valueOf(HConstants.DEFAULT_ZOOKEPER_CLIENT_PORT));
-        return HBaseConfiguration.create(conf);
+        // 将配置文件拷贝到resources目录下，create会去找hbase-site.xml配置文件进行创建。
+        // 同时还会自动加载在org.apache.hbase:hbase-common.jar下的hbase-default.xml配置文件
+        return HBaseConfiguration.create();
     }
 
     /**
