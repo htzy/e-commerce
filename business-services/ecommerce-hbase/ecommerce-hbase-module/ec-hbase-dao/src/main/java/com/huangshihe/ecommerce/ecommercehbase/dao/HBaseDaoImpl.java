@@ -1,17 +1,23 @@
 package com.huangshihe.ecommerce.ecommercehbase.dao;
 
 import com.huangshihe.ecommerce.ecommercehbase.manager.HBaseConnectionManager;
-import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.TableExistsException;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * DAO实现类.
@@ -74,6 +80,37 @@ public class HBaseDaoImpl implements IHBaseDao {
             LOGGER.error("create table '{}' failed! the table is exists, detail: {}", tableNameStr, e);
         } catch (IOException e) {
             LOGGER.error("create table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+        }
+    }
+
+    /**
+     * 通过rowKey查询.
+     *
+     * @param tableNameStr 表名
+     * @param rowKey       rowKey
+     */
+    @Override
+    public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey) {
+        Result result = null;
+        try {
+            // 这里的table名需要注意是否为default命名空间，即：default.tableName
+            Table table = connection.getTable(TableName.valueOf(tableNameStr));
+            Get get = new Get(Bytes.toBytes(rowKey));
+            result = table.get(get);
+            LOGGER.debug("[queryTableByRowKey] result: {}", result);
+            table.close();
+        } catch (IOException e) {
+            LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
+                    tableNameStr, rowKey, e);
+        }
+        // cell-key: rowKey + cf + column + version; cell-value: value
+        if (result == null) {
+            LOGGER.debug("[queryTableByRowKey] return null!");
+            return null;
+        } else {
+            // listCells 可能为null
+            LOGGER.debug("[queryTableByRowKey] return listCell: {}", result.listCells());
+            return result.listCells();
         }
     }
 

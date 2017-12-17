@@ -1,5 +1,9 @@
 package com.huangshihe.ecommerce.ecommercehbase.dao;
 
+import org.apache.hadoop.hbase.Cell;
+
+import java.util.List;
+
 /**
  * hbase数据库访问接口.
  * <p>
@@ -20,7 +24,15 @@ public interface IHBaseDao {
 
 //    public void queryTable();
 //
-//    public void queryTableByRowKey();
+
+    /**
+     * 通过rowKey查询.
+     *
+     * @param tableNameStr 表名
+     * @param rowKey       rowKey
+     * @return cellList
+     */
+    List<Cell> queryTableByRowKey(String tableNameStr, String rowKey);
 //
 //    public void queryTableByCondition();
 //
