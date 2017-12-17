@@ -30,5 +30,22 @@ Table table = connection.getTable(TableName.valueOf(tablename));
 HTablePool is Deprecated! HConnection, which is deprecated in HBase 1.0 by Connection. Please use Connection instead.
 HTableInterface is Deprecated! use Table instead.
 
+
+# 禁用自带zookeeper
+修改conf/hbase-env.sh
+```shell
+export HBASE_MANAGES_ZK=false
+```
+直接通过通过/bin/start-hbase.sh启动  
+不要先启动zk,可能导致端口占用报错:
+Could not start ZK at requested port of 2181.  
+ZK was started at port: 2182.  
+Aborting as clients (e.g. shell) will not be able to find this ZK quorum
+
+# web
+http://localhost:16010/
+
 # 参考
 [Mac下安装HBase及详解](http://www.jianshu.com/p/510e1d599123)  
+[Hbase禁用自带ZooKeeper，使用已经安装的ZooKeeper](http://www.aboutyun.com/thread-7451-1-1.html)  
+[hbase in action学习笔记一(quick start)](http://san-yun.iteye.com/blog/1991107)  
