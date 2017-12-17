@@ -19,7 +19,16 @@
     du -ha
 ```
 
-　　-a：显示目录占用的磁盘空间大小，还要显示其下目录和文件占用磁盘空间的大小
-　　-s：显示目录占用的磁盘空间大小，不要显示其下子目录和文件占用的磁盘空间大小
-　　-c：显示几个目录或文件占用的磁盘空间大小，还要统计它们的总和
+    -a：显示目录占用的磁盘空间大小，还要显示其下目录和文件占用磁盘空间的大小
+    -s：显示目录占用的磁盘空间大小，不要显示其下子目录和文件占用的磁盘空间大小
+    -c：显示几个目录或文件占用的磁盘空间大小，还要统计它们的总和
 
+# mac
+## 查看路由表
+```shell
+# "netstat -nr" will display the routing tables.
+# The '-r' displays the routing tables, and the '-n' flag makes sure the display show numerical addresses
+# instead of trying to resolve host/network/port names.
+netstat -nr
+
+```
