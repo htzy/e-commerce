@@ -29,3 +29,6 @@ Table table = connection.getTable(TableName.valueOf(tablename));
 ```
 HTablePool is Deprecated! HConnection, which is deprecated in HBase 1.0 by Connection. Please use Connection instead.
 HTableInterface is Deprecated! use Table instead.
+
+# 参考
+[Mac下安装HBase及详解](http://www.jianshu.com/p/510e1d599123)  
