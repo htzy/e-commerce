@@ -1,6 +1,7 @@
 package com.huangshihe.ecommerce.ecommercehbase.dao;
 
 import com.huangshihe.ecommerce.ecommercehbase.manager.HBaseConnectionManager;
+import com.huangshihe.ecommerce.ecommercehbase.util.HBaseDaoUtil;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -10,17 +11,24 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO实现类.
+ * TODO 是否需要针对每个数据表做一个DAO？
  * <p>
  * Create Date: 2017-12-14 00:18
  *
@@ -92,27 +100,108 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey) {
         Result result = null;
-        try {
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
-            final Table table = connection.getTable(TableName.valueOf(tableNameStr));
             final Get get = new Get(Bytes.toBytes(rowKey));
             result = table.get(get); //NOPMD
             LOGGER.debug("[queryTableByRowKey] result: {}", result);
-            table.close(); //NOPMD
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, e);
         }
-        // cell-key: rowKey + cf + column + version; cell-value: value
-        if (result == null) {
-            LOGGER.debug("[queryTableByRowKey] return null!");
-            return null;
-        } else {
-            // listCells 可能为null
-            LOGGER.debug("[queryTableByRowKey] return listCell: {}", result.listCells()); //NOPMD
-            return result.listCells(); //NOPMD
+        return HBaseDaoUtil.getCells(result);
+    }
+
+    /**
+     * 通过rowKey查询，并通过columns过滤.
+     *
+     * @param tableNameStr 表名
+     * @param rowKey       rowKey
+     * @param cf           过滤的列名(key为family，value为column)
+     * @return cellList
+     */
+    @Override
+    public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey,
+                                         final Map<String, List<String>> cf) {
+        Result result = null;
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+            // 这里的table名需要注意是否为default命名空间，即：default.tableName
+            final Get get = new Get(Bytes.toBytes(rowKey));
+            for (final String family : cf.keySet()) {
+                for (final String column : cf.get(family)) {
+                    get.addColumn(Bytes.toBytes(family), Bytes.toBytes(column));
+                }
+            }
+            result = table.get(get); //NOPMD
+            LOGGER.debug("[queryTableByRowKey] result: {}", result);
+        } catch (IOException e) {
+            LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, cf: {}, network exception occurs? detail: {}",
+                    tableNameStr, rowKey, cf, e);
+        }
+        return HBaseDaoUtil.getCells(result);
+    }
+
+    /**
+     * 查询表中的所有数据（全表扫描）.
+     * TODO 继续细化
+     * @param tableNameStr 表名
+     * @return 表中所有数据
+     */
+    @Override
+    public List<Cell> queryAll(String tableNameStr) {
+        ResultScanner resultScanner = null;
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+
+            Scan scan = new Scan();
+//            scan.setStartRow()
+//            scan.setStopRow()
+//            // 不轻易使用filter，因为速度很慢，如果要用，建议使用前缀filter：PrefixFilter，还有协助分页的filter：PageFilter
+//            scan.setFilter()
+
+//            // 协助缓存的
+//            scan.setCacheBlocks()
+//            scan.setCaching()
+            resultScanner = table.getScanner(scan);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeStream(resultScanner);
+        }
+        return null;
+    }
+
+    /**
+     * 插入值.
+     * TODO 增加是否使用缓冲区选项，默认不用
+     * TODO value可否设置为Object，如何更灵活的插入数据？
+     * TODO 插入之前应检查表是否存在，查询同理！！
+     *
+     * @param tableNameStr 表名
+     * @param rowKey       rowKey
+     * @param family       列族
+     * @param columnValues 列及值
+     */
+    @Override
+    public void insert(String tableNameStr, String rowKey, String family, Map<String, List<String>> columnValues) {
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+            LOGGER.debug("[insert]init List Put size: {}", columnValues.size() * columnValues.values().size());
+            List<Put> puts = new ArrayList<>(columnValues.size() * columnValues.values().size());
+            for (String column : columnValues.keySet()) {
+                for (String value : columnValues.get(column)) {
+                    Put put = new Put(Bytes.toBytes(rowKey));
+                    put.addColumn(Bytes.toBytes(family), Bytes.toBytes(column), Bytes.toBytes(value));
+                    puts.add(put);
+                }
+            }
+            LOGGER.debug("[insert] insert 'puts' size is {}", puts.size());
+            table.put(puts);
+        } catch (IOException e) {
+            LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
+                    tableNameStr, rowKey, e);
+
         }
     }
+
 
     /**
      * 删除表.
