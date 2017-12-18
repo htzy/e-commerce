@@ -16,7 +16,16 @@ brew install hbase
   
 # 进入shell
   hbase shell
+  
+# 可以在web中查看StoreFile的情况
+# 在Put之后，hbase会先写到MemStore中，这时不会写到StoreFile中，可以执行如下命令生成：
+  flush 'tableName'
+# 执行后可以在web中看到生成了一个新的StoreFile。
+# 删除数据后，若被删除的数据处于StoreFile中，那么StoreFile中的对应部分也不会立马被删除，可以执行如下命令，立即删除：
+  campact 'tableName'
 ```
+
+
 
 # HBase连接池
 例子
@@ -29,6 +38,12 @@ Table table = connection.getTable(TableName.valueOf(tablename));
 ```
 HTablePool is Deprecated! HConnection, which is deprecated in HBase 1.0 by Connection. Please use Connection instead.
 HTableInterface is Deprecated! use Table instead.
+```java
+// 若需要手动关闭table可在finally中使用：
+import org.apache.hadoop.io.IOUtils;
+IOUtils.closeStream(table);
+// 也可以利用try-with-resources，自动关闭try(open table){}catch(){}
+```
 
 
 # 禁用自带zookeeper
@@ -82,6 +97,8 @@ void setWriteBufferSize(long writeBufferSize)
     隐式刷写会在用户调用put()或setWriteBufferSize方法时触发。将目前占用的缓冲区大小与用户配置的大小做比较，如果超出限制，则会调用flushCommits()方法。如果缓冲区被禁用，即设置setAutoFlush(true)，这样用户每次调用put()方法时都会触发刷写。在调用Table类的close()方法时也会无条件地隐式触发刷写。
   
   对于往返时间，如果用户只存储大单元格，客户端缓冲区的作用就不大了，因为传输时间占用了大部分的请求时间。在这种情况下，建议最好不要增加客户端缓冲区大小。
+  
+  
 
 
 
