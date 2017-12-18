@@ -94,11 +94,11 @@ public class HBaseDaoImpl implements IHBaseDao {
         Result result = null;
         try {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
-            Table table = connection.getTable(TableName.valueOf(tableNameStr));
-            Get get = new Get(Bytes.toBytes(rowKey));
-            result = table.get(get);
+            final Table table = connection.getTable(TableName.valueOf(tableNameStr));
+            final Get get = new Get(Bytes.toBytes(rowKey));
+            result = table.get(get); //NOPMD
             LOGGER.debug("[queryTableByRowKey] result: {}", result);
-            table.close();
+            table.close(); //NOPMD
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, e);
@@ -109,8 +109,8 @@ public class HBaseDaoImpl implements IHBaseDao {
             return null;
         } else {
             // listCells 可能为null
-            LOGGER.debug("[queryTableByRowKey] return listCell: {}", result.listCells());
-            return result.listCells();
+            LOGGER.debug("[queryTableByRowKey] return listCell: {}", result.listCells()); //NOPMD
+            return result.listCells(); //NOPMD
         }
     }
 
