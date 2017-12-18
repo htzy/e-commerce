@@ -32,3 +32,6 @@
 netstat -nr
 
 ```
+
+# 参考
+[rsync命令——linux集群上同步文件](http://man.linuxde.net/rsync)
