@@ -78,17 +78,17 @@ http://localhost:16010/
 
 HBase的API配备了一个客户端的写缓冲区（write buffer），缓冲区负责收集put操作，然后调用RPC操作一次性将put送往服务器。
 ```java
-# 默认情况下，缓冲区是禁用的，将autoflush设置为false来激活缓冲区。
+// 默认情况下，缓冲区是禁用的，将autoflush设置为false来激活缓冲区。
 void setAutoFlush(boolean autoFlush)
 boolean isAutoFlush()
-# 当需要强制把数据写到服务端时，可以调用flushCommits()方法（用户调用则为显式刷写）
+// 当需要强制把数据写到服务端时，可以调用flushCommits()方法（用户调用则为显式刷写）
 void flushCommits()
 
-# 用户可以强制刷写缓冲区，不过这通常不必要。当缓冲的数据量超过缓冲指定的大小限制，客户端就会隐式地调用刷写命令。
-# 可以通过如下方法设置客户端写缓冲区的大小（默认的大小是2MB）：
+// 用户可以强制刷写缓冲区，不过这通常不必要。当缓冲的数据量超过缓冲指定的大小限制，客户端就会隐式地调用刷写命令。
+// 可以通过如下方法设置客户端写缓冲区的大小（默认的大小是2MB）：
 long getWriteBufferSize()
 void setWriteBufferSize(long writeBufferSize)
-# 也可以在hbase-site.xml中配置"hbase.client.write.buffer"的大小，单位为字节，默认值即2097152（字节，即2MB），用这种方式可以避免在每一个Table实例中设定缓冲区的麻烦。
+// 也可以在hbase-site.xml中配置"hbase.client.write.buffer"的大小，单位为字节，默认值即2097152（字节，即2MB），用这种方式可以避免在每一个Table实例中设定缓冲区的麻烦。
 ```
 
 - 显式刷写
