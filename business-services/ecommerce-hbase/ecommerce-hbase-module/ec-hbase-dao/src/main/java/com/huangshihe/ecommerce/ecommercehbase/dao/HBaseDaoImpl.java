@@ -99,6 +99,11 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("[queryTableByRowKey] table: {} is not exists!", tableNameStr);
+            return null;
+        }
+
         Result result = null;
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
@@ -123,6 +128,11 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey,
                                          final Map<String, List<String>> cf) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("[queryTableByRowKey] table: {} is not exists!", tableNameStr);
+            return null;
+        }
+
         Result result = null;
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
@@ -144,11 +154,17 @@ public class HBaseDaoImpl implements IHBaseDao {
     /**
      * 查询表中的所有数据（全表扫描）.
      * TODO 继续细化
+     *
      * @param tableNameStr 表名
      * @return 表中所有数据
      */
     @Override
     public List<Cell> queryAll(String tableNameStr) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("[queryAll] table: {} is not exists!", tableNameStr);
+            return null;
+        }
+
         ResultScanner resultScanner = null;
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
 
@@ -174,7 +190,6 @@ public class HBaseDaoImpl implements IHBaseDao {
      * 插入值.
      * TODO 增加是否使用缓冲区选项，默认不用
      * TODO value可否设置为Object，如何更灵活的插入数据？
-     * TODO 插入之前应检查表是否存在，查询同理！！
      *
      * @param tableNameStr 表名
      * @param rowKey       rowKey
@@ -183,6 +198,11 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void insert(String tableNameStr, String rowKey, String family, Map<String, List<String>> columnValues) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("[insert] table: {} is not exists!", tableNameStr);
+            return;
+        }
+
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             LOGGER.debug("[insert]init List Put size: {}", columnValues.size() * columnValues.values().size());
             List<Put> puts = new ArrayList<>(columnValues.size() * columnValues.values().size());
@@ -210,6 +230,7 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void deleteTable(final String tableNameStr) {
+        // TODO 删除前是否需要检查表是否已经存在？
         try (Admin admin = connection.getAdmin()) {
             final TableName tableName = TableName.valueOf(tableNameStr);
             // 禁用该表
