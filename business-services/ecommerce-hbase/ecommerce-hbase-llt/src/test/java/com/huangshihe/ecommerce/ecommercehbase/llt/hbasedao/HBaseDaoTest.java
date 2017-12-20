@@ -2,6 +2,7 @@ package com.huangshihe.ecommerce.ecommercehbase.llt.hbasedao;
 
 import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
+import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -80,4 +81,8 @@ public class HBaseDaoTest {
         }
     }
 
+    @When("^删除不存在的\"([^\"]*)\"表$")
+    public void 删除不存在的表(String tableNameStr) throws Throwable {
+        hBaseDao.deleteTable(tableNameStr);
+    }
 }

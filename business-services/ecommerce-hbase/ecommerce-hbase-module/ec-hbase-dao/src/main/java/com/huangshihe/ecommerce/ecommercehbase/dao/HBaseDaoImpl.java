@@ -8,6 +8,7 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.TableExistsException;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Get;
@@ -230,13 +231,15 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void deleteTable(final String tableNameStr) {
-        // TODO 删除前是否需要检查表是否已经存在？
+        // TODO 删除前是否需要检查表是否已经存在？，还是catch这种异常？
         try (Admin admin = connection.getAdmin()) {
             final TableName tableName = TableName.valueOf(tableNameStr);
             // 禁用该表
             admin.disableTable(tableName);
             // 删除该表
             admin.deleteTable(tableName);
+        } catch (TableNotFoundException e) {
+            LOGGER.warn("delete table failed! table: {}, not exists! detail: {}", tableNameStr, e);
         } catch (IOException e) {
             LOGGER.error("delete table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
         }

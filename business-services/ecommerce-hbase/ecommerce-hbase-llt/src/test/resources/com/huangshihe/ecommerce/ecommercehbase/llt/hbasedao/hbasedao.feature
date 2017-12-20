@@ -26,3 +26,12 @@ Feature: HBaseDao
       | tableName | familyNames | ttl     | rowKey | cellsCount |
       | llt-test  | name        | 7776000 | 10001  | 0          |
 
+
+  Scenario Outline: 删除不存在的表
+    Given 创建hbase连接成功
+    When 删除不存在的"<tableName>"表
+    Then 删除"<tableName>"表成功
+    Examples:
+      | tableName           |
+      | llt-test-not-exists |
+
