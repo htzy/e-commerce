@@ -231,14 +231,19 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void deleteTable(final String tableNameStr) {
-        // TODO 删除前是否需要检查表是否已经存在？，还是catch这种异常？
         try (Admin admin = connection.getAdmin()) {
             final TableName tableName = TableName.valueOf(tableNameStr);
+            // 删除前检查表是否不存在，不存在，则警告。
+            if (!admin.tableExists(tableName)) {
+                LOGGER.warn("delete table failed! table: {}, not exists!", tableNameStr);
+                return;
+            }
             // 禁用该表
             admin.disableTable(tableName);
             // 删除该表
             admin.deleteTable(tableName);
         } catch (TableNotFoundException e) {
+            // 删除表为同步操作，之前检查过，仍有可能是因为表不存在而失败！
             LOGGER.warn("delete table failed! table: {}, not exists! detail: {}", tableNameStr, e);
         } catch (IOException e) {
             LOGGER.error("delete table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);

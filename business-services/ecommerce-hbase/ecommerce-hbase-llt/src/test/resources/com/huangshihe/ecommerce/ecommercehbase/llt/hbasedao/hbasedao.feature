@@ -21,7 +21,6 @@ Feature: HBaseDao
     When 在表"<tableName>"中通过rowKey"<rowKey>"查询
     Then 查询该rowKey共有"<cellsCount>"条记录
     And 删除"<tableName>"表
-
     Examples:
       | tableName | familyNames | ttl     | rowKey | cellsCount |
       | llt-test  | name        | 7776000 | 10001  | 0          |

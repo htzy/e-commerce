@@ -34,7 +34,7 @@ public final class HBaseDaoUtil {
             return null;
         } else {
             // listCells 可能为null
-            LOGGER.debug("[queryTableByRowKey] return listCell: {}", result.listCells()); //NOPMD
+            LOGGER.debug("[queryTableByRowKey] return listCell: {}, isEmpty:{}", result.listCells(), result.isEmpty()); //NOPMD
             return result.listCells(); //NOPMD
         }
     }
