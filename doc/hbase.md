@@ -98,8 +98,12 @@ void setWriteBufferSize(long writeBufferSize)
   
   对于往返时间，如果用户只存储大单元格，客户端缓冲区的作用就不大了，因为传输时间占用了大部分的请求时间。在这种情况下，建议最好不要增加客户端缓冲区大小。
   
-  
 
+# rowKey
+rowkey可以直接通过拼接来完成，不需要连接符，所有的column长度定义为常量。
+
+TODO 
+将cf、family、column
 
 
 
