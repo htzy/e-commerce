@@ -1,6 +1,7 @@
 package com.huangshihe.ecommerce.ecommercehbase.dao;
 
 import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.client.Result;
 
 import java.util.List;
 import java.util.Map;
@@ -45,21 +46,22 @@ public interface IHBaseDao {
 
     /**
      * 查询表中的所有数据（全表扫描）.
+     *
      * @param tableNameStr 表名
      * @return 表中所有数据
      */
-    List<Cell> queryAll(String tableNameStr);
+    List<Result> queryAll(String tableNameStr);
 
 
     /**
-     * 插入值.
+     * 根据rowKey插入值，即只有一个rowKey.
      *
      * @param tableNameStr 表名
      * @param rowKey       rowKey
      * @param family       列族
      * @param columnValues 列及值
      */
-    void insert(String tableNameStr, String rowKey, String family, Map<String, List<String>> columnValues);
+    void insert(String tableNameStr, String rowKey, String family, Map<String, String> columnValues);
 
 //
 //    public void queryTableByCondition();

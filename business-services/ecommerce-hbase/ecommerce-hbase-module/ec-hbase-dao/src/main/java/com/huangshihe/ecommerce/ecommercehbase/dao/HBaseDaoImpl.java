@@ -160,15 +160,14 @@ public class HBaseDaoImpl implements IHBaseDao {
      * @return 表中所有数据
      */
     @Override
-    public List<Cell> queryAll(String tableNameStr) {
+    public List<Result> queryAll(String tableNameStr) {
         if (!isExists(tableNameStr)) {
             LOGGER.error("[queryAll] table: {} is not exists!", tableNameStr);
             return null;
         }
-
         ResultScanner resultScanner = null;
+        List<Result> results = new ArrayList<Result>();
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
-
             Scan scan = new Scan();
 //            scan.setStartRow()
 //            scan.setStopRow()
@@ -179,18 +178,23 @@ public class HBaseDaoImpl implements IHBaseDao {
 //            scan.setCacheBlocks()
 //            scan.setCaching()
             resultScanner = table.getScanner(scan);
+            for (Result result : resultScanner) {
+                results.add(result);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             IOUtils.closeStream(resultScanner);
         }
-        return null;
+        return results;
     }
 
     /**
-     * 插入值.
+     * 根据rowKey插入值，即只有一个rowKey.
+     * <p>
      * TODO 增加是否使用缓冲区选项，默认不用
      * TODO value可否设置为Object，如何更灵活的插入数据？
+     * 一般family越少越好，名越短越好，详细见doc中的参考：HBase入门实例: Table中Family和Qualifier的关系与区别
      *
      * @param tableNameStr 表名
      * @param rowKey       rowKey
@@ -198,28 +202,24 @@ public class HBaseDaoImpl implements IHBaseDao {
      * @param columnValues 列及值
      */
     @Override
-    public void insert(String tableNameStr, String rowKey, String family, Map<String, List<String>> columnValues) {
+    public void insert(String tableNameStr, String rowKey, String family, Map<String, String> columnValues) {
         if (!isExists(tableNameStr)) {
             LOGGER.error("[insert] table: {} is not exists!", tableNameStr);
             return;
         }
+        LOGGER.debug("[insert] tableNameStr:{}, rowKey:{}, columnValues:{}, columnValues.size: {}",
+                tableNameStr, rowKey, columnValues, columnValues.size());
 
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
-            LOGGER.debug("[insert]init List Put size: {}", columnValues.size() * columnValues.values().size());
-            List<Put> puts = new ArrayList<>(columnValues.size() * columnValues.values().size());
+            Put put = new Put(Bytes.toBytes(rowKey));
             for (String column : columnValues.keySet()) {
-                for (String value : columnValues.get(column)) {
-                    Put put = new Put(Bytes.toBytes(rowKey));
-                    put.addColumn(Bytes.toBytes(family), Bytes.toBytes(column), Bytes.toBytes(value));
-                    puts.add(put);
-                }
+                put.addColumn(Bytes.toBytes(family), Bytes.toBytes(column), Bytes.toBytes(columnValues.get(column)));
             }
-            LOGGER.debug("[insert] insert 'puts' size is {}", puts.size());
-            table.put(puts);
+            LOGGER.debug("[insert] insert 'put' all cells size is {}", put.size());
+            table.put(put);
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, e);
-
         }
     }
 
