@@ -126,3 +126,5 @@ TODO
 [Mac下安装HBase及详解](http://www.jianshu.com/p/510e1d599123)  
 [Hbase禁用自带ZooKeeper，使用已经安装的ZooKeeper](http://www.aboutyun.com/thread-7451-1-1.html)  
 [hbase in action学习笔记一(quick start)](http://san-yun.iteye.com/blog/1991107)  
+[HBase入门实例: Table中Family和Qualifier的关系与区别](http://blog.csdn.net/wkwanglei/article/details/43988109)  
+
