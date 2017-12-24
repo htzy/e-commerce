@@ -102,11 +102,14 @@ void setWriteBufferSize(long writeBufferSize)
 # rowKey
 rowkey可以直接通过拼接来完成，不需要连接符，所有的column长度定义为常量。
 
-TODO 
-将cf、family、column
 
-
-
+规范用名：
+1. column 由 column family 和 column qualifier组成，column一般表示列族或family+qualifier。
+2. 列族（一般用cf、column、family等表示）：  
+String: familyName  
+byte[]: family  
+3. qualifier限定符
+byte[]: qualifier
 
 
 

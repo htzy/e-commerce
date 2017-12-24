@@ -75,9 +75,9 @@ public class HBaseDaoImpl implements IHBaseDao {
                 final HTableDescriptor tableDesc = new HTableDescriptor(tableName);
                 // 列族描述对象
                 for (final String familyName : familyNames) {
-                    final HColumnDescriptor column = new HColumnDescriptor(familyName); //NOPMD
-                    column.setTimeToLive(ttl);
-                    tableDesc.addFamily(column);
+                    final HColumnDescriptor family = new HColumnDescriptor(familyName); //NOPMD
+                    family.setTimeToLive(ttl);
+                    tableDesc.addFamily(family);
                 }
                 admin.createTable(tableDesc);
             }
@@ -123,12 +123,12 @@ public class HBaseDaoImpl implements IHBaseDao {
      *
      * @param tableNameStr 表名
      * @param rowKey       rowKey
-     * @param cf           过滤的列名(key为family，value为column)
+     * @param column       过滤的列名(key为family，value为qualifier)
      * @return cellList
      */
     @Override
     public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey,
-                                         final Map<String, List<String>> cf) {
+                                         final Map<String, List<String>> column) {
         if (!isExists(tableNameStr)) {
             LOGGER.error("[queryTableByRowKey] table: {} is not exists!", tableNameStr);
             return null;
@@ -138,16 +138,16 @@ public class HBaseDaoImpl implements IHBaseDao {
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
             final Get get = new Get(Bytes.toBytes(rowKey));
-            for (final String family : cf.keySet()) {
-                for (final String column : cf.get(family)) {
-                    get.addColumn(Bytes.toBytes(family), Bytes.toBytes(column));
+            for (final String family : column.keySet()) {
+                for (final String qualifier : column.get(family)) {
+                    get.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier));
                 }
             }
             result = table.get(get); //NOPMD
             LOGGER.debug("[queryTableByRowKey] result: {}", result);
         } catch (IOException e) {
-            LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, cf: {}, network exception occurs? detail: {}",
-                    tableNameStr, rowKey, cf, e);
+            LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, column: {}, network exception occurs? detail: {}",
+                    tableNameStr, rowKey, column, e);
         }
         return HBaseDaoUtil.getCells(result);
     }
@@ -196,24 +196,24 @@ public class HBaseDaoImpl implements IHBaseDao {
      * TODO value可否设置为Object，如何更灵活的插入数据？
      * 一般family越少越好，名越短越好，详细见doc中的参考：HBase入门实例: Table中Family和Qualifier的关系与区别
      *
-     * @param tableNameStr 表名
-     * @param rowKey       rowKey
-     * @param family       列族
-     * @param columnValues 列及值
+     * @param tableNameStr    表名
+     * @param rowKey          rowKey
+     * @param family          列族
+     * @param qualifierValues 列及值
      */
     @Override
-    public void insert(String tableNameStr, String rowKey, String family, Map<String, String> columnValues) {
+    public void insert(String tableNameStr, String rowKey, String family, Map<String, String> qualifierValues) {
         if (!isExists(tableNameStr)) {
             LOGGER.error("[insert] table: {} is not exists!", tableNameStr);
             return;
         }
-        LOGGER.debug("[insert] tableNameStr:{}, rowKey:{}, columnValues:{}, columnValues.size: {}",
-                tableNameStr, rowKey, columnValues, columnValues.size());
+        LOGGER.debug("[insert] tableNameStr:{}, rowKey:{}, qualifierValues:{}, qualifierValues.size: {}",
+                tableNameStr, rowKey, qualifierValues, qualifierValues.size());
 
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             Put put = new Put(Bytes.toBytes(rowKey));
-            for (String column : columnValues.keySet()) {
-                put.addColumn(Bytes.toBytes(family), Bytes.toBytes(column), Bytes.toBytes(columnValues.get(column)));
+            for (String qualifier : qualifierValues.keySet()) {
+                put.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(qualifierValues.get(qualifier)));
             }
             LOGGER.debug("[insert] insert 'put' all cells size is {}", put.size());
             table.put(put);

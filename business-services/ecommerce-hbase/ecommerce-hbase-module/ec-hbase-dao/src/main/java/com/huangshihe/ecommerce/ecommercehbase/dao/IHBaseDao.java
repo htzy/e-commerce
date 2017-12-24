@@ -38,10 +38,10 @@ public interface IHBaseDao {
      *
      * @param tableNameStr 表名
      * @param rowKey       rowKey
-     * @param cf           过滤的列名(key为family，value为column)
+     * @param column       过滤的列名(key为family，value为qualifier)
      * @return cellList
      */
-    List<Cell> queryTableByRowKey(String tableNameStr, String rowKey, Map<String, List<String>> cf);
+    List<Cell> queryTableByRowKey(String tableNameStr, String rowKey, Map<String, List<String>> column);
 
 
     /**
@@ -56,12 +56,12 @@ public interface IHBaseDao {
     /**
      * 根据rowKey插入值，即只有一个rowKey.
      *
-     * @param tableNameStr 表名
-     * @param rowKey       rowKey
-     * @param family       列族
-     * @param columnValues 列及值
+     * @param tableNameStr    表名
+     * @param rowKey          rowKey
+     * @param family          列族
+     * @param qualifierValues 列及值
      */
-    void insert(String tableNameStr, String rowKey, String family, Map<String, String> columnValues);
+    void insert(String tableNameStr, String rowKey, String family, Map<String, String> qualifierValues);
 
 //
 //    public void queryTableByCondition();
