@@ -28,7 +28,7 @@ public class HBaseDaoTest {
     private static int ttl;
     private static String tableNameStr;
     private static List<Cell> cellList;
-    private static String[] columns;
+    private static String[] qualifiers;
 
     @Given("^创建hbase连接成功$")
     public void 创建hbase连接成功() throws Throwable {
@@ -95,9 +95,9 @@ public class HBaseDaoTest {
         hBaseDao.deleteTable(tableNameStr);
     }
 
-    @And("^要插入数据的columns为\"([^\"]*)\"$")
-    public void 要插入数据的columns为(String arg0) throws Throwable {
-        columns = arg0.split(",");
+    @And("^要插入数据的qualifiers为\"([^\"]*)\"$")
+    public void 要插入数据的qualifiers为(String arg0) throws Throwable {
+        qualifiers = arg0.split(",");
     }
 
     @When("^在表中随机生成\"([^\"]*)\"条rowKey和随机值插入$")
@@ -107,11 +107,11 @@ public class HBaseDaoTest {
         for (String familyName : familyNames) {
             for (int i = 0; i < count; i++) {
                 String rowKey = UUID.randomUUID().toString();
-                Map<String, String> columnValues = new HashMap<>(columns.length);
-                for (String column : columns) {
-                    columnValues.put(column, UUID.randomUUID().toString());
+                Map<String, String> qualifierValues = new HashMap<>(qualifiers.length);
+                for (String qualifier : qualifiers) {
+                    qualifierValues.put(qualifier, UUID.randomUUID().toString());
                 }
-                hBaseDao.insert(tableNameStr, rowKey, familyName, columnValues);
+                hBaseDao.insert(tableNameStr, rowKey, familyName, qualifierValues);
             }
         }
     }

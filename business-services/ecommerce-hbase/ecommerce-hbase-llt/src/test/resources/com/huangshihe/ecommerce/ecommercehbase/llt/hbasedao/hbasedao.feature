@@ -40,14 +40,13 @@ Feature: HBaseDao
 
   Scenario Outline: 插入数据
     Given 创建hbase连接成功
-    # TODO 整改familyNames为families
     And 要创建表的familyNames是"<familyNames>"
     And 表名为"<tableName>"
     And 数据表创建成功
-    And 要插入数据的columns为"<columns>"
+    And 要插入数据的qualifiers为"<qualifiers>"
     When 在表中随机生成"<rowNums>"条rowKey和随机值插入
     Then 查询表中共有"<rowNums>"条rowKey
     And 删除表
     Examples:
-      | tableName | familyNames | columns        | rowNums |
+      | tableName | familyNames | qualifiers     | rowNums |
       | llt-test  | t           | col1,col2,col3 | 5       |
