@@ -2,6 +2,7 @@ package com.huangshihe.ecommerce.ecommercehbase.llt.hbasedao;
 
 import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
+import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -29,6 +30,7 @@ public class HBaseDaoTest {
     private static String tableNameStr;
     private static List<Cell> cellList;
     private static String[] qualifiers;
+    private static String insertRowKey;
 
     @Given("^创建hbase连接成功$")
     public void 创建hbase连接成功() throws Throwable {
@@ -121,4 +123,25 @@ public class HBaseDaoTest {
         Assert.assertTrue(Integer.valueOf(arg0) == hBaseDao.queryAll(tableNameStr).size());
     }
 
+    @And("^要创建数据的rowKey为\"([^\"]*)\"$")
+    public void 要创建数据的rowkey为(String arg0) throws Throwable {
+        insertRowKey = arg0;
+    }
+
+    @When("^在表中插入随机值$")
+    public void 在表中插入随机值() throws Throwable {
+        for (String familyName : familyNames) {
+            Map<String, String> qualifierValues = new HashMap<>(qualifiers.length);
+            for (String qualifier : qualifiers) {
+                qualifierValues.put(qualifier, UUID.randomUUID().toString());
+            }
+            hBaseDao.insert(tableNameStr, insertRowKey, familyName, qualifierValues);
+        }
+    }
+
+    @Then("^查询rowKey为\"([^\"]*)\"$")
+    public void 查询rowkey为(String queryRowKey) throws Throwable {
+        List<Cell> cells = hBaseDao.queryTableByRowKey(tableNameStr, queryRowKey);
+        Assert.assertNotNull(cells);
+    }
 }
