@@ -1,7 +1,10 @@
 Feature: HBaseDao
+"""
+新用例若已覆盖到旧用例，则删除旧用例即可（即旧用例已重复，没必要）
+将创建等内容抽象出来，放入background，删除不必要的用例（或者注释？）
 
-  # 新用例若已覆盖到旧用例，则删除旧用例即可（即旧用例已重复，没必要）
-
+TODO 再多一点再删除，迭代出口整改时统一删除。（代码未稳定时，什么狗屎都可能会有！）
+"""
 
   Background: 每一次都会调用下面的语句，但这里连接只在第一次创建。除非测试删除表，否则每次运行后都会自动删除表名为tableName的表
     Given 创建hbase连接成功
@@ -76,7 +79,6 @@ Feature: HBaseDao
       | tableName | familyNames | qualifiers     | insertRowKeys     |
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |
 
-  # 将创建等内容抽象出来，放入background，删除不必要的用例（或者注释？）
   Scenario Outline: 分页查询
     Given 表名为"<tableName>"
     And 要创建表的familyNames是"<familyNames>"
@@ -100,5 +102,9 @@ Feature: HBaseDao
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10001       | 10004      | 5        | 3           |
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |             | 10004      | 3        | 3           |
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10001       |            | 3        | 3           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10004       |            | 3        | 0           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |             |            | 3        | 3           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |             |            | 2        | 2           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |             |            | 5        | 3           |
 
 

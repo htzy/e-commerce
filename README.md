@@ -56,6 +56,7 @@
 4. 可利用Spring进行技术整合
 5. HBase查询优化
 6. HBase org.apache.hadoop.conf.Configuration 的配置原理
+7. 迭代出口，整改llt和白盒
 
 
 # 参考
