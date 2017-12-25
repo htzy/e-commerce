@@ -3,6 +3,7 @@ package com.huangshihe.ecommerce.ecommercehbase.llt.hbasedao;
 import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
 import com.huangshihe.ecommerce.ecommercehbase.util.HBaseDaoUtil;
+import cucumber.api.java.After;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -37,7 +38,9 @@ public class HBaseDaoTest {
 
     @Given("^创建hbase连接成功$")
     public void 创建hbase连接成功() throws Throwable {
-        hBaseDao = new HBaseDaoImpl();
+        if (hBaseDao == null) {
+            hBaseDao = new HBaseDaoImpl();
+        }
     }
 
     @And("^要创建表的familyNames是\"([^\"]*)\"$")
@@ -50,7 +53,7 @@ public class HBaseDaoTest {
         ttl = Integer.valueOf(arg0);
     }
 
-    @And("^表名为\"([^\"]*)\"$")
+    @Given("^表名为\"([^\"]*)\"$")
     public void 表名为(String tableName) throws Throwable {
         tableNameStr = tableName;
     }
@@ -73,6 +76,7 @@ public class HBaseDaoTest {
     @Then("^删除表成功$")
     public void 删除表成功() throws Throwable {
         Assert.assertFalse(hBaseDao.isExists(tableNameStr));
+        tableNameStr = null;
     }
 
     @And("^数据表创建成功$")
@@ -176,5 +180,13 @@ public class HBaseDaoTest {
     public void 查询到所有的数据() throws Throwable {
         HBaseDaoUtil.printResultsInfo(results);
         Assert.assertTrue(results.size() == insertRowKeys.length * familyNames.length);
+    }
+
+    @After
+    public void after() {
+        // 删除表
+        if (tableNameStr != null && !tableNameStr.isEmpty()) {
+            hBaseDao.deleteTable(tableNameStr);
+        }
     }
 }
