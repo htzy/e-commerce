@@ -65,3 +65,18 @@ Feature: HBaseDao
       | tableName | familyNames | qualifiers     | insertRowKey | queryRowKey |
       | llt-test  | t           | col1,col2,col3 | 10001        | 10001       |
 
+
+  Scenario Outline: 根据表名查询所有数据
+    Given 创建hbase连接成功
+    And 表名为"<tableName>"
+    And 要创建表的familyNames是"<familyNames>"
+    And 数据表创建成功
+    And 要插入数据的qualifiers为"<qualifiers>"
+    And 要创建数据的rowKeys为"<insertRowKeys>"
+    And 在表中插入多个rowKeys随机值
+    When 根据表名查询所有数据
+    Then 查询到所有的数据
+    And 删除表
+    Examples:
+      | tableName | familyNames | qualifiers     | insertRowKeys     |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |

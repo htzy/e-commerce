@@ -169,6 +169,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         List<Result> results = new ArrayList<Result>();
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             Scan scan = new Scan();
+
 //            scan.setStartRow()
 //            scan.setStopRow()
 //            // 不轻易使用filter，因为速度很慢，如果要用，建议使用前缀filter：PrefixFilter，还有协助分页的filter：PageFilter

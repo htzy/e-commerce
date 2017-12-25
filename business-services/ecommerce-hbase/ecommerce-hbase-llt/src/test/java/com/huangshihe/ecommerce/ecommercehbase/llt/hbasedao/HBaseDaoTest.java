@@ -2,12 +2,13 @@ package com.huangshihe.ecommerce.ecommercehbase.llt.hbasedao;
 
 import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
-import cucumber.api.PendingException;
+import com.huangshihe.ecommerce.ecommercehbase.util.HBaseDaoUtil;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.client.Result;
 import org.junit.Assert;
 
 import java.util.HashMap;
@@ -31,6 +32,8 @@ public class HBaseDaoTest {
     private static List<Cell> cellList;
     private static String[] qualifiers;
     private static String insertRowKey;
+    private static String[] insertRowKeys;
+    private static List<Result> results;
 
     @Given("^创建hbase连接成功$")
     public void 创建hbase连接成功() throws Throwable {
@@ -143,5 +146,35 @@ public class HBaseDaoTest {
     public void 查询rowkey为(String queryRowKey) throws Throwable {
         List<Cell> cells = hBaseDao.queryTableByRowKey(tableNameStr, queryRowKey);
         Assert.assertNotNull(cells);
+    }
+
+    @And("^要创建数据的rowKeys为\"([^\"]*)\"$")
+    public void 要创建数据的rowkeys为(String arg0) throws Throwable {
+        insertRowKeys = arg0.split(",");
+    }
+
+    @And("^在表中插入多个rowKeys随机值$")
+    public void 在表中插入多个rowkeys随机值() throws Throwable {
+        for (String familyName : familyNames) {
+            Map<String, String> qualifierValues = new HashMap<>(qualifiers.length);
+            for (String qualifier : qualifiers) {
+                qualifierValues.put(qualifier, UUID.randomUUID().toString());
+            }
+            // 对于不同的rowKey插入相同的qualifierValues，仅测试。
+            for (String rowKey : insertRowKeys) {
+                hBaseDao.insert(tableNameStr, rowKey, familyName, qualifierValues);
+            }
+        }
+    }
+
+    @When("^根据表名查询所有数据$")
+    public void 根据表名查询所有数据() throws Throwable {
+        results = hBaseDao.queryAll(tableNameStr);
+    }
+
+    @Then("^查询到所有的数据$")
+    public void 查询到所有的数据() throws Throwable {
+        HBaseDaoUtil.printResultsInfo(results);
+        Assert.assertTrue(results.size() == insertRowKeys.length * familyNames.length);
     }
 }
