@@ -4,6 +4,7 @@ import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
 import com.huangshihe.ecommerce.ecommercehbase.util.HBaseDaoUtil;
 import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -40,8 +41,9 @@ public class HBaseDaoTest {
     private static int pageSize;
 
 
-    @Given("^创建hbase连接成功$")
-    public void 创建hbase连接成功() throws Throwable {
+    @Before
+    public void 准备测试环境() throws Throwable {
+        // 创建hbase连接
         if (hBaseDao == null) {
             hBaseDao = new HBaseDaoImpl();
         }
@@ -186,14 +188,6 @@ public class HBaseDaoTest {
         Assert.assertTrue(results.size() == insertRowKeys.length * familyNames.length);
     }
 
-    @After
-    public void after() {
-        // 删除表
-        if (tableNameStr != null && !tableNameStr.isEmpty()) {
-            hBaseDao.deleteTable(tableNameStr);
-        }
-    }
-
     @And("^要查询的startRowKey为\"([^\"]*)\"$")
     public void 要查询的startrowkey为(String arg0) throws Throwable {
         startRowKey = arg0;
@@ -217,5 +211,13 @@ public class HBaseDaoTest {
     @Then("^查询到\"([^\"]*)\"条数据$")
     public void 查询到条数据(String arg0) throws Throwable {
         Assert.assertTrue(results.size() == Integer.valueOf(arg0));
+    }
+
+    @After
+    public void 清理测试环境() {
+        // 删除表
+        if (tableNameStr != null && !tableNameStr.isEmpty()) {
+            hBaseDao.deleteTable(tableNameStr);
+        }
     }
 }

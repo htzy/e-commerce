@@ -1,5 +1,6 @@
 # cucumber
 ## background和before的区别？
+1. 相同：每次都会运行。
 
 
 ## before和after的用法

@@ -3,11 +3,13 @@ Feature: HBaseDao
 新用例若已覆盖到旧用例，则删除旧用例即可（即旧用例已重复，没必要）
 将创建等内容抽象出来，放入background，删除不必要的用例（或者注释？）
 
-TODO 再多一点再删除，迭代出口整改时统一删除。（代码未稳定时，什么狗屎都可能会有！）
-"""
+# Background: 每一次都会调用下面的语句，但这里连接只在第一次创建。除非测试删除表，否则每次运行后都会自动删除表名为tableName的表
+Before: 准备测试环境(): 每次都会执行：创建hbase连接
+After: 清理测试环境(): 每次都会执行：当tableName表名不为空时，删除该表
 
-  Background: 每一次都会调用下面的语句，但这里连接只在第一次创建。除非测试删除表，否则每次运行后都会自动删除表名为tableName的表
-    Given 创建hbase连接成功
+TODO 再多一点再删除，迭代出口整改时统一删除。（代码未稳定时，什么狗屎都可能会有！）
+
+"""
 
   Scenario Outline:  新建hbase表成功后删除该表
     Given 表名为"<tableName>"
@@ -53,6 +55,7 @@ TODO 再多一点再删除，迭代出口整改时统一删除。（代码未稳
       | tableName | familyNames | qualifiers     | rowNums |
       | llt-test  | t           | col1,col2,col3 | 5       |
 
+
   Scenario Outline: 插入特定数据并查询该数据
     Given 表名为"<tableName>"
     And 要创建表的familyNames是"<familyNames>"
@@ -78,6 +81,7 @@ TODO 再多一点再删除，迭代出口整改时统一删除。（代码未稳
     Examples:
       | tableName | familyNames | qualifiers     | insertRowKeys     |
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |
+
 
   Scenario Outline: 分页查询
     Given 表名为"<tableName>"
