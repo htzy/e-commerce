@@ -62,7 +62,6 @@
 # 参考
 [git 合并与创建分支](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840038939c291467cc7c747b1810aab2fb8863508000)  
 [sfj4j文档](https://www.slf4j.org/manual.html)  
-[cucumber java](https://cucumber.io/docs/reference/jvm#java)  
 [Linux 软件安装到 /usr，/usr/local/ 还是 /opt 目录？](http://blog.csdn.net/aqxin/article/details/48324377)  
 [日志错误](http://zhangzhenyihi.blog.163.com/blog/static/13548809420141015055383/)  
 [常见的几种RuntimeException](http://blog.csdn.net/qq635785620/article/details/7781026)  

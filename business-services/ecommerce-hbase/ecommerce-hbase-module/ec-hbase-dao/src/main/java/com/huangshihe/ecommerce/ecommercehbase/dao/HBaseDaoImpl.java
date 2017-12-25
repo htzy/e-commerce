@@ -155,7 +155,6 @@ public class HBaseDaoImpl implements IHBaseDao {
 
     /**
      * 查询表中的所有数据（全表扫描）.
-     * TODO 继续细化
      *
      * @param tableNameStr 表名
      * @return 表中所有数据
