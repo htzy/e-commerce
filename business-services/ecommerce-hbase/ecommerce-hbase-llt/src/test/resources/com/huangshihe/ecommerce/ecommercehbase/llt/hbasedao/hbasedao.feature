@@ -1,5 +1,8 @@
 Feature: HBaseDao
 
+  # 新用例若已覆盖到旧用例，则删除旧用例即可（即旧用例已重复，没必要）
+
+
   Background: 每一次都会调用下面的语句，但这里连接只在第一次创建。除非测试删除表，否则每次运行后都会自动删除表名为tableName的表
     Given 创建hbase连接成功
 
@@ -72,4 +75,30 @@ Feature: HBaseDao
     Examples:
       | tableName | familyNames | qualifiers     | insertRowKeys     |
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |
+
+  # 将创建等内容抽象出来，放入background，删除不必要的用例（或者注释？）
+  Scenario Outline: 分页查询
+    Given 表名为"<tableName>"
+    And 要创建表的familyNames是"<familyNames>"
+    And 数据表创建成功
+    And 要插入数据的qualifiers为"<qualifiers>"
+    And 要创建数据的rowKeys为"<insertRowKeys>"
+    And 在表中插入多个rowKeys随机值
+    And 要查询的startRowKey为"<startRowKey>"
+    And 要查询的stopRowKey为"<stopRowKey>"
+    And 要查询的pageSize为"<pageSize>"
+    When 分页查询数据
+    Then 查询到"<resultCount>"条数据
+    Examples:
+      | tableName | familyNames | qualifiers     | insertRowKeys     | startRowKey | stopRowKey | pageSize | resultCount |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10001       | 10004      | 3        | 3           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10003       | 10004      | 3        | 1           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10001       | 10003      | 3        | 2           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10000       | 10004      | 3        | 3           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10000       | 10003      | 3        | 2           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10001       | 10004      | 2        | 2           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10001       | 10004      | 5        | 3           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |             | 10004      | 3        | 3           |
+      | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 | 10001       |            | 3        | 3           |
+
 

@@ -17,6 +17,7 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.IOUtils;
 import org.slf4j.Logger;
@@ -169,11 +170,79 @@ public class HBaseDaoImpl implements IHBaseDao {
         List<Result> results = new ArrayList<Result>();
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
             Scan scan = new Scan();
+            resultScanner = table.getScanner(scan);
+            for (Result result : resultScanner) {
+                results.add(result);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeStream(resultScanner);
+        }
+        return results;
+    }
 
-//            scan.setStartRow()
-//            scan.setStopRow()
-//            // 不轻易使用filter，因为速度很慢，如果要用，建议使用前缀filter：PrefixFilter，还有协助分页的filter：PageFilter
-//            scan.setFilter()
+    /**
+     * 根据rowKey范围查找.
+     *
+     * @param tableNameStr 表名
+     * @param startRowKey  起始（包含）
+     * @param stopRowKey   止于（不包含）
+     * @return results
+     */
+    @Override
+    public List<Result> query(String tableNameStr, String startRowKey, String stopRowKey) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("[queryAll] table: {} is not exists!", tableNameStr);
+            return null;
+        }
+        ResultScanner resultScanner = null;
+        List<Result> results = new ArrayList<Result>();
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+            Scan scan = new Scan();
+            scan.setStartRow(Bytes.toBytes(startRowKey));
+            scan.setStopRow(Bytes.toBytes(stopRowKey));
+
+            resultScanner = table.getScanner(scan);
+            for (Result result : resultScanner) {
+                results.add(result);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeStream(resultScanner);
+        }
+        return results;
+    }
+
+    /**
+     * 根据rowKey范围分页查找.
+     *
+     * @param tableNameStr 表名
+     * @param startRowKey  起始（包含）
+     * @param stopRowKey   止于（不包含）
+     * @param pageSize     页大小
+     * @return results
+     */
+    @Override
+    public List<Result> query(String tableNameStr, String startRowKey, String stopRowKey, int pageSize) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("[queryAll] table: {} is not exists!", tableNameStr);
+            return null;
+        }
+        ResultScanner resultScanner = null;
+        List<Result> results = new ArrayList<Result>();
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+            Scan scan = new Scan();
+            if (startRowKey != null && !startRowKey.isEmpty()) {
+                scan.setStartRow(Bytes.toBytes(startRowKey));
+            }
+            if (stopRowKey != null && !stopRowKey.isEmpty()) {
+                scan.setStopRow(Bytes.toBytes(stopRowKey));
+            }
+            // 不轻易使用filter，因为速度很慢，如果要用，建议使用前缀filter：PrefixFilter，还有协助分页的filter：PageFilter
+            // 分页filter
+            scan.setFilter(new PageFilter(pageSize));
 
 //            // 协助缓存的
 //            scan.setCacheBlocks()

@@ -75,6 +75,7 @@ public final class HBaseConnectionManager {
      * @return 连接对象
      */
     public static Connection getConnection() {
+        // TODO 如果connection被关闭？如何处理？如果要重新新建一个，那么如何处理同步问题？两步检查机制可能不满足要求
         return connection;
     }
 

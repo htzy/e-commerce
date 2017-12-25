@@ -52,6 +52,27 @@ public interface IHBaseDao {
      */
     List<Result> queryAll(String tableNameStr);
 
+    /**
+     * 根据rowKey范围查找.
+     *
+     * @param tableNameStr 表名
+     * @param startRowKey  起始（包含）
+     * @param stopRowKey   止于（不包含）
+     * @return results
+     */
+    List<Result> query(String tableNameStr, String startRowKey, String stopRowKey);
+
+    /**
+     * 根据rowKey范围分页查找.
+     *
+     * @param tableNameStr 表名
+     * @param startRowKey  起始（包含）
+     * @param stopRowKey   止于（不包含）
+     * @param pageSize     页大小
+     * @return results
+     */
+    List<Result> query(String tableNameStr, String startRowKey, String stopRowKey, int pageSize);
+
 
     /**
      * 根据rowKey插入值，即只有一个rowKey.

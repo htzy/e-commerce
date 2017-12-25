@@ -35,6 +35,10 @@ public class HBaseDaoTest {
     private static String insertRowKey;
     private static String[] insertRowKeys;
     private static List<Result> results;
+    private static String startRowKey;
+    private static String stopRowKey;
+    private static int pageSize;
+
 
     @Given("^创建hbase连接成功$")
     public void 创建hbase连接成功() throws Throwable {
@@ -188,5 +192,30 @@ public class HBaseDaoTest {
         if (tableNameStr != null && !tableNameStr.isEmpty()) {
             hBaseDao.deleteTable(tableNameStr);
         }
+    }
+
+    @And("^要查询的startRowKey为\"([^\"]*)\"$")
+    public void 要查询的startrowkey为(String arg0) throws Throwable {
+        startRowKey = arg0;
+    }
+
+    @And("^要查询的stopRowKey为\"([^\"]*)\"$")
+    public void 要查询的stoprowkey为(String arg0) throws Throwable {
+        stopRowKey = arg0;
+    }
+
+    @And("^要查询的pageSize为\"([^\"]*)\"$")
+    public void 要查询的pagesize为(String arg0) throws Throwable {
+        pageSize = Integer.valueOf(arg0);
+    }
+
+    @When("^分页查询数据$")
+    public void 分页查询数据() throws Throwable {
+        results = hBaseDao.query(tableNameStr, startRowKey, stopRowKey, pageSize);
+    }
+
+    @Then("^查询到\"([^\"]*)\"条数据$")
+    public void 查询到条数据(String arg0) throws Throwable {
+        Assert.assertTrue(results.size() == Integer.valueOf(arg0));
     }
 }
