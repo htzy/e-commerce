@@ -23,6 +23,8 @@ brew install hbase
 # 执行后可以在web中看到生成了一个新的StoreFile。
 # 删除数据后，若被删除的数据处于StoreFile中，那么StoreFile中的对应部分也不会立马被删除，可以执行如下命令，立即删除：
   campact 'tableName'
+# TODO 删除表后，是否需要刷新？如何刷新？
+
 ```
 
 
@@ -99,11 +101,11 @@ void setWriteBufferSize(long writeBufferSize)
   对于往返时间，如果用户只存储大单元格，客户端缓冲区的作用就不大了，因为传输时间占用了大部分的请求时间。在这种情况下，建议最好不要增加客户端缓冲区大小。
   
 
-# rowKey
+## rowKey
 rowkey可以直接通过拼接来完成，不需要连接符，所有的column长度定义为常量。
 
 
-规范用名：
+## 规范用名：
 1. column 由 column family 和 column qualifier组成，column一般表示列族或family+qualifier。
 2. 列族（一般用cf、column、family等表示）：  
 String: familyName  
@@ -112,6 +114,20 @@ byte[]: family
 byte[]: qualifier
 
 
+## 获取Cell中的值
+Cell为接口，针对这个接口有多种实现，而在多种实现中getFamilyArray()和getQualifierArray()方法都是返回完整的字节数组，而不是单独的family或qualifier
+```java
+// 以下方式获取有问题！
+LOGGER.debug("cell-family: {}, cell-qualifier: {}, cell-values: {}",
+                        Bytes.toString(cell.getFamilyArray()), 
+                        Bytes.toString(cell.getQualifierArray()),
+                        Bytes.toString(cell.getValueArray()));
+// 应该使用下面的方式
+LOGGER.debug("cell-family: {}, cell-qualifier: {}, cell-values: {}",
+                        Bytes.toString(CellUtil.cloneFamily(cell)),
+                        Bytes.toString(CellUtil.cloneQualifier(cell)),
+                        Bytes.toString(CellUtil.cloneValue(cell)));
+```
 
 
 
