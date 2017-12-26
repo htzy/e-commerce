@@ -25,14 +25,24 @@ public final class HBaseConnectionManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(HBaseDaoImpl.class);
 
     /**
-     * 静态配置对象.
+     * 单例.
      */
-    private static Configuration configuration = createConfiguration();
+    private static HBaseConnectionManager INSTANCE = new HBaseConnectionManager();
 
     /**
-     * 静态连接对象.
+     * 配置对象.
      */
-    private static Connection connection = createConnection();
+    private Configuration configuration = null;
+
+    /**
+     * 连接对象.
+     */
+    private Connection connection = null;
+
+    /**
+     * 用于同步的对象？
+     */
+    private final Object object = new Object();
 
     /**
      * 创建配置对象.
@@ -46,12 +56,12 @@ public final class HBaseConnectionManager {
     }
 
     /**
-     * 获取配置对象.
+     * 获取实例
      *
-     * @return 配置对象
+     * @return 实例
      */
-    public static Configuration getConfiguration() {
-        return configuration;
+    public static HBaseConnectionManager getInstance() {
+        return INSTANCE;
     }
 
     /**
@@ -59,13 +69,14 @@ public final class HBaseConnectionManager {
      *
      * @return 连接对象
      */
-    private static Connection createConnection() {
-        try {
+    private Connection createConnection(Configuration conf) throws IOException {
+        if (conf == null) {
+            LOGGER.error("[HBaseConnectionManager] createConnection failed, conf is null");
+            return null;
+        } else {
+            LOGGER.info("[HBaseConnectionManager] createConnection");
             // 获取数据库连接对象
-            return ConnectionFactory.createConnection(getConfiguration());
-        } catch (IOException e) {
-            LOGGER.error("create hbase connection failed! {}", e);
-            throw new IllegalArgumentException("create hbase connection failed! {}", e);
+            return ConnectionFactory.createConnection(conf);
         }
     }
 
@@ -74,9 +85,40 @@ public final class HBaseConnectionManager {
      *
      * @return 连接对象
      */
-    public static Connection getConnection() {
-        // TODO 如果connection被关闭？如何处理？如果要重新新建一个，那么如何处理同步问题？两步检查机制可能不满足要求
+    public Connection getConnection() {
+        // 如果connection被关闭，重新初始化，TODO 那么如何处理同步问题？两步检查机制可能不满足要求
+        if (connection == null || connection.isClosed() || connection.isAborted()) {
+            LOGGER.info("[HBaseConnectionManager] connection is not init");
+            init();
+        }
         return connection;
+    }
+
+    /**
+     * 初始化.
+     */
+    private void init() {
+        // TODO 同步使用object对象，具体如何处理
+        Object obj = this.object;
+        synchronized (this.object) {
+            if (connection != null && !connection.isClosed() && !connection.isAborted()) {
+                LOGGER.info("[HBaseConnectionManager] connection has been inited.");
+            } else {
+                LOGGER.info("[HBaseConnectionManager] init connection.");
+                ClassLoader old = Thread.currentThread().getContextClassLoader();
+                try {
+                    Thread.currentThread().setContextClassLoader(Configuration.class.getClassLoader());
+                    if (configuration == null) {
+                        configuration = createConfiguration();
+                    }
+                    connection = createConnection(configuration);
+                } catch (IOException e) {
+                    LOGGER.error("[HBaseConnectionManager] init failed! {}", e);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(old);
+                }
+            }
+        }
     }
 
     /**

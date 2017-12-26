@@ -52,7 +52,7 @@ public class HBaseDaoImpl implements IHBaseDao {
      * 构造方法.
      */
     public HBaseDaoImpl() {
-        connection = HBaseConnectionManager.getConnection();
+        connection = HBaseConnectionManager.getInstance().getConnection();
     }
 
 
