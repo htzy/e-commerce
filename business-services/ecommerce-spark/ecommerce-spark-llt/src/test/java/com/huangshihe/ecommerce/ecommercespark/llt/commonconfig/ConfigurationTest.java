@@ -1,6 +1,6 @@
 package com.huangshihe.ecommerce.ecommercespark.llt.commonconfig;
 
-import com.huangshihe.ecommerce.ecommercespark.commonconfig.manager.ConfigurationManager;
+import com.huangshihe.ecommerce.ecommercespark.commonconfig.manager.ECConfigurationManager;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -26,7 +26,7 @@ public class ConfigurationTest {//NOPMD
 
     @When("^查询\"([^\"]*)\"的配置值$")
     public void 查询的配置值(final String arg0) throws Throwable {//NOPMD
-        author = ConfigurationManager.getBasicConfiguration().getProperty(arg0);//NOPMD
+        author = ECConfigurationManager.getBasicConfiguration().getProperty(arg0);//NOPMD
     }
 
     @Then("^查询结果不为空$")

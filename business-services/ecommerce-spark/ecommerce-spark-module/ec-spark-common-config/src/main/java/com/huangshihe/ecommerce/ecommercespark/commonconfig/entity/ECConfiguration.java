@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author huangshihe
  */
-public class Configuration {
+public class ECConfiguration {
 
     /**
      * 日志.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ECConfiguration.class);
 
     /**
      * 配置.
@@ -33,7 +33,7 @@ public class Configuration {
      *
      * @param fileName 配置文件名
      */
-    public Configuration(final String fileName) {
+    public ECConfiguration(final String fileName) {
 
         try (InputStream inputStream = getClassLoader().getResourceAsStream(fileName);
              Reader reader = new InputStreamReader(inputStream, "UTF-8")) {
@@ -64,5 +64,16 @@ public class Configuration {
      */
     public String getProperty(final String key) {
         return properties.getProperty(key);
+    }
+
+    /**
+     * 获取boolean配置值.
+     *
+     * @param key 配置名
+     * @return 配置值
+     */
+    public boolean getBoolean(final String key) {
+        // 内部实现：只要key不是"true"，返回值就是false
+        return Boolean.parseBoolean(properties.getProperty(key));
     }
 }
