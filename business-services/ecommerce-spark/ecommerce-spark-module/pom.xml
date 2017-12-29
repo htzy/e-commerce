@@ -17,6 +17,7 @@
 
     <modules>
         <module>ec-spark-common-config</module>
+        <module>ec-spark-task</module>
     </modules>
 
 </project>

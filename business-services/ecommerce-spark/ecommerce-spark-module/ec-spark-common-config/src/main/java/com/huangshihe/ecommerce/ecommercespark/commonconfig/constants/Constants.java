@@ -14,6 +14,11 @@ public final class Constants {
     public static final String BASIC_CONFIG = "basic.properties";
 
     /**
+     * 示例spark的配置文件名.
+     */
+    public static final String DEMO_CONF_FILENAME = "demotask.properties";
+
+    /**
      * 私有构造方法.
      */
     private Constants() {
