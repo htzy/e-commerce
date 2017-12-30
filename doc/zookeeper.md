@@ -28,5 +28,11 @@ brew install zookeeper
   zkCli    # （可在任意目录下执行）
 ```
 
+# 应用于原理
+
+
+
 # 参考
 [Mac OSX安装启动 zookeeper](https://www.cnblogs.com/phpdragon/p/5637943.html)  
+[zookeeper的应用和原理](http://blog.csdn.net/gs80140/article/details/51496925)  
+
