@@ -49,7 +49,7 @@ public final class HBaseConnectionManager {
      *
      * @return 静态配置对象
      */
-    private static Configuration createConfiguration() {
+    private Configuration createConfiguration() {
         // 将配置文件拷贝到resources目录下，create会去找hbase-site.xml配置文件进行创建。
         // 同时还会自动加载在org.apache.hbase:hbase-common.jar下的hbase-default.xml配置文件
         return HBaseConfiguration.create();
@@ -93,6 +93,30 @@ public final class HBaseConnectionManager {
         }
         return connection;
     }
+
+    /**
+     * 获取当前的配置对象.
+     *
+     * @return 配置
+     */
+    public Configuration getCurrentConfiguration() {
+        // 由于初始化在getConnection时才会进行，那么就不能保证configuration已经被初始化？
+        // 这里不能新建配置，只能初始化init中才能新建，否则职能乱套
+        if (configuration == null) {
+            LOGGER.warn("[HBaseConnectionManager] getConfiguration is null!");
+        }
+        return configuration;
+    }
+
+    /**
+     * 获取全新的配置对象
+     *
+     * @return 配置
+     */
+    public Configuration getNewConfiguration() {
+        return createConfiguration();
+    }
+
 
     /**
      * 初始化.
