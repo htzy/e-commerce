@@ -129,7 +129,87 @@ LOGGER.debug("cell-family: {}, cell-qualifier: {}, cell-values: {}",
                         Bytes.toString(CellUtil.cloneValue(cell)));
 ```
 
+## 启动zk相关
+start-hbase.sh
+```shell
+# 其中$distMode 应该为：hbase-site.xml 中的hbase.cluster.distributed配置，默认为false，也就是默认为单机部署。
+if [ "$distMode" == 'false' ]
+then
+  # 当单机部署时，运行hbase-daemon.sh，输入参数为：master。
+  # TODO 那么单机情况下，zk是如何自动启动的？若先启动zk，还会报zk已启动？只能直接启动hbase-start,让它自动启动zk
+  "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" $commandToRun master $@
+else
+  # 这里很奇怪，如果部署为分布式的，一般来说是先手动启动zk，然后再启动hbase，而这里却显示hbase在
+  # 分布式情况下，hbase在启动master之前自动启动了一个Zookeeper的server？
+  "$bin"/hbase-daemons.sh --config "${HBASE_CONF_DIR}" $commandToRun zookeeper
+  "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" $commandToRun master
+  "$bin"/hbase-daemons.sh --config "${HBASE_CONF_DIR}" \
+    --hosts "${HBASE_REGIONSERVERS}" $commandToRun regionserver
+  "$bin"/hbase-daemons.sh --config "${HBASE_CONF_DIR}" \
+    --hosts "${HBASE_BACKUP_MASTERS}" $commandToRun master-backup
+fi
+```
 
+hbase-deamon.sh
+```shell
+cleanAfterRun() {
+  if [ -f ${HBASE_PID} ]; then
+    # If the process is still running time to tear it down.
+    kill -9 `cat ${HBASE_PID}` > /dev/null 2>&1
+    rm -f ${HBASE_PID} > /dev/null 2>&1
+  fi
+
+  if [ -f ${HBASE_ZNODE_FILE} ]; then
+    if [ "$command" = "master" ]; then
+      # 输入参数并执行hbase master clear
+      HBASE_OPTS="$HBASE_OPTS $HBASE_MASTER_OPTS" $bin/hbase master clear > /dev/null 2>&1
+    else
+      #call ZK to delete the node
+      ZNODE=`cat ${HBASE_ZNODE_FILE}`
+      HBASE_OPTS="$HBASE_OPTS $HBASE_REGIONSERVER_OPTS" $bin/hbase zkcli delete ${ZNODE} > /dev/null 2>&1
+    fi
+    rm ${HBASE_ZNODE_FILE}
+  fi
+}
+
+```
+
+hbase
+```shell
+  echo "Some commands take arguments. Pass no args or -h for usage."
+  echo "  shell           Run the HBase shell"
+  echo "  hbck            Run the hbase 'fsck' tool"
+  echo "  snapshot        Create a new snapshot of a table"
+  echo "  snapshotinfo    Tool for dumping snapshot information"
+  echo "  wal             Write-ahead-log analyzer"
+  echo "  hfile           Store file analyzer"
+  echo "  zkcli           Run the ZooKeeper shell"
+  echo "  upgrade         Upgrade hbase"
+  echo "  master          Run an HBase HMaster node"
+  echo "  regionserver    Run an HBase HRegionServer node"
+  echo "  zookeeper       Run a Zookeeper server"
+  echo "  rest            Run an HBase REST server"
+  echo "  thrift          Run the HBase Thrift server"
+  echo "  thrift2         Run the HBase Thrift2 server"
+  echo "  clean           Run the HBase clean up script"
+  echo "  classpath       Dump hbase CLASSPATH"
+  echo "  mapredcp        Dump CLASSPATH entries required by mapreduce"
+  echo "  pe              Run PerformanceEvaluation"
+  echo "  ltt             Run LoadTestTool"
+  echo "  version         Print the version"
+  echo "  CLASSNAME       Run the class named CLASSNAME"
+  exit 1
+
+
+
+elif [ "$COMMAND" = "master" ] ; then
+  CLASS='org.apache.hadoop.hbase.master.HMaster'
+  if [ "$1" != "stop" ] && [ "$1" != "clear" ] ; then
+    HBASE_OPTS="$HBASE_OPTS $HBASE_MASTER_OPTS"
+  fi
+  
+  
+```
 
 
 

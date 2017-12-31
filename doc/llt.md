@@ -1,7 +1,9 @@
 # cucumber
 ## background和before的区别？
 1. 相同：每次都会运行。
-
+2. Background：background的steps在feature中可见，可代替Before，给每个scenario创建上下文。
+在scenario执行之前执行，若还存在Before，则Background会先于Before执行。
+3. 当相同的操作，可放至Background也可以放至Before中，则选择哪一种方式，取决于当它们明确的出现在feature文件里是否有价值。
 
 ## before和after的用法
 ```java
@@ -60,3 +62,4 @@ TODO 再多一点再删除，迭代出口整改时统一删除。（代码未稳
 [Execute Cucumber step before/after a specific feature](https://stackoverflow.com/questions/18856458/execute-cucumber-step-before-after-a-specific-feature)  
 [Cucumber JVM: Hooks](https://zsoltfabok.com/blog/2012/09/cucumber-jvm-hooks/)    
 [cucumber java](https://cucumber.io/docs/reference/jvm#java)  
+[Cucumber入门之_Hooks&Background](https://www.cnblogs.com/puresoul/archive/2012/03/05/2380543.html)  
