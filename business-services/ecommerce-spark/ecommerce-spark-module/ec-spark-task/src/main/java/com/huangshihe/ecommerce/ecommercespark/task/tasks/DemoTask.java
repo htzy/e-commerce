@@ -57,7 +57,7 @@ public class DemoTask {
         SQLContext sqlContext = getSqlContext(sc.sc());
 
         createTestData(sc, sqlContext);
-        queryFromHbaseDemo(sc, sqlContext);
+        queryFromHBaseDemo(sc, sqlContext);
 
         // 关闭上下文
         sc.close();
@@ -97,9 +97,8 @@ public class DemoTask {
         dataset.show(1);
     }
 
-    public static void queryFromHbaseDemo(JavaSparkContext sc, SQLContext sqlContext) {
+    public static void queryFromHBaseDemo(JavaSparkContext sc, SQLContext sqlContext) {
         Configuration configuration = HBaseConnectionManager.getInstance().getNewConfiguration();
-//        JavaRDD<Row> hbaseRDD = sc.newAPIHadoopRDD();
 
         Scan scan = new Scan();
         scan.setStartRow(Bytes.toBytes("1"));

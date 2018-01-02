@@ -44,16 +44,6 @@ public final class HBaseConnectionManager {
      */
     private final Object object = new Object();
 
-    /**
-     * 创建配置对象.
-     *
-     * @return 静态配置对象
-     */
-    private Configuration createConfiguration() {
-        // 将配置文件拷贝到resources目录下，create会去找hbase-site.xml配置文件进行创建。
-        // 同时还会自动加载在org.apache.hbase:hbase-common.jar下的hbase-default.xml配置文件
-        return HBaseConfiguration.create();
-    }
 
     /**
      * 获取实例
@@ -64,21 +54,7 @@ public final class HBaseConnectionManager {
         return INSTANCE;
     }
 
-    /**
-     * 创建连接对象.
-     *
-     * @return 连接对象
-     */
-    private Connection createConnection(Configuration conf) throws IOException {
-        if (conf == null) {
-            LOGGER.error("[HBaseConnectionManager] createConnection failed, conf is null");
-            return null;
-        } else {
-            LOGGER.info("[HBaseConnectionManager] createConnection");
-            // 获取数据库连接对象
-            return ConnectionFactory.createConnection(conf);
-        }
-    }
+
 
     /**
      * 获取连接对象.
@@ -117,6 +93,33 @@ public final class HBaseConnectionManager {
         return createConfiguration();
     }
 
+
+    /**
+     * 创建配置对象.
+     *
+     * @return 静态配置对象
+     */
+    private Configuration createConfiguration() {
+        // 将配置文件拷贝到resources目录下，create会去找hbase-site.xml配置文件进行创建。
+        // 同时还会自动加载在org.apache.hbase:hbase-common.jar下的hbase-default.xml配置文件
+        return HBaseConfiguration.create();
+    }
+
+    /**
+     * 创建连接对象.
+     *
+     * @return 连接对象
+     */
+    private Connection createConnection(Configuration conf) throws IOException {
+        if (conf == null) {
+            LOGGER.error("[HBaseConnectionManager] createConnection failed, conf is null");
+            return null;
+        } else {
+            LOGGER.info("[HBaseConnectionManager] createConnection");
+            // 获取数据库连接对象
+            return ConnectionFactory.createConnection(conf);
+        }
+    }
 
     /**
      * 初始化.
