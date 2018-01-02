@@ -1,6 +1,7 @@
 package com.huangshihe.ecommerce.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +40,6 @@ public final class JsonUtil {
     }
 
     /**
-     * 私有构造方法.
-     */
-    private JsonUtil() {
-
-    }
-
-    /**
      * 字符串转对象.
      *
      * @param json   字符串
@@ -62,5 +56,40 @@ public final class JsonUtil {
             throw new IllegalArgumentException(e);
         }
     }
+
+    /**
+     * 将字符串转为json对象，也可以将对象转为json对象，然后知道field之后，可直接通过json对象path(field)获取node值.
+     *
+     * @param json json字符串
+     * @return JsonNode
+     */
+    public static JsonNode jsonToTree(final String json) {
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readTree(json);
+        } catch (IOException e) {
+            LOGGER.error("String to jsonNode fail, json:{}, error: {}", json, e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * 将object转为json对象.
+     *
+     * @param object 待转对象
+     * @return jsonNode
+     */
+    public static JsonNode objToTree(final Object object) {
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.valueToTree(object);
+    }
+
+    /**
+     * 私有构造方法.
+     */
+    private JsonUtil() {
+
+    }
+
 
 }

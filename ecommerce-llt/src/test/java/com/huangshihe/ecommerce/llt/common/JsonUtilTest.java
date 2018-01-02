@@ -1,5 +1,6 @@
 package com.huangshihe.ecommerce.llt.common;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.huangshihe.ecommerce.common.util.JsonUtil;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -18,6 +19,8 @@ public class JsonUtilTest {
     private static Simple simple;
 
     private static String simpleStr;
+
+    private static JsonNode jsonNode;
 
     @Given("^待转换对象已存在$")
     public void 待转换对象已存在() throws Throwable {
@@ -54,4 +57,21 @@ public class JsonUtilTest {
         // 在Simple中覆盖了equals方法
         Assert.assertEquals(simple, right);
     }
+
+    @When("^字符串转Tree$")
+    public void 字符串转tree() throws Throwable {
+        jsonNode = JsonUtil.jsonToTree(simpleStr);
+    }
+
+    @Then("^转换Tree正确$")
+    public void 转换tree正确() throws Throwable {
+        Assert.assertTrue(jsonNode.path("id").asInt() == 666);
+        Assert.assertEquals("htzy", jsonNode.path("name").asText());
+    }
+
+    @When("^对象转Tree$")
+    public void 对象转tree() throws Throwable {
+        jsonNode = JsonUtil.objToTree(simple);
+    }
+
 }

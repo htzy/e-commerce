@@ -78,3 +78,4 @@ class Foo{
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
 [Java 7 新的 try-with-resources 语句，自动资源释放](http://www.oschina.net/question/12_10706)  
+[jackson readTree](https://www.cnblogs.com/yangy608/p/3939315.html)  

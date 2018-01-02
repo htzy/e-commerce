@@ -57,6 +57,7 @@
 5. HBase查询优化
 6. HBase org.apache.hadoop.conf.Configuration 的配置原理
 7. 迭代出口，整改llt和白盒
+8. 内部使用的字段加_下划线，私有方法也同样加_下划线（静态的视情况定）
 
 
 # 参考
