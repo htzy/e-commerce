@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author huangshihe
  */
-public class VaildUtil {
+public final class ValidUtil {
 
     /**
      * 日志.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(VaildUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidUtil.class);
 
     /**
      * 匹配data数据中的dataField项，与param数据中的paramField项，field中数据以,分割，
@@ -50,4 +50,10 @@ public class VaildUtil {
         return false;
     }
 
+    /**
+     * 私有构造方法.
+     */
+    private ValidUtil() {
+
+    }
 }

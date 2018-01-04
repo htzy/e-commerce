@@ -1,7 +1,9 @@
 package com.huangshihe.ecommerce.llt.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.huangshihe.ecommerce.common.util.JsonUtil;
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -60,7 +62,7 @@ public class JsonUtilTest {
 
     @When("^字符串转Tree$")
     public void 字符串转tree() throws Throwable {
-        jsonNode = JsonUtil.jsonToTree(simpleStr);
+        jsonNode = JsonUtil.strToTree(simpleStr);
     }
 
     @Then("^转换Tree正确$")
@@ -72,6 +74,19 @@ public class JsonUtilTest {
     @When("^对象转Tree$")
     public void 对象转tree() throws Throwable {
         jsonNode = JsonUtil.objToTree(simple);
+    }
+
+    @Given("^待转换Tree已存在$")
+    public void 待转换tree已存在() throws Throwable {
+        simple = new Simple();
+        simple.setId(666);
+        simple.setName("htzy");
+        jsonNode = JsonUtil.objToTree(simple);
+    }
+
+    @When("^Tree转字符串$")
+    public void tree转字符串() throws Throwable {
+        simpleStr = JsonUtil.treeToStr(jsonNode);
     }
 
 }

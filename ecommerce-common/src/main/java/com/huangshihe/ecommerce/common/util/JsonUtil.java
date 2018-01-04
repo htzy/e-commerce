@@ -63,7 +63,7 @@ public final class JsonUtil {
      * @param json json字符串
      * @return JsonNode
      */
-    public static JsonNode jsonToTree(final String json) {
+    public static JsonNode strToTree(final String json) {
         final ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readTree(json);
@@ -71,6 +71,16 @@ public final class JsonUtil {
             LOGGER.error("String to jsonNode fail, json:{}, error: {}", json, e);
             throw new IllegalArgumentException(e);
         }
+    }
+
+    /**
+     * 将json对象转为字符串
+     *
+     * @param tree JsonNode
+     * @return json字符串
+     */
+    public static String treeToStr(final JsonNode tree) {
+        return tree == null ? null : tree.toString();
     }
 
     /**
