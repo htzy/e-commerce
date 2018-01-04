@@ -75,7 +75,28 @@ class Foo{
 }
 ```
 
+# jackson
+```java
+class Foo{
+    public void foo(){
+        // 构造tree
+        JsonNode jsonNode;
+        ObjectNode rootNode = jsonNodeFactory.objectNode();
+        rootNode.put("id", 666);
+        rootNode.put("name", "htzy");
+        jsonNode = rootNode;
+        // 或者通过对象转为tree
+//        simple = new Simple();
+//        simple.setId(666);
+//        simple.setName("htzy");
+//        jsonNode = JsonUtil.objToTree(simple);
+    }    
+}
+
+```
+
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
 [Java 7 新的 try-with-resources 语句，自动资源释放](http://www.oschina.net/question/12_10706)  
 [jackson readTree](https://www.cnblogs.com/yangy608/p/3939315.html)  
+[使用 Jackson 树模型(tree model) API 处理 JSON](http://blog.csdn.net/gao1440156051/article/details/54091702)    
