@@ -15,12 +15,12 @@ import java.io.IOException;
  *
  * @author huangshihe
  */
-public final class JsonUtil {
+public final class JsonKit {
 
     /**
      * 日志.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonKit.class);
 
     /**
      * 对象转字符串.
@@ -97,7 +97,7 @@ public final class JsonUtil {
     /**
      * 私有构造方法.
      */
-    private JsonUtil() {
+    private JsonKit() {
 
     }
 

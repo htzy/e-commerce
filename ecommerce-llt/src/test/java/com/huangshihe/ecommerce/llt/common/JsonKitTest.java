@@ -3,7 +3,7 @@ package com.huangshihe.ecommerce.llt.common;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.huangshihe.ecommerce.common.util.JsonUtil;
+import com.huangshihe.ecommerce.common.kits.JsonKit;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -35,7 +35,7 @@ public class JsonUtilTest {
 
     @When("^对象转字符串$")
     public void 对象转字符串() throws Throwable {
-        simpleStr = JsonUtil.objToStr(simple);
+        simpleStr = JsonKit.objToStr(simple);
     }
 
     @Then("^转换字符串正确$")
@@ -50,7 +50,7 @@ public class JsonUtilTest {
 
     @When("^字符串转对象$")
     public void 字符串转对象() throws Throwable {
-        simple = JsonUtil.strToObj(simpleStr, Simple.class);
+        simple = JsonKit.strToObj(simpleStr, Simple.class);
     }
 
     @Then("^转换对象正确$")
@@ -64,7 +64,7 @@ public class JsonUtilTest {
 
     @When("^字符串转Tree$")
     public void 字符串转tree() throws Throwable {
-        jsonNode = JsonUtil.strToTree(simpleStr);
+        jsonNode = JsonKit.strToTree(simpleStr);
     }
 
     @Then("^转换Tree正确$")
@@ -75,7 +75,7 @@ public class JsonUtilTest {
 
     @When("^对象转Tree$")
     public void 对象转tree() throws Throwable {
-        jsonNode = JsonUtil.objToTree(simple);
+        jsonNode = JsonKit.objToTree(simple);
     }
 
     @Given("^待转换Tree已存在$")
@@ -88,7 +88,7 @@ public class JsonUtilTest {
 
     @When("^Tree转字符串$")
     public void tree转字符串() throws Throwable {
-        simpleStr = JsonUtil.treeToStr(jsonNode);
+        simpleStr = JsonKit.treeToStr(jsonNode);
     }
 
 }

@@ -90,7 +90,36 @@ class Foo{
 //        simple.setId(666);
 //        simple.setName("htzy");
 //        jsonNode = JsonUtil.objToTree(simple);
-    }    
+
+        // 取值方法，一律推荐使用asXXX方法
+        // 其他方法有坑！如textValue()只有节点内是String类型才有返回值，否则返回null
+        jsonNode.asText("name");
+    }  
+    
+    /**
+     * 返回json节点，当遇到null时，返回MissingNode.
+     *
+     * @param json      json
+     * @param dataField 数据项
+     * @return json节点
+     */
+    public static JsonNode getNodeNeverNull(final String json, final String dataField) {
+        // 首先要判断strToTree返回的类型是什么？，假设strToTree返回的类型是ObjectNode，
+        // 节点为空时：path返回：MissingNode；而get返回null（从LinkedHashMap中获取）
+        // 先有的所有JsonNode类型，遇到空节点，这里都将返回MissingNode，值为""
+        return strToTree(json).path(dataField);
+    }
+
+    /**
+     * 返回json节点，可能是null.
+     *
+     * @param json
+     * @param dataField
+     * @return
+     */
+    public static JsonNode getNodeWithNull(final String json, final String dataField) {
+        return strToTree(json).get(dataField);
+    }
 }
 
 ```
