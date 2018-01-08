@@ -20,6 +20,8 @@ public class ValidKitTest {
     private static String dataField;
     private static String jsonParam;
     private static String paramField;
+    private static String startParamField;
+    private static String stopParamField;
     private static boolean actualResult;
 
     @Given("^param和data数据已存在$")
@@ -54,8 +56,21 @@ public class ValidKitTest {
 
     @Then("^结果为\"([^\"]*)\"$")
     public void 结果为(String arg0) throws Throwable {
-        System.out.println("result: arg0:"+arg0 + " boolean: "+ Boolean.valueOf(arg0));
         Assert.assertEquals(actualResult, Boolean.valueOf(arg0));
     }
 
+    @And("^参数起始数据项为\"([^\"]*)\"$")
+    public void 参数起始数据项为(String arg0) throws Throwable {
+        startParamField = arg0;
+    }
+
+    @And("^参数终止数据项为\"([^\"]*)\"$")
+    public void 参数终止数据项为(String arg0) throws Throwable {
+        stopParamField = arg0;
+    }
+
+    @When("^判断是否在范围内$")
+    public void 判断是否在范围内() throws Throwable {
+        actualResult = ValidKit.between(jsonData, dataField, jsonParam, startParamField, stopParamField);
+    }
 }

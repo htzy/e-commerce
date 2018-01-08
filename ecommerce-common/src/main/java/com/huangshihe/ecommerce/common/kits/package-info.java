@@ -5,4 +5,4 @@
  *
  * @author huangshihe
  */
-package com.huangshihe.ecommerce.common.util;
+package com.huangshihe.ecommerce.common.kits;

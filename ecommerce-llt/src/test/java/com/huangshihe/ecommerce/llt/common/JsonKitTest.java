@@ -16,7 +16,7 @@ import org.junit.Assert;
  *
  * @author huangshihe
  */
-public class JsonUtilTest {
+public class JsonKitTest {
 
     private static Simple simple;
 
