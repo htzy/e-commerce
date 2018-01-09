@@ -222,3 +222,4 @@ elif [ "$COMMAND" = "master" ] ; then
 [HBase scan setBatch和setCaching的区别【转】](https://www.cnblogs.com/seaspring/p/6861957.html)  
 [sparksql_dataframes](http://hbase.apache.org/book.html#_sparksql_dataframes)  
 [win10下Spark java读取Hbase数据](http://blog.csdn.net/incy_1218/article/details/71453608)  
+[大数据性能调优之HBase的RowKey设计](https://www.cnblogs.com/yaohaitao/p/6821321.html)  
