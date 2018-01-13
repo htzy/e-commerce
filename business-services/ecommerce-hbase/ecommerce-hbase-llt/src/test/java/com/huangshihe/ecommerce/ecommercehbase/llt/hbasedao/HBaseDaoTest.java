@@ -66,7 +66,11 @@ public class HBaseDaoTest {
 
     @When("^创建表$")
     public void 创建表() throws Throwable {
-        hBaseDao.createTable(tableNameStr, familyNames, ttl);
+        if (ttl <= 0) {
+            hBaseDao.createTable(tableNameStr, familyNames, 7776000);
+        } else {
+            hBaseDao.createTable(tableNameStr, familyNames, ttl);
+        }
     }
 
     @Then("^创建表成功$")
@@ -87,7 +91,11 @@ public class HBaseDaoTest {
 
     @And("^数据表创建成功$")
     public void 数据表创建成功() throws Throwable {
-        hBaseDao.createTable(tableNameStr, familyNames, ttl);
+        if (ttl <= 0) {
+            hBaseDao.createTable(tableNameStr, familyNames, 7776000);
+        } else {
+            hBaseDao.createTable(tableNameStr, familyNames, ttl);
+        }
     }
 
     @When("^在表中通过rowKey\"([^\"]*)\"查询$")

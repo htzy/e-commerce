@@ -65,6 +65,7 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void createTable(final String tableNameStr, final String[] familyNames, final int ttl) { //NOPMD
+        LOGGER.info("tableNameStr:{}, familyName:{}, ttl:{}", tableNameStr, familyNames, ttl);
         // 数据库元数据操作对象
         try (Admin admin = connection.getAdmin()) {
             // 检查表是否存在
