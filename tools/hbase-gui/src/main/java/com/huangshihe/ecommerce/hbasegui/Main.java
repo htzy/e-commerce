@@ -98,7 +98,8 @@ public class Main extends Application {
                     int result = DigitKit.fromHexStr(fieldText);
                     valueField.setText(String.valueOf(result));
                 } else if ("文本".equals(cb.getValue().toString())) {
-                    valueField.setText("未支持！");
+                    String result = DigitKit.fromUHexStr(fieldText);
+                    valueField.setText(result);
                 } else if ("时间".equals(cb.getValue().toString())) {
                     String date = TimeKit.toCompleteDate(fieldText);
                     valueField.setText(date);

@@ -17,6 +17,7 @@ public class DigitKitTest {
 
     private static String str16;
     private static int resultInt;
+    private static String resultStr;
 
     @Given("^待转换十六进制字符串为\"([^\"]*)\"$")
     public void 待转换十六进制字符串为(String arg0) throws Throwable {
@@ -28,10 +29,19 @@ public class DigitKitTest {
         resultInt = DigitKit.fromHexStr(str16);
     }
 
-    @Then("^转换结果为\"([^\"]*)\"$")
-    public void 转换结果为(String arg0) throws Throwable {
+    @Then("^转换int结果为\"([^\"]*)\"$")
+    public void 转换int结果为(String arg0) throws Throwable {
         Assert.assertTrue(Integer.valueOf(arg0) == resultInt);
     }
 
 
+    @When("^含汉字的十六进制转字符串$")
+    public void 含汉字的十六进制转字符串() throws Throwable {
+        resultStr = DigitKit.fromUHexStr(str16);
+    }
+
+    @Then("^转换str结果为\"([^\"]*)\"$")
+    public void 转换str结果为(String arg0) throws Throwable {
+        Assert.assertEquals(arg0, resultStr);
+    }
 }
