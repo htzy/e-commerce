@@ -42,7 +42,6 @@ public class DigitKit {
                 str += x;
             }
         }
-        System.out.println(str);
         return Integer.parseInt(str, 16);
     }
 

@@ -2,12 +2,16 @@ package com.huangshihe.ecommerce.hbasegui;
 
 import com.huangshihe.ecommerce.common.kits.DigitKit;
 import com.huangshihe.ecommerce.common.kits.StringKit;
+import com.huangshihe.ecommerce.common.kits.TimeKit;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -64,17 +68,22 @@ public class Main extends Application {
         Text title = new Text("翻译从HBase shell查询的结果");
         title.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(title, 0, 0, 2, 1);
-        Label asciiLabel = new Label("16进制&ASCII：");
-        grid.add(asciiLabel, 0, 1);
 
-        TextField asciiField = new TextField();
-        grid.add(asciiField, 1, 1);
+        ChoiceBox<Object> cb = new ChoiceBox<>();
+        cb.setItems(FXCollections.observableArrayList(
+                "十进制", "文本",
+                new Separator(), "时间")
+        );
+        grid.add(cb, 0, 1);
 
-        Label tenValueLabel = new Label("十进制：");
-        grid.add(tenValueLabel, 0, 2);
+        TextField textField = new TextField();
+        grid.add(textField, 1, 1);
 
-        TextField tenValueField = new TextField();
-        grid.add(tenValueField, 1, 2);
+        Label valueLabel = new Label("值：");
+        grid.add(valueLabel, 0, 2);
+
+        TextField valueField = new TextField();
+        grid.add(valueField, 1, 2);
 
         Button btn = new Button("get");
         HBox hbBtn = new HBox(10);
@@ -83,10 +92,17 @@ public class Main extends Application {
         grid.add(hbBtn, 1, 4);
 
         btn.setOnAction(e -> {
-            String asciiFieldText = asciiField.getText();
-            if (StringKit.isNotEmpty(asciiFieldText)) {
-                int result = DigitKit.fromHexStr(asciiFieldText);
-                tenValueField.setText(String.valueOf(result));
+            String fieldText = textField.getText();
+            if (StringKit.isNotEmpty(fieldText) && null != cb.getValue()) {
+                if ("十进制".equals(cb.getValue().toString())) {
+                    int result = DigitKit.fromHexStr(fieldText);
+                    valueField.setText(String.valueOf(result));
+                } else if ("文本".equals(cb.getValue().toString())) {
+                    valueField.setText("未支持！");
+                } else if ("时间".equals(cb.getValue().toString())) {
+                    String date = TimeKit.toCompleteDate(fieldText);
+                    valueField.setText(date);
+                }
             }
         });
     }

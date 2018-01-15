@@ -41,7 +41,10 @@ public final class JsonKit {
      * @return json字符串
      */
     public static String objToStr(final Object object) {
-        // TODO 这里是否需要判断object为null？
+        if (object == null) {
+            LOGGER.warn("object is null!");
+            return NullNode.instance.asText();
+        }
         final ObjectMapper mapper = getMapper();
         try {
             return mapper.writeValueAsString(object);
@@ -61,7 +64,10 @@ public final class JsonKit {
      * @return 对象
      */
     public static <T> T strToObj(final String json, final Class<T> tClass) {
-        // TODO 这里是否需要判断object为null？
+        LOGGER.debug("json:{}, tClass:{}", json, tClass);
+        if (StringKit.isEmpty(json) || tClass == null) {
+            return null;
+        }
         final ObjectMapper mapper = getMapper();
         try {
             return mapper.readValue(json, tClass);
