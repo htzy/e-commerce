@@ -72,7 +72,7 @@ public class Main extends Application {
         ChoiceBox<Object> cb = new ChoiceBox<>();
         cb.setItems(FXCollections.observableArrayList(
                 "十进制", "文本",
-                new Separator(), "时间")
+                new Separator(), "时间(ms)")
         );
         grid.add(cb, 0, 1);
 
@@ -95,12 +95,12 @@ public class Main extends Application {
             String fieldText = textField.getText();
             if (StringKit.isNotEmpty(fieldText) && null != cb.getValue()) {
                 if ("十进制".equals(cb.getValue().toString())) {
-                    int result = DigitKit.fromHexStr(fieldText);
+                    long result = DigitKit.fromHexStr(fieldText);
                     valueField.setText(String.valueOf(result));
                 } else if ("文本".equals(cb.getValue().toString())) {
                     String result = DigitKit.fromUHexStr(fieldText);
                     valueField.setText(result);
-                } else if ("时间".equals(cb.getValue().toString())) {
+                } else if ("时间(ms)".equals(cb.getValue().toString())) {
                     String date = TimeKit.toCompleteDate(fieldText);
                     valueField.setText(date);
                 }

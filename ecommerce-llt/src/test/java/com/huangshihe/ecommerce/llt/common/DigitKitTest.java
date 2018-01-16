@@ -16,7 +16,7 @@ import org.junit.Assert;
 public class DigitKitTest {
 
     private static String str16;
-    private static int resultInt;
+    private static long resultLong;
     private static String resultStr;
 
     @Given("^待转换十六进制字符串为\"([^\"]*)\"$")
@@ -24,14 +24,14 @@ public class DigitKitTest {
         str16 = arg0;
     }
 
-    @When("^十六进制字符串转为int$")
-    public void 十六进制字符串转为int() throws Throwable {
-        resultInt = DigitKit.fromHexStr(str16);
+    @When("^十六进制字符串转为long$")
+    public void 十六进制字符串转为long() throws Throwable {
+        resultLong = DigitKit.fromHexStr(str16);
     }
 
-    @Then("^转换int结果为\"([^\"]*)\"$")
-    public void 转换int结果为(String arg0) throws Throwable {
-        Assert.assertTrue(Integer.valueOf(arg0) == resultInt);
+    @Then("^转换long结果为\"([^\"]*)\"$")
+    public void 转换long结果为(String arg0) throws Throwable {
+        Assert.assertTrue(Long.valueOf(arg0) == resultLong);
     }
 
 

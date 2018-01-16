@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * 数字工具类.
@@ -34,21 +32,20 @@ public class DigitKit {
      * 还原过程为：有一个十进制的int值为：1465660800，然后保存为16进制：0x575C3580，
      * 然后还是太长了，所以可以转为ASCII码的再转成ASCII码：W\x5C5\x80
      *
-     * @param in 包含16进制的字符串，每一个16进制字符前都有\x标识，其他字符为ASCII码。
+     * @param in 包含16进制的字符串，每一个16进制字符前都有\x标识，其他字符为ASCII码，前后可能存在空格，而空格也是ASCII码，不能删除
      * @return 十进制
      */
-    public static int fromHexStr(String in) {
+    public static long fromHexStr(String in) {
         if (StringKit.isEmpty(in)) {
             LOGGER.error("in is empty");
             throw new IllegalArgumentException("in is empty");
         }
-        String source = in.trim();
         String str = "";
-        for (int i = 0; i < source.length(); ++i) {
-            char ch = source.charAt(i);
-            if (ch == '\\' && source.length() > i + 1 && source.charAt(i + 1) == 'x') {
-                char hd1 = source.charAt(i + 2);
-                char hd2 = source.charAt(i + 3);
+        for (int i = 0; i < in.length(); ++i) {
+            char ch = in.charAt(i);
+            if (ch == '\\' && in.length() > i + 1 && in.charAt(i + 1) == 'x') {
+                char hd1 = in.charAt(i + 2);
+                char hd2 = in.charAt(i + 3);
                 if (!isHexDigit(hd1) || !isHexDigit(hd2)) {
                     continue;
                 }
@@ -61,7 +58,12 @@ public class DigitKit {
                 str += x;
             }
         }
-        return Integer.parseInt(str, 16);
+        try {
+            return Long.parseLong(str, 16);
+        } catch (NumberFormatException e) {
+            LOGGER.error("number:{} may be too long! detail:{}", in, e);
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -84,6 +86,12 @@ public class DigitKit {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
     }
 
+    /**
+     * 将16进制的字符串解成utf-8格式.
+     *
+     * @param in in中不包含\x
+     * @return utf-8字符串
+     */
     public static String decodeHex(String in) {
         if (StringKit.isEmpty(in)) {
             LOGGER.error("in is empty");
@@ -101,7 +109,7 @@ public class DigitKit {
     /**
      * 将含有汉字的16进制字符串转为可读的字符串.
      *
-     * @param in 包含汉字的16进制的字符串
+     * @param in 包含汉字的16进制的字符串，前后可能存在空格，而空格也是ASCII码，不能删除
      * @return 可读的字符串
      */
     public static String fromUHexStr(String in) {
@@ -109,16 +117,15 @@ public class DigitKit {
             LOGGER.error("in is empty");
             throw new IllegalArgumentException("in is empty");
         }
-        String source = in.trim();
         StringBuilder result = new StringBuilder();
 
         String str = "";
 
-        for (int i = 0; i < source.length(); i++) {
-            char ch = source.charAt(i);
-            if (ch == '\\' && source.length() > i + 1 && source.charAt(i + 1) == 'x') {
-                char hd1 = source.charAt(i + 2);
-                char hd2 = source.charAt(i + 3);
+        for (int i = 0; i < in.length(); i++) {
+            char ch = in.charAt(i);
+            if (ch == '\\' && in.length() > i + 1 && in.charAt(i + 1) == 'x') {
+                char hd1 = in.charAt(i + 2);
+                char hd2 = in.charAt(i + 3);
                 if (!isUHexDigit(hd1) || !isUHexDigit(hd2)) {
                     continue;
                 }

@@ -34,8 +34,11 @@ public class TimeKit {
      * @return 完整格式时间
      */
     public static String toCompleteDate(String timestamp) {
-        long lt = new Long(timestamp);
-        return toCompleteDate(lt);
+        if (StringKit.isNotEmpty(timestamp)) {
+            long lt = new Long(timestamp.trim());
+            return toCompleteDate(lt);
+        }
+        return StringKit.emptyString;
     }
 
 

@@ -85,6 +85,11 @@ public final class StringKit {
 
 
     /**
+     * 空字符串.
+     */
+    public static final String emptyString = "";
+
+    /**
      * 私有构造方法.
      */
     private StringKit() {

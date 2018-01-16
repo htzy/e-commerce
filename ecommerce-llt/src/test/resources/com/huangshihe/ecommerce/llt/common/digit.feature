@@ -1,11 +1,11 @@
 Feature: 数字工具类
 
-  Scenario Outline: 16进制转int
+  Scenario Outline: 16进制转long
     Given 待转换十六进制字符串为"<str_16>"
-    When 十六进制字符串转为int
-    Then 转换int结果为"<result_int>"
+    When 十六进制字符串转为long
+    Then 转换long结果为"<result_long>"
     Examples:
-      | str_16     | result_int |
+      | str_16     | result_long |
       | W\x5C5\x80 | 1465660800 |
 
   Scenario Outline: 含汉字的16进制转字符串
