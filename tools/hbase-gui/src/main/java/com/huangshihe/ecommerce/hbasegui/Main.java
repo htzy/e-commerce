@@ -15,10 +15,13 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 主方法.
@@ -33,6 +36,11 @@ public class Main extends Application {
      * stage.
      */
     private Stage primaryStage;
+
+    /**
+     * 日志.
+     */
+    private Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -71,7 +79,7 @@ public class Main extends Application {
 
         ChoiceBox<Object> cb = new ChoiceBox<>();
         cb.setItems(FXCollections.observableArrayList(
-                "十进制", "文本",
+                "十进制", "文本", "连续MAC",
                 new Separator(), "时间(ms)")
         );
         grid.add(cb, 0, 1);
@@ -91,23 +99,42 @@ public class Main extends Application {
         hbBtn.getChildren().add(btn);
         grid.add(hbBtn, 1, 4);
 
+        final Text info = new Text();
+        grid.add(info, 1, 6);
+
+
         btn.setOnAction(e -> {
-            String fieldText = textField.getText();
-            if (StringKit.isNotEmpty(fieldText) && null != cb.getValue()) {
-                if ("十进制".equals(cb.getValue().toString())) {
-                    long result = DigitKit.fromHexStr(fieldText);
-                    valueField.setText(String.valueOf(result));
-                } else if ("文本".equals(cb.getValue().toString())) {
-                    String result = DigitKit.fromUHexStr(fieldText);
-                    valueField.setText(result);
-                } else if ("时间(ms)".equals(cb.getValue().toString())) {
-                    String date = TimeKit.toCompleteDate(fieldText);
-                    valueField.setText(date);
+            try {
+                // 清空提示信息框
+                info.setFill(Color.WHITE);
+                info.setText(StringKit.emptyString);
+
+                String fieldText = textField.getText();
+                if (StringKit.isNotEmpty(fieldText) && null != cb.getValue()) {
+                    switch (cb.getSelectionModel().selectedIndexProperty().getValue()) {
+                        case 0:
+                            long result = DigitKit.fromHexStr(fieldText);
+                            valueField.setText(String.valueOf(result));
+                            break;
+                        case 1:
+                            valueField.setText(DigitKit.fromUHexStr(fieldText));
+                            break;
+                        case 2:
+                            valueField.setText(DigitKit.fromHexMacStr(fieldText));
+                            break;
+                        case 4:
+                            String date = TimeKit.toCompleteDate(fieldText);
+                            valueField.setText(date);
+                            break;
+                    }
                 }
+            } catch (IllegalArgumentException e1) {
+                info.setFill(Color.FIREBRICK);
+                info.setText("error! more info in log file!");
             }
+
         });
     }
-
 
     public static void main(String[] args) {
         launch(args);

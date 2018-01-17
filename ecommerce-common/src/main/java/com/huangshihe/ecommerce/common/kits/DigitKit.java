@@ -147,4 +147,45 @@ public class DigitKit {
         }
         return result.toString();
     }
+
+    public static String fromHexMacStr(String in) {
+        if (StringKit.isEmpty(in)) {
+            LOGGER.error("in is empty");
+            throw new IllegalArgumentException("in is empty");
+        }
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < in.length(); i++) {
+            char ch = in.charAt(i);
+            if (ch == '\\' && in.length() > i + 1 && in.charAt(i + 1) == 'x') {
+                char hd1 = in.charAt(i + 2);
+                char hd2 = in.charAt(i + 3);
+                if (!isUHexDigit(hd1) || !isUHexDigit(hd2)) {
+                    continue;
+                }
+                result.append(hd1);
+                result.append(hd2);
+                i += 3;
+            } else {
+                // 先转成ASCII码（十进制），再转成16进制
+                String x = Integer.toHexString((int) ch);
+                result.append(x);
+            }
+            // 每隔18位，将':'换成','
+            if (result.length() % 17 == 0) {
+                result.append(',');
+            } else {
+                result.append(':');
+            }
+        }
+        // 删除最后一个':'
+        if (result.charAt(result.length() - 1) == ':') {
+            result.deleteCharAt(result.length() - 1);
+        }
+        String resStr = result.toString();
+        // 转换为全大写
+        if (StringKit.isNotEmpty(resStr)) {
+            resStr = resStr.toUpperCase();
+        }
+        return resStr;
+    }
 }
