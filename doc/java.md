@@ -124,6 +124,15 @@ class Foo{
 
 ```
 
+
+```shell
+brew 
+# 查看hadoop.rb的历史
+git log master -- Formula/hadoop.rb
+
+git checkout 9d524e4
+```
+
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
 [Java 7 新的 try-with-resources 语句，自动资源释放](http://www.oschina.net/question/12_10706)  
@@ -131,5 +140,6 @@ class Foo{
 [使用 Jackson 树模型(tree model) API 处理 JSON](http://blog.csdn.net/gao1440156051/article/details/54091702)    
 [JavaFX 8 教程](http://code.makery.ch/library/javafx-8-tutorial/zh-cn/part1/)  
 [EA如何打包可运行jar的一个问题](http://bglmmz.iteye.com/blog/2058785)  
-
-
+[如何在MacOSX上安装Hadoop(how to install hadoop on mac os x)](http://www.ifzer.com/2014/10/31/how_to_install_hadoop_on_mac_ox_x/)  
+[brew安装指定版本的软件](https://www.jianshu.com/p/aadb54eac0a8)  
+[Mac OS X 10.10 运用 Homebrew安装Hadoop 2.7.1](http://blog.csdn.net/u012336567/article/details/50778989)  
