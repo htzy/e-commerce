@@ -35,3 +35,5 @@ netstat -nr
 
 # 参考
 [rsync命令——linux集群上同步文件](http://man.linuxde.net/rsync)
+[brew安装指定版本的软件](https://www.jianshu.com/p/aadb54eac0a8)
+
