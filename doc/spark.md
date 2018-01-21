@@ -22,6 +22,17 @@ External Libraries中的jackson依赖中，这时即可看到多个jackson的依
     原因为指定的类型为LongType，而传入的为int类型，只需在int类型后加"L"或直接定义一个Long变量，赋值后再将该变量传入。
     如果执行还报一样的错，重新手动编译整个项目再运行试试。
 
+# 命令
+```shell
+# 启动spark，注意到spark目录下执行 
+./start-master.sh 
+./start-slaves.sh
+
+# 停止spark，注意到spark目录下执行
+./stop-master.sh    
+./stop-slaves.sh
+```
+
 
 # 参考
 [Spark java读取Hbase数据](http://blog.csdn.net/incy_1218/article/details/71453608)  
