@@ -2,6 +2,7 @@ package com.huangshihe.ecommerce.ecommercehbase.llt.hbasedao;
 
 import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
+import com.huangshihe.ecommerce.ecommercehbase.filter.PrefixFuzzyAndTimeFilter;
 import com.huangshihe.ecommerce.ecommercehbase.util.HBaseDaoUtil;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -11,6 +12,8 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Assert;
 
 import java.util.HashMap;
@@ -39,6 +42,10 @@ public class HBaseDaoTest {
     private static String startRowKey;
     private static String stopRowKey;
     private static int pageSize;
+    private static long startTime;
+    private static long stopTime;
+    private static String prefix;
+    private static long insertTime;
 
 
     @Before
@@ -221,6 +228,51 @@ public class HBaseDaoTest {
         Assert.assertTrue(results.size() == Integer.valueOf(arg0));
     }
 
+    @And("^要创建数据的rowKeys的前缀为\"([^\"]*)\"$")
+    public void 要创建数据的rowkeys的前缀为(String arg0) throws Throwable {
+        prefix = arg0;
+    }
+
+    @And("^要创建数据的rowKeys的时间为\"([^\"]*)\"$")
+    public void 要创建数据的rowkeys的时间为(String arg0) throws Throwable {
+        insertTime = Long.valueOf(arg0);
+    }
+
+    @And("^在表中插入一个前缀rowKeys随机值$")
+    public void 在表中插入一个前缀rowkeys随机值() throws Throwable {
+        // TODO 这里暂时只存一个rowkey，之后在feature文件中增加多个rowkey
+        byte[] row = Bytes.toBytes(prefix);
+        row = Bytes.add(row, Bytes.toBytes(insertTime));
+        for (String familyName : familyNames) {
+            Map<String, String> qualifierValues = new HashMap<>(qualifiers.length);
+            for (String qualifier : qualifiers) {
+                qualifierValues.put(qualifier, UUID.randomUUID().toString());
+            }
+            // 对于不同的rowKey插入相同的qualifierValues，仅测试。
+            hBaseDao.insert(tableNameStr, row, familyName, qualifierValues);
+        }
+
+    }
+
+    @And("^要查询的startTime为\"([^\"]*)\"$")
+    public void 要查询的starttime为(String arg0) throws Throwable {
+        startTime = Long.valueOf(arg0);
+    }
+
+    @And("^要查询的stopTime为\"([^\"]*)\"$")
+    public void 要查询的stoptime为(String arg0) throws Throwable {
+        stopTime = Long.valueOf(arg0);
+    }
+
+    @When("^前缀模糊和时间范围查询数据$")
+    public void 前缀模糊和时间范围查询数据() throws Throwable {
+
+        Filter filter = new PrefixFuzzyAndTimeFilter(prefix.length(), startTime, stopTime);
+        results = hBaseDao.query(tableNameStr, filter);
+
+        HBaseDaoUtil.printResultsInfo(results);
+    }
+
     @After
     public void 清理测试环境() {
         // 删除表
@@ -228,4 +280,5 @@ public class HBaseDaoTest {
             hBaseDao.deleteTable(tableNameStr);
         }
     }
+
 }

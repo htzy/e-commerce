@@ -100,4 +100,18 @@ Feature: HBaseDao
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |             |            | 2        | 2           |
       | llt-test  | t           | col1,col2,col3 | 10001,10002,10003 |             |            | 5        | 3           |
 
-
+  Scenario Outline: 前缀模糊和时间范围查询
+    Given 表名为"<tableName>"
+    And 要创建表的familyNames是"<familyNames>"
+    And 数据表创建成功
+    And 要插入数据的qualifiers为"<qualifiers>"
+    And 要创建数据的rowKeys的前缀为"<prefix>"
+    And 要创建数据的rowKeys的时间为"<insertTime>"
+    And 在表中插入一个前缀rowKeys随机值
+    And 要查询的startTime为"<startTime>"
+    And 要查询的stopTime为"<stopTime>"
+    When 前缀模糊和时间范围查询数据
+    Then 查询到"<resultCount>"条数据
+    Examples:
+      | tableName | familyNames | qualifiers | prefix | insertTime    | startTime     | stopTime      | resultCount |
+      | llt-test  | t           | col1       | (      | 1514522700000 | 1514522600000 | 1514522800000 | 1           |

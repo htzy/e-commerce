@@ -17,6 +17,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.IOUtils;
@@ -103,7 +105,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey) {
         if (!isExists(tableNameStr)) {
-            LOGGER.error("[queryTableByRowKey] table: {} is not exists!", tableNameStr);
+            LOGGER.error("table: {} is not exists!", tableNameStr);
             return null;
         }
 
@@ -112,7 +114,7 @@ public class HBaseDaoImpl implements IHBaseDao {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
             final Get get = new Get(Bytes.toBytes(rowKey));
             result = table.get(get); //NOPMD
-            LOGGER.debug("[queryTableByRowKey] result: {}", result);
+            LOGGER.debug("result: {}", result);
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, e);
@@ -132,7 +134,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     public List<Cell> queryTableByRowKey(final String tableNameStr, final String rowKey,
                                          final Map<String, List<String>> column) {
         if (!isExists(tableNameStr)) {
-            LOGGER.error("[queryTableByRowKey] table: {} is not exists!", tableNameStr);
+            LOGGER.error("table: {} is not exists!", tableNameStr);
             return null;
         }
 
@@ -146,7 +148,7 @@ public class HBaseDaoImpl implements IHBaseDao {
                 }
             }
             result = table.get(get); //NOPMD
-            LOGGER.debug("[queryTableByRowKey] result: {}", result);
+            LOGGER.debug("result: {}", result);
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, column: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, column, e);
@@ -163,7 +165,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public List<Result> queryAll(String tableNameStr) {
         if (!isExists(tableNameStr)) {
-            LOGGER.error("[queryAll] table: {} is not exists!", tableNameStr);
+            LOGGER.error("table: {} is not exists!", tableNameStr);
             return null;
         }
         ResultScanner resultScanner = null;
@@ -193,7 +195,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public List<Result> query(String tableNameStr, String startRowKey, String stopRowKey) {
         if (!isExists(tableNameStr)) {
-            LOGGER.error("[queryAll] table: {} is not exists!", tableNameStr);
+            LOGGER.error("table: {} is not exists!", tableNameStr);
             return null;
         }
         ResultScanner resultScanner = null;
@@ -227,7 +229,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public List<Result> query(String tableNameStr, String startRowKey, String stopRowKey, int pageSize) {
         if (!isExists(tableNameStr)) {
-            LOGGER.error("[queryAll] table: {} is not exists!", tableNameStr);
+            LOGGER.error("table: {} is not exists!", tableNameStr);
             return null;
         }
         ResultScanner resultScanner = null;
@@ -260,6 +262,36 @@ public class HBaseDaoImpl implements IHBaseDao {
     }
 
     /**
+     * 多个过滤器过滤.
+     *
+     * @param tableNameStr 表名
+     * @param filter       过滤器
+     * @return results
+     */
+    @Override
+    public List<Result> query(String tableNameStr, Filter filter) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("table: {} is not exists!", tableNameStr);
+            return null;
+        }
+        ResultScanner resultScanner = null;
+        List<Result> results = new ArrayList<Result>();
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+            Scan scan = new Scan();
+            scan.setFilter(filter);
+            resultScanner = table.getScanner(scan);
+            for (Result result : resultScanner) {
+                results.add(result);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeStream(resultScanner);
+        }
+        return results;
+    }
+
+    /**
      * 根据rowKey插入值，即只有一个rowKey.
      * <p>
      * TODO 增加是否使用缓冲区选项，默认不用
@@ -274,10 +306,10 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public void insert(String tableNameStr, String rowKey, String family, Map<String, String> qualifierValues) {
         if (!isExists(tableNameStr)) {
-            LOGGER.error("[insert] table: {} is not exists!", tableNameStr);
+            LOGGER.error("table: {} is not exists!", tableNameStr);
             return;
         }
-        LOGGER.debug("[insert] tableNameStr:{}, rowKey:{}, qualifierValues:{}, qualifierValues.size: {}",
+        LOGGER.debug("tableNameStr:{}, rowKey:{}, qualifierValues:{}, qualifierValues.size: {}",
                 tableNameStr, rowKey, qualifierValues, qualifierValues.size());
 
         try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
@@ -285,7 +317,37 @@ public class HBaseDaoImpl implements IHBaseDao {
             for (String qualifier : qualifierValues.keySet()) {
                 put.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(qualifierValues.get(qualifier)));
             }
-            LOGGER.debug("[insert] insert 'put' all cells size is {}", put.size());
+            LOGGER.debug("insert 'put' all cells size is {}", put.size());
+            table.put(put);
+        } catch (IOException e) {
+            LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
+                    tableNameStr, rowKey, e);
+        }
+    }
+
+    /**
+     * 根据rowKey插入值，即只有一个rowKey.
+     *
+     * @param tableNameStr    表名
+     * @param rowKey          rowKey
+     * @param family          列族
+     * @param qualifierValues 列及值
+     */
+    @Override
+    public void insert(String tableNameStr, byte[] rowKey, String family, Map<String, String> qualifierValues) {
+        if (!isExists(tableNameStr)) {
+            LOGGER.error("table: {} is not exists!", tableNameStr);
+            return;
+        }
+        LOGGER.debug("tableNameStr:{}, rowKey:{}, qualifierValues:{}, qualifierValues.size: {}",
+                tableNameStr, rowKey, qualifierValues, qualifierValues.size());
+
+        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+            Put put = new Put(rowKey);
+            for (String qualifier : qualifierValues.keySet()) {
+                put.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(qualifierValues.get(qualifier)));
+            }
+            LOGGER.debug("insert 'put' all cells size is {}", put.size());
             table.put(put);
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",

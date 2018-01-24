@@ -3,10 +3,15 @@ package com.huangshihe.ecommerce.ecommercehbase.util;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.protobuf.ProtobufUtil;
+import org.apache.hadoop.hbase.protobuf.generated.ClientProtos;
+import org.apache.hadoop.hbase.util.Base64;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -43,7 +48,7 @@ public final class HBaseDaoUtil {
 
     /**
      * debug用：打印Result中的信息：1.rowKey；2.families；3.qualifiers；4.values
-     *
+     * TODO 移到DebugUtil
      * @param result result
      */
     public static void printResultInfo(final Result result) {
@@ -64,7 +69,7 @@ public final class HBaseDaoUtil {
 
     /**
      * debug用：打印多个Result中的信息：1.rowKey；2.families；3.qualifiers；4.values
-     *
+     * TODO 移到DebugUtil
      * @param results results
      */
     public static void printResultsInfo(final List<Result> results) {
@@ -77,6 +82,20 @@ public final class HBaseDaoUtil {
             }
         }
         LOGGER.debug("[printResultsInfo] end print results");
+    }
+
+    /**
+     * Scan转为String，转换进制
+     *
+     * @param scan scan
+     * @throws IOException 网络或文件错误
+     */
+    public static String convertScanToString(final Scan scan) throws IOException {
+        LOGGER.debug("[convertScanToString] begin to convert scan to String");
+        ClientProtos.Scan proto = ProtobufUtil.toScan(scan);
+        String scanToString = Base64.encodeBytes(proto.toByteArray());
+        LOGGER.debug("[convertScanToString] end to convert");
+        return scanToString;
     }
 
 

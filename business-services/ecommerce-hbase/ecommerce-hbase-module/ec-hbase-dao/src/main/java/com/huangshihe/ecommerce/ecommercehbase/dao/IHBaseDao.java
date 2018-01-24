@@ -2,6 +2,8 @@ package com.huangshihe.ecommerce.ecommercehbase.dao;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
 
 import java.util.List;
 import java.util.Map;
@@ -73,6 +75,15 @@ public interface IHBaseDao {
      */
     List<Result> query(String tableNameStr, String startRowKey, String stopRowKey, int pageSize);
 
+    /**
+     * 多个过滤器过滤.
+     *
+     * @param tableNameStr 表名
+     * @param filter       过滤器
+     * @return results
+     */
+    List<Result> query(String tableNameStr, Filter filter);
+
 
     /**
      * 根据rowKey插入值，即只有一个rowKey.
@@ -83,6 +94,16 @@ public interface IHBaseDao {
      * @param qualifierValues 列及值
      */
     void insert(String tableNameStr, String rowKey, String family, Map<String, String> qualifierValues);
+
+    /**
+     * 根据rowKey插入值，即只有一个rowKey.
+     *
+     * @param tableNameStr    表名
+     * @param rowKey          rowKey
+     * @param family          列族
+     * @param qualifierValues 列及值
+     */
+    void insert(String tableNameStr, byte[] rowKey, String family, Map<String, String> qualifierValues);
 
 //
 //    public void queryTableByCondition();
