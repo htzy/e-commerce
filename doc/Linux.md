@@ -38,6 +38,13 @@ netstat -nr
 
 ```
 
+## homebrew
+### 常见错误
+1. Error: Calling Formula.sha1 is disabled!
+    该问题出现在下载homebrew源代码，checkout较老的版本，没有直接解决该问题，使用brew search <要安装的软件>
+    很巧的是找到了，然后brew install <对应的版本，可能包含@符号>
+
+
 # 参考
 [rsync命令——linux集群上同步文件](http://man.linuxde.net/rsync)
 [brew安装指定版本的软件](https://www.jianshu.com/p/aadb54eac0a8)

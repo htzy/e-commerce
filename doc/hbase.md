@@ -315,8 +315,17 @@ class MyFilter{
     }
 }
 
-```
 
+```
+## 常见错误
+1. 在自定义filter中遇到：org.apache.hadoop.hbase.exceptions.OutOfOrderScannerNextException:
+Failed after retry of OutOfOrderScannerNextException: was there a rpc timeout? 
+    基本可以确定为自定义的filter中存在错误，导致数据没有传输成功，可以在关键数据转换的地方加日志，注意修改日志级别，
+    如果不方便修改，就直接加error级别日志，日志地址在启动hbase（start-hbase.sh）的时候会给出。
+    本机的日志文件在：/usr/local/var/log/hbase/hbase-huangshihe-master-bogon.out，该配置项在hbase-env.sh文件中。
+    ```shell
+    export HBASE_LOG_DIR="${HBASE_LOG_DIR:-/usr/local/var/log/hbase}"
+    ```
 
 
 # 测试数据
