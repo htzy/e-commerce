@@ -115,3 +115,7 @@ Feature: HBaseDao
     Examples:
       | tableName | familyNames | qualifiers | prefix | insertTime    | startTime     | stopTime      | resultCount |
       | llt-test  | t           | col1       | (      | 1514522700000 | 1514522600000 | 1514522800000 | 1           |
+      | llt-test  | t           | col1       |        | 1514522700000 | 1514522600000 | 1514522800000 | 1           |
+      | llt-test  | t           | col1       | (      | 1514522600000 | 1514522600000 | 1514522800000 | 1           |
+      | llt-test  | t           | col1       | (      | 1514522800000 | 1514522600000 | 1514522800000 | 0           |
+      | llt-test  | t           | col1       | ()     | 1514522700000 | 1514522600000 | 1514522800000 | 1           |

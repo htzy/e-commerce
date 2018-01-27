@@ -265,9 +265,58 @@ cd ecommerce/business-services/ecommerce-hbase/ecommerce-hbase-module/ec-hbase-d
 
 protoc -I=./ --java_out=../../java PrefixFuzzyAndTimeFilterProto.proto
 
+# 将filter所在jar创建符号链接到hbase lib中
+ln -s XXX XXX
 
+# 每次修改lib中的文件，都要重启hbase
+cd /usr/local/opt/hbase/bin
+./stop-hbase.sh
+./start-hbase.sh
+```
+MyFilter.java
+```java
+
+// 以下注解暂时未用到
+@InterfaceAudience.Public
+@InterfaceStability.Stable
+class MyFilter{
+    // 以下方法暂时未用到   
+    public static Filter createFilterFromArguments(ArrayList<byte[]> filterArguments) {
+        Preconditions.checkArgument(filterArguments.size() == 3,
+                "Expected 3 but got: %s", filterArguments.size());
+        int prefixFuzzyLength = ParseFilter.convertByteArrayToInt(filterArguments.get(0));
+        long startTimeStamp = ParseFilter.convertByteArrayToLong(filterArguments.get(1));
+        long stopTimeStamp = ParseFilter.convertByteArrayToLong(filterArguments.get(2));
+        return new PrefixFuzzyAndTimeFilter(prefixFuzzyLength, startTimeStamp, stopTimeStamp);
+    }
+    // 以下方法暂时未用到
+    @Override
+    public Cell transformCell(Cell v) throws IOException {
+        return v;
+    }
+    // 以下方法暂时未用到
+    /**
+     * Filters that do not filter by row key can inherit this implementation that
+     * never filters anything. (ie: returns false).
+     * <p>
+     * {@inheritDoc}
+     *
+     * @param buffer
+     * @param offset
+     * @param length
+     */
+    @Override
+    public boolean filterRowKey(byte[] buffer, int offset, int length) throws IOException {
+        // false保留，true丢弃
+        // str为整个row，length为rowkey的长度，offset为length+1
+        // 也就是0~length为rowkey，后面的为column+value，每个元素之间有特殊符号分隔
+        LOGGER.debug("buffer to Str: {}, offset:{}, length:{}", Bytes.toString(buffer), offset, length);
+        return super.filterRowKey(buffer, offset, length);
+    }
+}
 
 ```
+
 
 
 # 测试数据

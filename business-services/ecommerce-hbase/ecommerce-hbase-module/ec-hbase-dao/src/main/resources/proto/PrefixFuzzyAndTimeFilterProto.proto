@@ -1,0 +1,13 @@
+package proto;
+
+option java_package = "com.huangshihe.ecommerce.ecommercehbase.proto";
+option java_outer_classname = "PrefixFuzzyAndTimeFilterProto";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+message PrefixFuzzyAndTimeFilter {
+    required int32 prefixFuzzyLength = 1;
+    required int64 startTimeStamp = 2;
+    required int64 stopTimeStamp = 3;
+}

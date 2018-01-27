@@ -1,19 +1,20 @@
 package com.huangshihe.ecommerce.ecommercehbase.filter;
 
-import com.huangshihe.ecommerce.common.kits.DigitKit;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.huangshihe.ecommerce.ecommercehbase.proto.PrefixFuzzyAndTimeFilterProto;
+import com.huangshihe.ecommerce.ecommercehbase.util.DebugUtil;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.exceptions.DeserializationException;
 import org.apache.hadoop.hbase.filter.FilterBase;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * 前缀模糊和时间范围过滤器。
+ * 前缀模糊和时间范围过滤器，包头不包尾.
  * 结构为：前n的字节模糊匹配，后跟时间范围匹配。
  * <p>
  * Create Date: 2018-01-24 20:29
@@ -21,7 +22,7 @@ import java.util.Map;
  * @author huangshihe
  */
 public class PrefixFuzzyAndTimeFilter extends FilterBase {
-
+    // LOGGER在client端不会打印，因为这是运行在HBase服务端
     private static final Logger LOGGER = LoggerFactory.getLogger(PrefixFuzzyAndTimeFilter.class);
 
     private int prefixFuzzyLength = 0;
@@ -30,12 +31,9 @@ public class PrefixFuzzyAndTimeFilter extends FilterBase {
 
     private boolean filterRow = true;
 
-    /**
-     * map中存放需要读的行RowKey
-     */
-    public Map<Object, Object> map = new HashMap<Object, Object>();
-
     public PrefixFuzzyAndTimeFilter(int prefixFuzzyLength, long startTimeStamp, long stopTimeStamp) {
+        LOGGER.debug("prefixFuzzyLength:{}, startTimeStamp:{}, stopTimeStamp:{}",
+                prefixFuzzyLength, startTimeStamp, stopTimeStamp);
         this.prefixFuzzyLength = prefixFuzzyLength;
         this.startTimeStamp = startTimeStamp;
         this.stopTimeStamp = stopTimeStamp;
@@ -55,16 +53,17 @@ public class PrefixFuzzyAndTimeFilter extends FilterBase {
     // TODO ?????原意是解析rowkey，如果rowkey不满足要求，则把整个rowkey干掉，而这里实际是Cell，会不会影响性能？
     @Override
     public ReturnCode filterKeyValue(Cell ignored) throws IOException {
-        byte[] row = CellUtil.cloneRow(ignored);
-
-        // time: \x00\x00\x00\x00ZE\xC8L 十进制：1514522700
-        byte[] time = Bytes.copy(row, prefixFuzzyLength, 8);
-        LOGGER.debug("time:{}", time);
-        String timeStr = Bytes.toString(time);
-        LOGGER.debug("timeStr:{}", timeStr);
-        long timeStamp = DigitKit.fromHexStr(Bytes.toString(time));
-        if (timeStamp >= startTimeStamp && timeStamp <= stopTimeStamp) {
-            filterRow = false;
+        try {
+            byte[] row = CellUtil.cloneRow(ignored);
+            // time: [0, 0, 1, 96, -96, -106, 104, -32] 十进制：1514522700000
+            byte[] time = Bytes.copy(row, prefixFuzzyLength, 8);
+            long timeStamp = Bytes.toLong(time);
+            if (timeStamp >= startTimeStamp && timeStamp < stopTimeStamp) {
+                filterRow = false;
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("wrong argument, cell info:{}, detail:{}", DebugUtil.cellInfo(ignored), e);
+            filterRow = true;
         }
         return ReturnCode.INCLUDE;
     }
@@ -81,24 +80,48 @@ public class PrefixFuzzyAndTimeFilter extends FilterBase {
         return filterRow;
     }
 
-    /////////////////////////////////////////////////////////////////
 
     /**
-     * Filters that do not filter by row key can inherit this implementation that
-     * never filters anything. (ie: returns false).
-     * <p>
-     * {@inheritDoc}
+     * 序列化：由byte转为对象.
      *
-     * @param buffer
-     * @param offset
-     * @param length
+     * @param pbBytes row bytes
+     * @return 序列化后的row
+     * @throws DeserializationException wrong row？
      */
-    @Override
-    public boolean filterRowKey(byte[] buffer, int offset, int length) throws IOException {
-        // false保留，true丢弃
-        LOGGER.debug("buffer to Str: {}, offset:{}, length:{}", Bytes.toString(buffer), offset, length);
-        return super.filterRowKey(buffer, offset, length);
+    public static PrefixFuzzyAndTimeFilter parseFrom(final byte[] pbBytes)
+            throws DeserializationException {
+        PrefixFuzzyAndTimeFilterProto.PrefixFuzzyAndTimeFilter proto;
+        try {
+            proto = PrefixFuzzyAndTimeFilterProto.PrefixFuzzyAndTimeFilter.parseFrom(pbBytes);
+        } catch (InvalidProtocolBufferException e) {
+            throw new DeserializationException(e);
+        }
+        return new PrefixFuzzyAndTimeFilter(proto.getPrefixFuzzyLength(),
+                proto.getStartTimeStamp(), proto.getStopTimeStamp());
     }
 
+    /**
+     * 序列化用：由对象转为byte.
+     *
+     * @return byteArray
+     */
+    public byte[] toByteArray() {
+        PrefixFuzzyAndTimeFilterProto.PrefixFuzzyAndTimeFilter.Builder builder =
+                PrefixFuzzyAndTimeFilterProto.PrefixFuzzyAndTimeFilter.newBuilder();
+        builder.setPrefixFuzzyLength(this.prefixFuzzyLength);
+        builder.setStartTimeStamp(this.startTimeStamp);
+        builder.setStopTimeStamp(this.stopTimeStamp);
+        return builder.build().toByteArray();
+    }
+
+    @Override
+    public String toString() {
+        return "PrefixFuzzyAndTimeFilter{" +
+                "prefixFuzzyLength=" + prefixFuzzyLength +
+                ", startTimeStamp=" + startTimeStamp +
+                ", stopTimeStamp=" + stopTimeStamp +
+                ", filterRow=" + filterRow +
+                '}';
+    }
 
 }

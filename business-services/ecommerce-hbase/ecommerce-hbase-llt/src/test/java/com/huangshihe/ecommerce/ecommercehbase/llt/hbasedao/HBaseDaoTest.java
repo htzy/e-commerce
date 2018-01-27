@@ -3,7 +3,7 @@ package com.huangshihe.ecommerce.ecommercehbase.llt.hbasedao;
 import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
 import com.huangshihe.ecommerce.ecommercehbase.filter.PrefixFuzzyAndTimeFilter;
-import com.huangshihe.ecommerce.ecommercehbase.util.HBaseDaoUtil;
+import com.huangshihe.ecommerce.ecommercehbase.util.DebugUtil;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -15,6 +15,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,8 @@ public class HBaseDaoTest {
     private static String prefix;
     private static long insertTime;
 
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HBaseDaoTest.class);
 
     @Before
     public void 准备测试环境() throws Throwable {
@@ -199,7 +203,7 @@ public class HBaseDaoTest {
 
     @Then("^查询到所有的数据$")
     public void 查询到所有的数据() throws Throwable {
-        HBaseDaoUtil.printResultsInfo(results);
+        DebugUtil.printResultsInfo(results);
         Assert.assertTrue(results.size() == insertRowKeys.length * familyNames.length);
     }
 
@@ -242,7 +246,9 @@ public class HBaseDaoTest {
     public void 在表中插入一个前缀rowkeys随机值() throws Throwable {
         // TODO 这里暂时只存一个rowkey，之后在feature文件中增加多个rowkey
         byte[] row = Bytes.toBytes(prefix);
+        LOGGER.debug("prefix-row:{}, len:{}", row, row.length);
         row = Bytes.add(row, Bytes.toBytes(insertTime));
+        LOGGER.debug("time-row:{}, len:{}", row, row.length);
         for (String familyName : familyNames) {
             Map<String, String> qualifierValues = new HashMap<>(qualifiers.length);
             for (String qualifier : qualifiers) {
@@ -251,7 +257,6 @@ public class HBaseDaoTest {
             // 对于不同的rowKey插入相同的qualifierValues，仅测试。
             hBaseDao.insert(tableNameStr, row, familyName, qualifierValues);
         }
-
     }
 
     @And("^要查询的startTime为\"([^\"]*)\"$")
@@ -266,11 +271,14 @@ public class HBaseDaoTest {
 
     @When("^前缀模糊和时间范围查询数据$")
     public void 前缀模糊和时间范围查询数据() throws Throwable {
-
-        Filter filter = new PrefixFuzzyAndTimeFilter(prefix.length(), startTime, stopTime);
+        // char占2个字节，而String.length为char的个数，TODO 理解有误？？byte长度还是为1
+//        int len = prefix.length() * 2;
+        int len = prefix.length();
+        LOGGER.debug("prefix:{}, start:{}, stop:{}", len, startTime, stopTime);
+        Filter filter = new PrefixFuzzyAndTimeFilter(len, startTime, stopTime);
         results = hBaseDao.query(tableNameStr, filter);
-
-        HBaseDaoUtil.printResultsInfo(results);
+        // 打印查询到的结果
+        DebugUtil.printResultsInfo(results);
     }
 
     @After
