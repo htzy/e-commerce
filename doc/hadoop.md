@@ -13,7 +13,6 @@ git log master -- Formula/hadoop.rb
 git checkout f9ec4b3
 # 下载2.7.3版本的hadoop
 brew install ./Formula/hadoop.rb
-
 ```
 2. 配置hadoop
 配置文件目录：/usr/local/opt/hadoop/libexec/etc/hadoop
@@ -96,13 +95,17 @@ hbase-site.xml
 </configuration>
 ```
 
+hbase-env.sh
+```shell
+# 之后将自定义的filter等类上传到该处，否则class not found
+export HBASE_CLASSPATH="/usr/local/opt/hbase/libexec/lib"
+```
 
 
 4. 配置spark
 TODO
 
 # 命令
-
 ```shell
 # 查看后台进程
 jps

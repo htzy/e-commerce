@@ -211,6 +211,65 @@ elif [ "$COMMAND" = "master" ] ; then
   
 ```
 
+# 配置
+hbase-env.sh
+```shell
+# 之后将自定义的filter等类上传到该处，否则class not found
+export HBASE_CLASSPATH="/usr/local/opt/hbase/libexec/lib"
+```
+
+```shell
+# 创建硬链接，这里不需要跨物理设备，同时不用关联目录，只需要关联文件，所以可以使用硬链接（即保存的位置一样，其实是一份文件）
+# ! 使用mvn clean compile后，功能不可用，找不到对应的类
+ln /Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-dao/0.0.1/ec-hbase-dao-0.0.1.jar ec-hbase-dao-0.0.1.jar
+# 若之后有新需求，可以考虑使用符号链接：ln -s XXX XXX
+ln -s /Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-dao/0.0.1/ec-hbase-dao-0.0.1.jar ec-hbase-dao-0.0.1.jar
+
+```
+
+
+# 自定义filter
+```shell
+# 安装protobuf。查看当前hbase1.2.6版本中使用的protobuf版本为2.5.0
+# 搜索该版本的protobuf
+brew search protobuf
+# protobuf            protobuf-swift      protobuf@2.6        swift-protobuf
+# protobuf-c          protobuf@2.5        protobuf@3.1
+
+# 安装2.5版本
+brew install protobuf@2.5
+
+# brew install protobuf
+# 这里下载的版本为：protobuf@2.5-2.5.0.high_sierra.bottle.tar.gz
+# 安装目录：/usr/local/opt/protobuf/share/doc/protobuf
+# Editor support and examples have been installed to:
+#   /usr/local/opt/protobuf@2.5/share/doc/protobuf@2.5
+
+# 增加到环境变量里：
+echo 'export PATH="/usr/local/opt/protobuf@2.5/bin:$PATH"' >> ~/.bash_profile
+
+# This formula is keg-only, which means it was not symlinked into /usr/local,
+# because this is an alternate version of another formula.
+
+# If you need to have this software first in your PATH run:
+#  echo 'export PATH="/usr/local/opt/protobuf@2.5/bin:$PATH"' >> ~/.bash_profile
+
+# For compilers to find this software you may need to set:
+#    LDFLAGS:  -L/usr/local/opt/protobuf@2.5/lib
+    CPPFLAGS: -I/usr/local/opt/protobuf@2.5/include
+# For pkg-config to find this software you may need to set:
+#    PKG_CONFIG_PATH: /usr/local/opt/protobuf@2.5/lib/pkgconfig
+
+# 生成
+cd ecommerce/business-services/ecommerce-hbase/ecommerce-hbase-module/ec-hbase-dao/src/main/resources/proto
+
+protoc -I=./ --java_out=../../java PrefixFuzzyAndTimeFilterProto.proto
+
+
+
+```
+
+
 # 测试数据
 1. value=W\x5C5\x80
 那么这个值具体等于多少? 查阅资料后发现算法如下
@@ -248,3 +307,5 @@ A -> A的ASCII码16进制 为 0x41
 [sparksql_dataframes](http://hbase.apache.org/book.html#_sparksql_dataframes)  
 [win10下Spark java读取Hbase数据](http://blog.csdn.net/incy_1218/article/details/71453608)  
 [大数据性能调优之HBase的RowKey设计](https://www.cnblogs.com/yaohaitao/p/6821321.html)  
+[HBase自定义Filter](http://www.zhyea.com/2016/12/19/hbase-custom-filter.html)  
+
