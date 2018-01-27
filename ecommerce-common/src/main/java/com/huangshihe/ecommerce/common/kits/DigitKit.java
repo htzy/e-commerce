@@ -41,23 +41,29 @@ public class DigitKit {
             throw new IllegalArgumentException("in is empty");
         }
         String str = "";
-        for (int i = 0; i < in.length(); ++i) {
-            char ch = in.charAt(i);
-            if (ch == '\\' && in.length() > i + 1 && in.charAt(i + 1) == 'x') {
-                char hd1 = in.charAt(i + 2);
-                char hd2 = in.charAt(i + 3);
-                if (!isHexDigit(hd1) || !isHexDigit(hd2)) {
-                    continue;
+        try {
+            for (int i = 0; i < in.length(); ++i) {
+                char ch = in.charAt(i);
+                if (ch == '\\' && in.length() > i + 1 && in.charAt(i + 1) == 'x') {
+                    char hd1 = in.charAt(i + 2);
+                    char hd2 = in.charAt(i + 3);
+                    if (!isHexDigit(hd1) || !isHexDigit(hd2)) {
+                        continue;
+                    }
+                    str += hd1;
+                    str += hd2;
+                    i += 3;
+                } else {
+                    // 先转成ASCII码（十进制），再转成16进制
+                    String x = Integer.toHexString((int) ch);
+                    str += x;
                 }
-                str += hd1;
-                str += hd2;
-                i += 3;
-            } else {
-                // 先转成ASCII码（十进制），再转成16进制
-                String x = Integer.toHexString((int) ch);
-                str += x;
             }
+        } catch (StringIndexOutOfBoundsException e) {
+            LOGGER.error("number:{} may be wrong pattern! detail:{}", in, e);
+            throw new IllegalArgumentException(e);
         }
+
         try {
             return Long.parseLong(str, 16);
         } catch (NumberFormatException e) {
@@ -148,6 +154,12 @@ public class DigitKit {
         return result.toString();
     }
 
+    /**
+     * 将含有16进制的mac地址字符串解码.
+     *
+     * @param in \x保存不变，其余为ASCII码
+     * @return 解码后的mac地址
+     */
     public static String fromHexMacStr(String in) {
         if (StringKit.isEmpty(in)) {
             LOGGER.error("in is empty");
