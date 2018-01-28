@@ -140,4 +140,5 @@ git checkout 9d524e4
 [使用 Jackson 树模型(tree model) API 处理 JSON](http://blog.csdn.net/gao1440156051/article/details/54091702)    
 [JavaFX 8 教程](http://code.makery.ch/library/javafx-8-tutorial/zh-cn/part1/)  
 [EA如何打包可运行jar的一个问题](http://bglmmz.iteye.com/blog/2058785)    
+[Protobuf的那些事](http://blog.csdn.net/u013022222/article/details/50521835)  
 

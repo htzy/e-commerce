@@ -327,6 +327,56 @@ Failed after retry of OutOfOrderScannerNextException: was there a rpc timeout?
     export HBASE_LOG_DIR="${HBASE_LOG_DIR:-/usr/local/var/log/hbase}"
     ```
 
+# 数据大小
+```java
+import org.apache.hadoop.hbase.util.Bytes;
+
+/**
+ * temp.
+ * <p>
+ * Create Date: 2018-01-28 20:56
+ *
+ * @author huangshihe
+ */
+public class Foo {
+    public static void main(String[] args) {
+        // 获取HBase的实际的存储字节长度，不应该是Bytes.toString().length 而是Bytes.toStringBinary()结果中的实际字节长
+        // Bytes.toBytes方法中，传入char，实际接受的int，所以字节长度为4，而不是2
+        char c = '(';
+        byte[] bytes_c = Bytes.toBytes(c);
+        byte[] bytes_a = Bytes.add(bytes_c, Bytes.toBytes('}'));
+        System.out.println(Bytes.toString(bytes_a) + " len:" + bytes_a.length);//   (   } len:8
+        System.out.println(Bytes.toStringBinary(bytes_a) + " len:" + Bytes.toStringBinary(bytes_a).length());
+        // \x00\x00\x00(\x00\x00\x00} len:26
+//        System.out.println("char: " + Bytes.toString(bytes_c) + " len: " + bytes_c.length);//char:    ( len: 4
+        // Bytes.toBytes方法中，传入String，普通的一个字符，一个字节，而一个汉字字符，三个字节
+        String s = "(";
+        byte[] bytes_s = Bytes.toBytes(s);
+        System.out.println(Bytes.toStringBinary(bytes_s) + " len: " + Bytes.toStringBinary(bytes_s).length());
+//        ( len: 1
+
+//        System.out.println("String: " + Bytes.toString(bytes_s) + " len: " + bytes_c.length);//String: ( len: 4
+
+        String u = "好";
+        System.out.println(u.length());//1
+        byte[] bytes_u = Bytes.toBytes(u);
+//        System.out.println("u: " + Bytes.toString(bytes_u) + " len: " + bytes_u.length);//u: 好 len: 3
+        System.out.println(Bytes.toStringBinary(bytes_u) + " len: " + Bytes.toStringBinary(bytes_u).length());
+//        \xE5\xA5\xBD len: 12
+
+
+        String ss = "()";
+        byte[] bytes_ss = Bytes.toBytes(ss);
+        System.out.println(Bytes.toString(bytes_ss) + " len: " + bytes_ss.length);// () len: 2
+        System.out.println(Bytes.toStringBinary(bytes_ss) + " len: " + Bytes.toStringBinary(bytes_ss).length());
+//        () len: 2
+
+    }
+}
+
+
+```
+
 
 # 测试数据
 1. value=W\x5C5\x80

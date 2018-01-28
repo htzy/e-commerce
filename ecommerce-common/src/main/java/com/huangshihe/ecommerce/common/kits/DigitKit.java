@@ -200,4 +200,9 @@ public class DigitKit {
         }
         return resStr;
     }
+
+    // TODO 增加是否为中文字符的方法，如String u = "好"，要求可以识别出来，因为直接输出的长度为1，而HBase中存储的字节长度是3，格外要注意！
+    // 即使rowkey中不会放中文，但是也应该增加检查，否则崩了，无法定位！
+    // 还有部分含有中文的，要求计算出在HBase中存储的字节长度。
+    // TODO 综上，即要求通过参数：String、int、char等，增加一个计算在HBase中实际存储字节长度的方法
 }
