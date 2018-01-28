@@ -366,4 +366,5 @@ A -> A的ASCII码16进制 为 0x41
 [win10下Spark java读取Hbase数据](http://blog.csdn.net/incy_1218/article/details/71453608)  
 [大数据性能调优之HBase的RowKey设计](https://www.cnblogs.com/yaohaitao/p/6821321.html)  
 [HBase自定义Filter](http://www.zhyea.com/2016/12/19/hbase-custom-filter.html)  
+[一个自定义 HBase Filter -“通过RowKeys来高性能获取数据”](https://www.cnblogs.com/wgp13x/p/4196466.html)  
 
