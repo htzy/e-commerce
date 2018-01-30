@@ -40,7 +40,7 @@ public class DigitKit {
             LOGGER.error("in is empty");
             throw new IllegalArgumentException("in is empty");
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         try {
             for (int i = 0; i < in.length(); ++i) {
                 char ch = in.charAt(i);
@@ -50,13 +50,13 @@ public class DigitKit {
                     if (!isHexDigit(hd1) || !isHexDigit(hd2)) {
                         continue;
                     }
-                    str += hd1;
-                    str += hd2;
+                    str.append(hd1);
+                    str.append(hd2);
                     i += 3;
                 } else {
                     // 先转成ASCII码（十进制），再转成16进制
                     String x = Integer.toHexString((int) ch);
-                    str += x;
+                    str.append(x);
                 }
             }
         } catch (StringIndexOutOfBoundsException e) {
@@ -65,7 +65,7 @@ public class DigitKit {
         }
 
         try {
-            return Long.parseLong(str, 16);
+            return Long.parseLong(str.toString(), 16);
         } catch (NumberFormatException e) {
             LOGGER.error("number:{} may be too long! detail:{}", in, e);
             throw new IllegalArgumentException(e);
