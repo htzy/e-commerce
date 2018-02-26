@@ -22,7 +22,7 @@ public class DigitKit {
     private static Logger LOGGER = LoggerFactory.getLogger(DigitKit.class);
 
     /**
-     * 将16进制的字符串转为int，
+     * 将16进制的字符串转为long，
      * 如：W\x5C5\x80 => 0x575C3580 => 1465660800
      * W -> W的ASCII码（10进制为87）16进制为 0x57
      * \x5C -> 就是16进制不变 0x5C
@@ -83,10 +83,10 @@ public class DigitKit {
     }
 
     /**
-     * 检查是否为16进制的中文字符.
+     * 检查是否为16进制的utf-8字符.
      *
      * @param c 字符
-     * @return 是否为16进制的中文字符
+     * @return 是否为16进制的utf-8字符
      */
     public static boolean isUHexDigit(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
@@ -95,10 +95,10 @@ public class DigitKit {
     /**
      * 将16进制的字符串解成utf-8格式.
      *
-     * @param in in中不包含\x
+     * @param in in只包含16进制，且不能包含\x，如：E794B7 （男）
      * @return utf-8字符串
      */
-    public static String decodeHex(String in) {
+    public static String decodeFromHex(String in) {
         if (StringKit.isEmpty(in)) {
             LOGGER.error("in is empty");
             throw new IllegalArgumentException("in is empty");
@@ -112,10 +112,11 @@ public class DigitKit {
         }
     }
 
+
     /**
      * 将含有汉字的16进制字符串转为可读的字符串.
      *
-     * @param in 包含汉字的16进制的字符串，前后可能存在空格，而空格也是ASCII码，不能删除
+     * @param in 包含汉字或其他转为16进制的的16进制字符串，前后可能存在空格，而空格也是ASCII码，不能删除
      * @return 可读的字符串
      */
     public static String fromUHexStr(String in) {
@@ -125,7 +126,8 @@ public class DigitKit {
         }
         StringBuilder result = new StringBuilder();
 
-        String str = "";
+        // 中文词或其他转为16进制的词
+        String words = "";
 
         for (int i = 0; i < in.length(); i++) {
             char ch = in.charAt(i);
@@ -135,21 +137,22 @@ public class DigitKit {
                 if (!isUHexDigit(hd1) || !isUHexDigit(hd2)) {
                     continue;
                 }
-                str += hd1;
-                str += hd2;
+                words += hd1;
+                words += hd2;
                 i += 3;
             } else {
-                if (StringKit.isNotEmpty(str)) {
-                    result.append(decodeHex(str));
-                    // 清空str
-                    str = "";
+                // 直到遇到非\x开头的字符，才开始转词
+                if (StringKit.isNotEmpty(words)) {
+                    result.append(decodeFromHex(words));
+                    // 清空words
+                    words = "";
                 }
                 result.append(ch);
             }
         }
-        // 对于最后一个str而言
-        if (StringKit.isNotEmpty(str)) {
-            result.append(decodeHex(str));
+        // 对于最后一个words而言
+        if (StringKit.isNotEmpty(words)) {
+            result.append(decodeFromHex(words));
         }
         return result.toString();
     }
@@ -201,8 +204,43 @@ public class DigitKit {
         return resStr;
     }
 
-    // TODO 增加是否为中文字符的方法，如String u = "好"，要求可以识别出来，因为直接输出的长度为1，而HBase中存储的字节长度是3，格外要注意！
-    // 即使rowkey中不会放中文，但是也应该增加检查，否则崩了，无法定位！
-    // 还有部分含有中文的，要求计算出在HBase中存储的字节长度。
-    // TODO 综上，即要求通过参数：String、int、char等，增加一个计算在HBase中实际存储字节长度的方法
+
+    /**
+     * 删除十六进制的格式，如\x符号.
+     *
+     * @param in 包含十六进制格式的字符串
+     * @return 无十六进制格式的字符串
+     */
+    public static String remove16format(String in) {
+        if (StringKit.isEmpty(in)) {
+            // 如果为空，可能是null，可能是""，则原样返回。
+            return in;
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < in.length(); i++) {
+            char ch = in.charAt(i);
+            if (ch == '\\' && in.length() > i + 1 && in.charAt(i + 1) == 'x') {
+                i += 1;
+            } else {
+                builder.append(ch);
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
+     * 计算utf-8字符串长度.
+     * String u = "好"，要求可以识别出来，因为直接输出的长度为1，而HBase中存储的字节长度是3，格外要注意！
+     * TODO // 即使rowkey中不会放中文，但是也应该增加检查，否则崩了，无法定位！——rowkey中只需要检查总长度是否符合标准即可！
+     * TODO // 还有部分含有中文的，要求计算出在HBase中存储的字节长度。
+     *
+     * @param in 可能包含中文或其他转为16进制的任意字符串，16进制格式，如：\xe4\xb8\xad\xe6\x96\x87 —— 中文
+     * @return 将in转为utf8格式的长度
+     */
+    public static int getUtf8Len(String in) {
+        if (StringKit.isEmpty(in)) {
+            return 0;
+        }
+        return fromUHexStr(in).length();
+    }
 }
