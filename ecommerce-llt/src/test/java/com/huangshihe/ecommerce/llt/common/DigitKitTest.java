@@ -55,11 +55,21 @@ public class DigitKitTest {
 
     @When("^计算utf8字符串长度$")
     public void 计算utf8字符串的长度() throws Throwable {
-        resultInt = DigitKit.getUtf8Len(str);
+        resultInt = DigitKit.getUtf8LenFromUHex(str);
     }
 
     @Then("^计算utf8字符串长度的结果为\"([^\"]*)\"$")
     public void 计算utf8字符串长度的结果为(String arg0) throws Throwable {
+        Assert.assertTrue(Integer.valueOf(arg0) == resultInt);
+    }
+
+    @When("^计算十六进制的字符串字节长度$")
+    public void 计算十六进制的字符串字节长度() throws Throwable {
+        resultInt = DigitKit.getBytesLenFromUHex(str);
+    }
+
+    @Then("^计算十六进制的字符串字节长度的结果为\"([^\"]*)\"$")
+    public void 计算十六进制的字符串字节长度的结果为(String arg0) throws Throwable {
         Assert.assertTrue(Integer.valueOf(arg0) == resultInt);
     }
 }

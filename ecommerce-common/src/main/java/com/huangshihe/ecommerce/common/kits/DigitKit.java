@@ -211,6 +211,7 @@ public class DigitKit {
      * @param in 包含十六进制格式的字符串
      * @return 无十六进制格式的字符串
      */
+    @Deprecated
     public static String remove16format(String in) {
         if (StringKit.isEmpty(in)) {
             // 如果为空，可能是null，可能是""，则原样返回。
@@ -237,10 +238,32 @@ public class DigitKit {
      * @param in 可能包含中文或其他转为16进制的任意字符串，16进制格式，如：\xe4\xb8\xad\xe6\x96\x87 —— 中文
      * @return 将in转为utf8格式的长度
      */
-    public static int getUtf8Len(String in) {
+    public static int getUtf8LenFromUHex(String in) {
         if (StringKit.isEmpty(in)) {
             return 0;
         }
         return fromUHexStr(in).length();
+    }
+
+
+    /**
+     * 计算字节数组长度.
+     *
+     * @param in 可能包含中文或其他转为16进制的任意字符串，16进制格式，如：\xe4\xb8\xad\xe6\x96\x87 —— 中文
+     * @return 转为字节数组的长度
+     */
+    public static int getBytesLenFromUHex(String in) {
+        int count = 0;
+        if (StringKit.isEmpty(in)) {
+            return count;
+        }
+        for (int i = 0; i < in.length(); i++) {
+            char ch = in.charAt(i);
+            if (ch == '\\' && in.length() > i + 1 && in.charAt(i + 1) == 'x') {
+                i += 3;
+            }
+            ++count;
+        }
+        return count;
     }
 }

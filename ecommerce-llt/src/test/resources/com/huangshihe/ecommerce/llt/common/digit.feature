@@ -26,3 +26,13 @@ Feature: 数字工具类
       | 123\xE7\x94\xB7age       | 7          |
       | \xe4\xb8\xad\xe6\x96\x87 | 2          |
       |                          | 0          |
+
+  Scenario Outline: 计算包含汉字或其他转为16进制的字符串的字节长度
+    Given 待计算的字符串为"<str>"
+    When 计算十六进制的字符串字节长度
+    Then 计算十六进制的字符串字节长度的结果为"<result_int>"
+    Examples:
+      | str                      | result_int |
+      | 123\xE7\x94\xB7age       | 9          |
+      | \xe4\xb8\xad\xe6\x96\x87 | 6          |
+      |                          | 0          |
