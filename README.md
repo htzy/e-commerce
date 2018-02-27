@@ -34,6 +34,9 @@
             - <component_name>-llt           // low level test
             - <component_name>-privilege     // 
             - <component_name>-module        // 下面放模块，如ui、service、dao、entity等
+    - <product_name>.common          // 放常用工具包（可以增加线程池的工具包，但线程池的主体是归为public）
+    - <product_name>.public          // 放公共内容，如线程池、配置文件等
+
 
 # 工具说明
 - 公式编辑——macOS Grapher
@@ -59,6 +62,8 @@
 - 启动
     - 暂不引入bundle（osgi），当前成本太高
     - 规避方案：引入一个初始init任务，启动所有的组件
+    - 初始init任务中定义定时任务
+    
 
 
 # TODO
