@@ -41,6 +41,11 @@
             <artifactId>ecommerce-common</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.huangshihe.ecommerce</groupId>
+            <artifactId>ecommerce-public</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
