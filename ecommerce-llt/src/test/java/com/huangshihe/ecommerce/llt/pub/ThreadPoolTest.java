@@ -1,6 +1,6 @@
-package com.huangshihe.ecommerce.pub;
+package com.huangshihe.ecommerce.llt.pub;
 
-import com.huangshihe.ecommerce.pub.threadpool.ThreadPoolEntity;
+import com.huangshihe.ecommerce.pub.config.ConfigEntity;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -20,7 +20,7 @@ import java.io.InputStream;
 public class ThreadPoolTest {
 
     private static String xmlFileName;
-    private static ThreadPoolEntity threadPoolEntity;
+    private static ConfigEntity configEntity;
 
     @Given("^待转换的xml文件名为\"([^\"]*)\"$")
     public void 待转换的xml文件名为(String arg0) throws Throwable {
@@ -32,13 +32,14 @@ public class ThreadPoolTest {
         String threadPoolXmlFile = "data" + File.separator + "pub" + File.separator + "threadpool" + File.separator + xmlFileName;
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(threadPoolXmlFile);
 
-        JAXBContext threadPoolContext = JAXBContext.newInstance(ThreadPoolEntity.class);
-        Unmarshaller unmarshaller = threadPoolContext.createUnmarshaller();
-        threadPoolEntity = (ThreadPoolEntity) unmarshaller.unmarshal(inputStream);
+        JAXBContext configContext = JAXBContext.newInstance(ConfigEntity.class);
+        Unmarshaller unmarshaller = configContext.createUnmarshaller();
+        configEntity = (ConfigEntity) unmarshaller.unmarshal(inputStream);
     }
 
     @Then("^线程池xml转bean成功$")
     public void 线程池xml转bean成功() throws Throwable {
-        Assert.assertNotNull(threadPoolEntity);
+        System.out.println(configEntity);
+        Assert.assertNotNull(configEntity);
     }
 }

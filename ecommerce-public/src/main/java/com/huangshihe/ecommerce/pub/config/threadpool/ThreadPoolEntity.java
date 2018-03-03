@@ -1,4 +1,4 @@
-package com.huangshihe.ecommerce.pub.threadpool;
+package com.huangshihe.ecommerce.pub.config.threadpool;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
@@ -60,5 +60,15 @@ public class ThreadPoolEntity implements Serializable {
 
     public void setKeepAliveTime(long keepAliveTime) {
         this.keepAliveTime = keepAliveTime;
+    }
+
+    @Override
+    public String toString() {
+        return "ThreadPoolEntity{" +
+                "poolSize=" + poolSize +
+                ", maxPoolSize=" + maxPoolSize +
+                ", queueSize=" + queueSize +
+                ", keepAliveTime=" + keepAliveTime +
+                '}';
     }
 }
