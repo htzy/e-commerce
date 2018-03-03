@@ -1,7 +1,6 @@
 package com.huangshihe.ecommerce.pub.threadpool;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
@@ -11,7 +10,7 @@ import java.io.Serializable;
  *
  * @author huangshihe
  */
-@XmlRootElement(name="threadPool")
+//@XmlRootElement(name = "threadPool")
 public class ThreadPoolEntity implements Serializable {
 
     private Integer poolSize;

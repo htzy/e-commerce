@@ -142,3 +142,4 @@ git checkout 9d524e4
 [EA如何打包可运行jar的一个问题](http://bglmmz.iteye.com/blog/2058785)    
 [Protobuf的那些事](http://blog.csdn.net/u013022222/article/details/50521835)  
 [利用JAXB实现xml和bean之间的转换（一）](http://blog.csdn.net/lchinam/article/details/51785036)  
+[Jaxb2 实现JavaBean与xml互转](http://blog.csdn.net/wugouzi/article/details/25044655/)  
