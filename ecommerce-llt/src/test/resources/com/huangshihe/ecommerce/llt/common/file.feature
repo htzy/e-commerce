@@ -6,4 +6,4 @@ Feature: 文件工具类
     Then 获取文件夹下的所有文件数目为"<nums>"
     Examples:
       | file_path | nums |
-      | data      | 1    |
+      | data      | 2    |

@@ -2,7 +2,6 @@ package com.huangshihe.ecommerce.common.kits;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,15 +14,12 @@ import java.util.List;
 public class FileKit {
 
     /**
-     * 读取某文件夹下的所有文件，使用非递归方法，存在冗余代码
+     * 读取某文件夹下的所有文件，使用递归方法
      *
      * @param path 文件夹路径
      * @return 文件夹下的所有文件
      */
-    @Deprecated
     public static List<File> getAllFiles(String path) {
-        // LinkedList便于动态增加和删除
-        LinkedList<File> folders = new LinkedList<File>();
         List<File> results = new ArrayList<File>();
         File root = new File(path);
         if (root.exists()) {
@@ -33,29 +29,13 @@ public class FileKit {
                 // 尘归尘，土归土
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        folders.add(file);
+                        results.addAll(getAllFiles(file.getAbsolutePath()));
                     } else {
                         results.add(file);
                     }
                 }
             }
-            while (!folders.isEmpty()) {
-                File currentFolder = folders.removeFirst();
-                files = currentFolder.listFiles();
-                if (files != null) {
-                    // 尘归尘，土归土
-                    for (File file : files) {
-                        if (file.isDirectory()) {
-                            folders.add(file);
-                        } else {
-                            results.add(file);
-                        }
-                    }
-                }
-            }
-
         }
-
         return results;
     }
 
