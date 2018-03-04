@@ -1,7 +1,6 @@
 package com.huangshihe.ecommerce.llt.common;
 
 import com.huangshihe.ecommerce.common.kits.DigitKit;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -34,9 +33,8 @@ public class DigitKitTest {
 
     @Then("^转换long结果为\"([^\"]*)\"$")
     public void 转换long结果为(String arg0) throws Throwable {
-        Assert.assertTrue(Long.valueOf(arg0) == resultLong);
+        Assert.assertEquals(resultLong, Long.parseLong(arg0));
     }
-
 
     @When("^含汉字的十六进制转字符串$")
     public void 含汉字的十六进制转字符串() throws Throwable {
@@ -60,7 +58,7 @@ public class DigitKitTest {
 
     @Then("^计算utf8字符串长度的结果为\"([^\"]*)\"$")
     public void 计算utf8字符串长度的结果为(String arg0) throws Throwable {
-        Assert.assertTrue(Integer.valueOf(arg0) == resultInt);
+        Assert.assertEquals(Integer.toString(resultInt), arg0);
     }
 
     @When("^计算十六进制的字符串字节长度$")
@@ -70,6 +68,6 @@ public class DigitKitTest {
 
     @Then("^计算十六进制的字符串字节长度的结果为\"([^\"]*)\"$")
     public void 计算十六进制的字符串字节长度的结果为(String arg0) throws Throwable {
-        Assert.assertTrue(Integer.valueOf(arg0) == resultInt);
+        Assert.assertEquals(Integer.toString(resultInt), arg0);
     }
 }

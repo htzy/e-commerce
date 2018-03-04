@@ -123,15 +123,40 @@ class Foo{
 }
 
 ```
+# for循环
+## 增强型for循环：for(E e: Collection<E> es)
+这种的for循环中的es不能为空，否则会导致空指针，实际上内部调用的为：iterator()，以下两种方式等同
+```java
+class Foo {
+    void fooFor() {
+        if (root.exists() && root.listFiles() != null) {
+            // File.listFiles()可能为null，下面可能触发NullPointerException，所以需要提前检查
+            for (File file : root.listFiles()) {
+                // ...
+            }
 
-
-```shell
-brew 
-# 查看hadoop.rb的历史
-git log master -- Formula/hadoop.rb
-
-git checkout 9d524e4
+        }
+    }
+    
+    void fooIterator() {
+        if (root.exists() && root.listFiles() != null) {
+            Collection collection = Arrays.asList(root.listFiles());
+            for (Iterator iter = collection.iterator(); iter.hasNext(); ) {
+                // ...
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        List<Object> re = null;
+        for (Object i : re) {   // NullPointerException
+            System.out.println(i);
+        }
+        System.out.println("can't be done...");
+    }
+}
 ```
+
 
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
@@ -143,3 +168,4 @@ git checkout 9d524e4
 [Protobuf的那些事](http://blog.csdn.net/u013022222/article/details/50521835)  
 [利用JAXB实现xml和bean之间的转换（一）](http://blog.csdn.net/lchinam/article/details/51785036)  
 [Jaxb2 实现JavaBean与xml互转](http://blog.csdn.net/wugouzi/article/details/25044655/)  
+[java for循环的几种写法](https://www.cnblogs.com/wangcp-2014/p/5379208.html)  

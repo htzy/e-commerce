@@ -8,3 +8,13 @@ git checkout master
 git merge br_1
 
 ```
+
+# brew
+```shell
+brew 
+# 查看hadoop.rb的历史
+git log master -- Formula/hadoop.rb
+
+git checkout 9d524e4
+
+```
