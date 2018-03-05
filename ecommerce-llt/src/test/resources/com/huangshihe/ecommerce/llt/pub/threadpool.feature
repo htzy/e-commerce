@@ -7,3 +7,14 @@ Feature: 线程池
     Examples:
       | xml_file_name   |
       | simple_data.xml |
+
+
+  Scenario Outline: 线程池解析xml并将任务提交到线程池中
+    Given 待转换的xml文件名为"<xml_file_name>"
+    When 线程池xml转bean
+    And 新建线程池
+    And 显示调用任务
+    Then 任务运行在线程池中
+    Examples:
+      | xml_file_name   |
+      | simple_task.xml |

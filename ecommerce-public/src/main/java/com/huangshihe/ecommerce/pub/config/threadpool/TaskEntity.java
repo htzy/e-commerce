@@ -13,7 +13,7 @@ public class TaskEntity {
 
     private String className;
 
-    private String method;
+    private String methodName;
 
     @XmlAttribute(name = "class", required = true)
     public String getClassName() {
@@ -25,19 +25,11 @@ public class TaskEntity {
     }
 
     @XmlAttribute(name = "method", required = true)
-    public String getMethod() {
-        return method;
+    public String getMethodName() {
+        return methodName;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    @Override
-    public String toString() {
-        return "TaskEntity{" +
-                "className='" + className + '\'' +
-                ", method='" + method + '\'' +
-                '}';
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 }
