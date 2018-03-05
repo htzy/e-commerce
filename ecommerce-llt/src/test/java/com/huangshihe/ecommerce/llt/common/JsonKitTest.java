@@ -59,7 +59,7 @@ public class JsonKitTest {
         right.setId(666);
         right.setName("htzy");
         // 在Simple中覆盖了equals方法
-        Assert.assertEquals(simple, right);
+        Assert.assertEquals(right, simple);
     }
 
     @When("^字符串转Tree$")

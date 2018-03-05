@@ -33,7 +33,7 @@ public class DigitKitTest {
 
     @Then("^转换long结果为\"([^\"]*)\"$")
     public void 转换long结果为(String arg0) throws Throwable {
-        Assert.assertEquals(resultLong, Long.parseLong(arg0));
+        Assert.assertEquals(Long.parseLong(arg0), resultLong);
     }
 
     @When("^含汉字的十六进制转字符串$")
@@ -58,7 +58,7 @@ public class DigitKitTest {
 
     @Then("^计算utf8字符串长度的结果为\"([^\"]*)\"$")
     public void 计算utf8字符串长度的结果为(String arg0) throws Throwable {
-        Assert.assertEquals(Integer.toString(resultInt), arg0);
+        Assert.assertEquals(arg0, Integer.toString(resultInt));
     }
 
     @When("^计算十六进制的字符串字节长度$")
@@ -68,6 +68,6 @@ public class DigitKitTest {
 
     @Then("^计算十六进制的字符串字节长度的结果为\"([^\"]*)\"$")
     public void 计算十六进制的字符串字节长度的结果为(String arg0) throws Throwable {
-        Assert.assertEquals(Integer.toString(resultInt), arg0);
+        Assert.assertEquals(arg0, Integer.toString(resultInt));
     }
 }

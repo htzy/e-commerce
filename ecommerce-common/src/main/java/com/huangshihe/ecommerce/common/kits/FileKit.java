@@ -39,9 +39,34 @@ public class FileKit {
         return results;
     }
 
-
-    // 实现读取某文件夹下并且文件名符合给定的正则表达式的所有文件 => 常量：符合配置文件后缀的正则表达式：***-cfg.xml
-
+    /**
+     * 实现读取某文件夹下并且文件名符合给定的正则表达式的所有文件 => 常量：符合配置文件后缀的正则表达式：***-cfg.xml
+     *
+     * @param path    文件夹路径
+     * @param pattern 文件名匹配符
+     * @return
+     */
+    public static List<File> getAllFiles(String path, String pattern) {
+        List<File> results = new ArrayList<File>();
+        File root = new File(path);
+        if (root.exists()) {
+            File[] files = root.listFiles();
+            // File.listFiles()可能为null，下面可能触发NullPointerException，所以需要提前检查
+            if (files != null) {
+                // 尘归尘，土归土
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        results.addAll(getAllFiles(file.getAbsolutePath(), pattern));
+                    } else {
+                        if (file.getName().matches(pattern)) {
+                            results.add(file);
+                        }
+                    }
+                }
+            }
+        }
+        return results;
+    }
 
     // 检查文件夹是否存在
 

@@ -158,6 +158,33 @@ class Foo {
 ```
 
 
+# java正则表达式
+```java
+class Foo {
+    void foo() {
+        // ...
+        // 匹配以.xml为后缀名的文件，而\\.xml，xml等作为匹配符，都不能使用String.matches()匹配成功
+        // 由于String.matches()的方式会默认增加^$符号：<pattern> => ^<pattern>$，所以无法使用"xml"来匹配。
+        String pattern = "(.*)\\.xml"; 
+        if (file.getName().matches(pattern)) {
+            results.add(file);
+        }
+        // ...
+        // 也可使用Pattern，compile可以使用.xml、xml等作为匹配符，使用Pattern.matcher()匹配成功
+        Pattern pattern = Pattern.compile("xml");
+//        Pattern pattern = Pattern.compile(".xml");
+        String name = "simple_data.xml";
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find()) {
+            System.out.println(matcher.group()); // xml
+//            System.out.println(matcher.group()); // .xml
+        }
+    }
+}
+
+```
+
+
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
 [Java 7 新的 try-with-resources 语句，自动资源释放](http://www.oschina.net/question/12_10706)  
@@ -169,3 +196,7 @@ class Foo {
 [利用JAXB实现xml和bean之间的转换（一）](http://blog.csdn.net/lchinam/article/details/51785036)  
 [Jaxb2 实现JavaBean与xml互转](http://blog.csdn.net/wugouzi/article/details/25044655/)  
 [java for循环的几种写法](https://www.cnblogs.com/wangcp-2014/p/5379208.html)  
+[Java matches() 方法](http://www.runoob.com/java/java-string-matches.html)  
+[Regex doesn't work in String.matches()](https://stackoverflow.com/questions/8923398/regex-doesnt-work-in-string-matches)  
+[Java正则-String.matches的坑](http://blog.csdn.net/qq_24505485/article/details/54799882)  
+

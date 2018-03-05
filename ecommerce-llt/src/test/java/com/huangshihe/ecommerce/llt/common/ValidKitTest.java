@@ -56,7 +56,7 @@ public class ValidKitTest {
 
     @Then("^结果为\"([^\"]*)\"$")
     public void 结果为(String arg0) throws Throwable {
-        Assert.assertEquals(actualResult, Boolean.valueOf(arg0));
+        Assert.assertEquals(Boolean.valueOf(arg0), actualResult);
     }
 
     @And("^参数起始数据项为\"([^\"]*)\"$")
