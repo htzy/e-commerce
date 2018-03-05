@@ -199,4 +199,7 @@ class Foo {
 [Java matches() 方法](http://www.runoob.com/java/java-string-matches.html)  
 [Regex doesn't work in String.matches()](https://stackoverflow.com/questions/8923398/regex-doesnt-work-in-string-matches)  
 [Java正则-String.matches的坑](http://blog.csdn.net/qq_24505485/article/details/54799882)  
+[Jackson Annotation Examples](http://www.baeldung.com/jackson-annotations)  
+[More Jackson Annotations](http://www.baeldung.com/jackson-advanced-annotations)  
+[Java笔试面试题整理第六波（修正版）](http://blog.csdn.net/shakespeare001/article/details/51330745)  
 
