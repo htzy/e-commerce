@@ -47,6 +47,10 @@ public class ServiceConfigEntity {
         this.taskEntities = taskEntities;
     }
 
+    public String getIdentity() {
+        return serviceEntity.getNameSpace() + "-" + serviceEntity.getName();
+    }
+
     @Override
     public String toString() {
         return "ServiceConfigEntity{" +

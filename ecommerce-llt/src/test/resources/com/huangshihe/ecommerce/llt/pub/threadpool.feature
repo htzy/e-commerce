@@ -13,7 +13,7 @@ Feature: 线程池
     Given 待转换的xml文件名为"<xml_file_name>"
     When 线程池xml转bean
     And 新建线程池
-    And 显示调用任务
+    And 显式调用任务
     Then 任务运行在线程池中
     Examples:
       | xml_file_name   |

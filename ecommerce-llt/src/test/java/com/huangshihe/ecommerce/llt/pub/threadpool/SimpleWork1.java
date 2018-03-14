@@ -14,8 +14,8 @@ public class SimpleWork1 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleWork1.class);
 
-    public static void drawLine() {
-        LOGGER.info("{}+{}------------------------------------------",
+    public void drawLine() {
+        LOGGER.info("{}+{}-count:{}-----------------------------------------",
                 Thread.currentThread().getId(), Thread.currentThread().getName());
     }
 }
