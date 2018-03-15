@@ -13,8 +13,9 @@ import com.huangshihe.ecommerce.common.aop.Invocation;
 public class SimpleInterceptor implements Interceptor {
     @Override
     public void intercept(Invocation inv) {
-        // TODO setArg当前不可用！！！原jfinal方式中也不可用
-        inv.setArg(0, new Object[]{"tom"});
+        if ("setName".equals(inv.getMethod().getName())) {
+            inv.setArg(0, "tom");
+        }
 //        inv.getTarget().getClass()
         inv.invoke();
     }

@@ -203,3 +203,6 @@ class Foo {
 [More Jackson Annotations](http://www.baeldung.com/jackson-advanced-annotations)  
 [Java笔试面试题整理第六波（修正版）](http://blog.csdn.net/shakespeare001/article/details/51330745)  
 
+[java中基于线程池和反射机制实现定时任务](http://blog.csdn.net/5iasp/article/details/10949925)  
+[用 Java 实现拦截器 Interceptor 的拦截功能](http://blog.csdn.net/qq_35246620/article/details/68484407)  
+[debug模式下发现toString()抛NullPointerException](http://blog.csdn.net/lzjansing/article/details/50319817)  

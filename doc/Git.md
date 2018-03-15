@@ -7,6 +7,8 @@ git checkout master
 ## 将br_1合并到master分支上
 git merge br_1
 
+# 修改上一次提交
+git commit --amend
 ```
 
 # brew
