@@ -18,17 +18,26 @@ public class AOPTest {
 
     @Given("^对简单类进行增强$")
     public void 对简单类进行增强() throws Throwable {
-        simple = Enhancer.enhance(Simple.class, SimpleInterceptor.class);
+        try {
+            //TODO  1.  java.lang.ClassCastException: [Ljava.lang.Object; cannot be cast to java.lang.String
+
+            // TODO 2.  Method threw 'java.lang.NullPointerException' exception.
+// Cannot evaluate com.huangshihe.ecommerce.llt.common.Simple$$EnhancerByCGLIB$$f85e382d.toString()
+            simple = Enhancer.enhance(Simple.class, SimpleInterceptor.class);
+        } catch (Exception e) {
+            System.out.println("1111");
+            e.printStackTrace();
+            System.out.println("2222");
+        }
     }
 
     @When("^调用简单类的方法$")
     public void 调用简单类的方法() throws Throwable {
-        simple.setId(0);
+        simple.setName("bob");
     }
 
     @Then("^方法被拦截$")
     public void 方法被拦截() throws Throwable {
-        System.out.println(simple.getId());
-//        Assert.assertTrue(simple.getId() == 2);
+        Assert.assertTrue(simple.getName().equals("tom"));
     }
 }

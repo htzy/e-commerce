@@ -7,8 +7,6 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.huangshihe.ecommerce.common.aop.InterceptorManager.NULL_INTERS;
-
 /**
  * aop callback.
  * <p>
@@ -21,7 +19,6 @@ public class Callback implements MethodInterceptor {
     private final Interceptor[] injectInters;
 
     private static final Set<String> excludedMethodName = buildExcludedMethodName();
-    private static final InterceptorManager interMan = InterceptorManager.getInstance();
 
     public Callback(Interceptor... injectInters) {
         checkInjectInterceptors(injectInters);
@@ -43,11 +40,6 @@ public class Callback implements MethodInterceptor {
     public Object intercept(Object target, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         // 若拦截的是Class自带的方法，则需要按下方法特殊处理
         if (excludedMethodName.contains(method.getName())) {
-            // if (method.getName().equals("finalize"))
-            // return methodProxy.invokeSuper(target, args);
-            // return this.injectTarget != null ? methodProxy.invoke(this.injectTarget, args) : methodProxy.invokeSuper(target, args);
-
-            //
             if (this.injectTarget == null || method.getName().equals("finalize")) {
                 return methodProxy.invokeSuper(target, args);
             } else {
@@ -60,7 +52,6 @@ public class Callback implements MethodInterceptor {
 //            targetClass = targetClass.getSuperclass();
 //        }
         Invocation invocation = new Invocation(target, method, args, methodProxy, injectInters);
-        invocation.useInjectTarget = false;
         invocation.invoke();
         return invocation.getReturnValue();
 

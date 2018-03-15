@@ -43,4 +43,12 @@ public class Simple {
         result = 31 * result + name.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Simple{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

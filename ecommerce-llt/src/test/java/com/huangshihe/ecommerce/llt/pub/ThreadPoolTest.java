@@ -1,15 +1,16 @@
 package com.huangshihe.ecommerce.llt.pub;
 
+import com.huangshihe.ecommerce.llt.common.Simple;
 import com.huangshihe.ecommerce.llt.pub.threadpool.SimpleWork1;
 import com.huangshihe.ecommerce.pub.config.ConfigEntity;
 import com.huangshihe.ecommerce.pub.config.threadpool.ExecutorManager;
 import com.huangshihe.ecommerce.pub.config.threadpool.ServiceConfigEntity;
 import com.huangshihe.ecommerce.pub.config.threadpool.TaskEntity;
 import com.huangshihe.ecommerce.pub.config.threadpool.ThreadPoolEntity;
-import com.huangshihe.ecommerce.pub.config.threadpool.ThreadTask;
 import com.huangshihe.ecommerce.pub.config.threadpool.ThreadTaskInterceptor;
 import com.jfinal.aop.Enhancer;
-import cucumber.api.PendingException;
+import com.jfinal.aop.Interceptor;
+import com.jfinal.aop.Invocation;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -20,8 +21,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -97,6 +96,21 @@ public class ThreadPoolTest {
         // 获取加强对象，TODO 服务使用工厂方式获取实例，首先到manager中找，如果没有的话，再创建实例，不要直接显式的创建实例
         SimpleWork1 work = (SimpleWork1) ExecutorManager.getInstance().get(SimpleWork1.class);
         work.drawLine();
+
+
+//        Simple simple = Enhancer.enhance(Simple.class, new Interceptor() {
+//            @Override
+//            public void intercept(Invocation invocation) {
+//                System.out.println(invocation.getMethodName());
+//                System.out.println("-----------");
+//                invocation.setArg(0, new String[]{"nice"});
+//                invocation.invoke();
+//            }
+//        });
+//        simple.setName("fail");
+//        System.out.println(simple.getName());
+
+
     }
 
     @Then("^任务运行在线程池中$")
