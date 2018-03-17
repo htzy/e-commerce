@@ -54,9 +54,9 @@
             <version>3.1</version>
         </dependency>
         <dependency>
-            <groupId>com.jfinal</groupId>
-            <artifactId>jfinal</artifactId>
-            <version>3.3</version>
+            <groupId>com.huangshihe.ecommerce</groupId>
+            <artifactId>ecommerce-common</artifactId>
+            <version>0.0.1</version>
         </dependency>
 
     </dependencies>

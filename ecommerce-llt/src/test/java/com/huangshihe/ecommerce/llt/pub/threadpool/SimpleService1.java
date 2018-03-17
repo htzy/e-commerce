@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author huangshihe
  */
-public class SimpleWork1 {
+public class SimpleService1 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleWork1.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleService1.class);
 
     public void drawLine() {
         LOGGER.info("{}+{}-count:{}-----------------------------------------",

@@ -13,9 +13,6 @@ import java.lang.reflect.Method;
  * @author huangshihe
  */
 public class Invocation {
-    // Prevent new Object[0] by jvm for paras of action invocation.
-    private static final Object[] NULL_ARGS = new Object[0];
-
     private Object target;
     private Method method;
     private Object[] args;
@@ -25,6 +22,15 @@ public class Invocation {
 
     private int index = 0;
 
+    /**
+     * 构造方法
+     *
+     * @param target      被增强对象，即原类的子类对象
+     * @param method      当前拦截的方法
+     * @param args        当前拦截方法的参数
+     * @param methodProxy 方法代理
+     * @param inters      拦截器
+     */
     public Invocation(Object target, Method method, Object[] args, MethodProxy methodProxy, Interceptor[] inters) {
         this.target = target;
         this.method = method;
@@ -34,6 +40,8 @@ public class Invocation {
     }
 
     public void invoke() {
+        // 首先依次执行所有的拦截器，最后再执行原方法，返回结果
+        // TODO 多个拦截器的情况待测试，并需要将流程补充到doc<jfinal-拦截器流程.eddx>中
         if (index < inters.length) {
             inters[index++].intercept(this);
         } else if (index++ == inters.length) {    // index++ ensure invoke action only one time
@@ -41,6 +49,8 @@ public class Invocation {
                 // Invoke the method
                 // if (!Modifier.isAbstract(method.getModifiers()))
                 // returnValue = methodProxy.invokeSuper(target, args);
+                // 由于target为被增强对象的子类对象，所以这里执行原方法，即target父类的方法，并传入参数
+                // 被拦截后的方法的执行结果，若原方法为void，则这里返回null
                 returnValue = methodProxy.invokeSuper(target, args);
             } catch (InvocationTargetException e) {
                 Throwable t = e.getTargetException();

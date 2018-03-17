@@ -1,6 +1,10 @@
 package com.huangshihe.ecommerce.common.aop;
 
+import com.huangshihe.ecommerce.common.kits.AopKit;
+
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * Intercerptor管理类.
@@ -13,9 +17,11 @@ public class InterceptorManager {
 
     private static InterceptorManager instance = new InterceptorManager();
 
-    public static final Interceptor[] NULL_INTERS = new Interceptor[0];
 
-    private final ConcurrentHashMap<Class<? extends Interceptor>, Interceptor> singletonMap
+    /**
+     * key: 拦截器类；value: 拦截器对象
+     */
+    private final Map<Class<? extends Interceptor>, Interceptor> singletonMap
             = new ConcurrentHashMap<Class<? extends Interceptor>, Interceptor>();
 
     private InterceptorManager() {
@@ -34,7 +40,7 @@ public class InterceptorManager {
      */
     public Interceptor[] createInterceptor(Class<? extends Interceptor>[] interceptorClasses) {
         if (interceptorClasses == null || interceptorClasses.length == 0) {
-            return NULL_INTERS;
+            return AopKit.NULL_INTERS;
         }
 
         Interceptor[] result = new Interceptor[interceptorClasses.length];
@@ -47,6 +53,7 @@ public class InterceptorManager {
                 }
             }
             return result;
+            // TODO 细化异常
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

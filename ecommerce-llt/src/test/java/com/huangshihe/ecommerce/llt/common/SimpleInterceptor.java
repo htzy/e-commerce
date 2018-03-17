@@ -16,7 +16,6 @@ public class SimpleInterceptor implements Interceptor {
         if ("setName".equals(inv.getMethod().getName())) {
             inv.setArg(0, "tom");
         }
-//        inv.getTarget().getClass()
         inv.invoke();
     }
 }

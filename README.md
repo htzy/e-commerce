@@ -35,7 +35,7 @@
             - <component_name>-privilege     // 
             - <component_name>-module        // 下面放模块，如ui、service、dao、entity等
     - <product_name>.common          // 放常用工具包（可以增加线程池的工具包，但线程池的主体是归为public）
-    - <product_name>.public          // 放公共内容，如线程池、配置文件等
+    - <product_name>.public          // 放公共内容，如线程池、全局配置文件管理（而非配置文件工具类）及需要提前部署的内容
 
 
 # 工具说明
