@@ -1,8 +1,8 @@
 package com.huangshihe.ecommerce.llt.pub;
 
+import com.huangshihe.ecommerce.common.factory.ServicesFactory;
 import com.huangshihe.ecommerce.common.kits.XmlKit;
 import com.huangshihe.ecommerce.llt.pub.threadpool.SimpleService1;
-import com.huangshihe.ecommerce.pub.factory.ServicesFactory;
 import com.huangshihe.ecommerce.pub.config.ConfigEntity;
 import com.huangshihe.ecommerce.pub.config.threadpool.ThreadPoolManager;
 import cucumber.api.java.en.And;
@@ -53,6 +53,7 @@ public class ThreadPoolTest {
         // 获取加强对象，服务使用工厂方式获取实例，首先到manager中找，如果没有的话，再创建实例，不要直接显式的创建实例
         SimpleService1 service = ServicesFactory.getInstance().getServiceObject(SimpleService1.class);
         service.drawLine();
+        service.toString();
     }
 
     @Then("^任务运行在线程池中$")

@@ -1,6 +1,5 @@
 package com.huangshihe.ecommerce.common.aop;
 
-import com.huangshihe.ecommerce.common.kits.AopKit;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
@@ -16,14 +15,12 @@ import java.util.Set;
  * @author huangshihe
  */
 public class Callback implements MethodInterceptor {
-    private Object injectTarget = null;
-    private final Interceptor[] injectInters;
 
     private static final Set<String> excludedMethodName = buildExcludedMethodName();
 
-    public Callback(Interceptor... injectInters) {
-        AopKit.checkInjectInterceptors(injectInters);
-        this.injectInters = injectInters;
+    private static final InterceptorManager _interMan = InterceptorManager.getInstance();
+
+    public Callback() {
     }
 
     /**
@@ -38,15 +35,16 @@ public class Callback implements MethodInterceptor {
      */
     @Override
     public Object intercept(Object target, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+
         // 若拦截的是Class自带的方法，则需要按下方法特殊处理
         if (excludedMethodName.contains(method.getName())) {
-            if (this.injectTarget == null || method.getName().equals("finalize")) {
-                return methodProxy.invokeSuper(target, args);
-            } else {
-                return methodProxy.invoke(this.injectTarget, args);
-            }
+            return methodProxy.invokeSuper(target, args);
+//            if (method.getName().equals("finalize")) {
+//                return methodProxy.invokeSuper(target, args);
+//            }
         }
-        Invocation invocation = new Invocation(target, method, args, methodProxy, injectInters);
+        // 拦截方法与拦截器对象对应管理存储在interceptorManager中，具体拦截器对象需要实时查询
+        Invocation invocation = new Invocation(target, method, args, methodProxy, _interMan.query(method));
         invocation.invoke();
         // 若需要返回自定义return value，需要自定义：MethodInterceptor方法，示例：com.jfinal.aop.Callback
         // 被拦截后的方法的执行结果，若原方法为void，则这里返回null

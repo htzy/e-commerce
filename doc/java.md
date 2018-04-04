@@ -202,7 +202,12 @@ class Foo {
 [Jackson Annotation Examples](http://www.baeldung.com/jackson-annotations)  
 [More Jackson Annotations](http://www.baeldung.com/jackson-advanced-annotations)  
 [Java笔试面试题整理第六波（修正版）](http://blog.csdn.net/shakespeare001/article/details/51330745)  
-
 [java中基于线程池和反射机制实现定时任务](http://blog.csdn.net/5iasp/article/details/10949925)  
 [用 Java 实现拦截器 Interceptor 的拦截功能](http://blog.csdn.net/qq_35246620/article/details/68484407)  
 [debug模式下发现toString()抛NullPointerException](http://blog.csdn.net/lzjansing/article/details/50319817)  
+[CGLIB(Code Generation Library)详解](http://blog.csdn.net/danchu/article/details/70238002)  
+[Java 的方法签名与字段类型表示-\[Ljava.lang.String;](https://unmi.cc/java-signatures-data-types/)  
+[ScheduleExecutorService定时周期执行指定的任务](https://www.jianshu.com/p/4fe0b09fdbfc)  
+[CGLIB动态代理介绍](http://ifeve.com/cglib-desc/)  
+
+

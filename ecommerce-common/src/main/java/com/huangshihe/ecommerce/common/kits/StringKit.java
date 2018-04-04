@@ -63,6 +63,24 @@ public final class StringKit {
     }
 
     /**
+     * 是否都不为空.
+     *
+     * @param params 参数
+     * @return 是否都不为空
+     */
+    public static boolean isAllNotEmpty(String... params) {
+        if (params == null) {
+            return true;
+        }
+        for (String param : params) {
+            if (isEmpty(param)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 字符串转数字.
      *
      * @param param        字符串

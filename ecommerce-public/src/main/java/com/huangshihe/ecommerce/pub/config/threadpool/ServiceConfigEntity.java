@@ -33,6 +33,8 @@ public class ServiceConfigEntity {
         return threadPoolEntity;
     }
 
+    // 多种类型用枚举 TODO
+
     public void setThreadPoolEntity(ThreadPoolEntity threadPoolEntity) {
         this.threadPoolEntity = threadPoolEntity;
     }

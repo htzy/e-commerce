@@ -1,5 +1,7 @@
 package com.huangshihe.ecommerce.pub.config.threadpool;
 
+import com.huangshihe.ecommerce.common.kits.StringKit;
+
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
@@ -31,5 +33,12 @@ public class TaskEntity {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public String getTaskName() {
+        if (StringKit.isContainEmpty(className, methodName)) {
+            throw new IllegalArgumentException("error className or methodName");
+        }
+        return className + methodName;
     }
 }

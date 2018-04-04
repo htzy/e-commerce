@@ -1,10 +1,16 @@
 package com.huangshihe.ecommerce.pub.config.threadpool;
 
 import com.huangshihe.ecommerce.common.aop.Enhancer;
+import com.huangshihe.ecommerce.common.factory.ServicesFactory;
 import com.huangshihe.ecommerce.common.kits.AopKit;
+import com.huangshihe.ecommerce.pub.config.Config;
 import com.huangshihe.ecommerce.pub.config.ConfigEntity;
+import com.huangshihe.ecommerce.pub.config.ConfigManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -13,30 +19,52 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 线程池管理类.
+ * 拿到所有的配置文件实体对象，对
  * <p>
  * Create Date: 2018-03-17 23:01
  *
  * @author huangshihe
  */
+@SuppressWarnings("unchecked")
 public class ThreadPoolManager {
-    private static ThreadPoolManager instance = new ThreadPoolManager();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolManager.class);
+
+    private static ThreadPoolManager _instance = new ThreadPoolManager();
 
     private ThreadPoolManager() {
-
+        init();
     }
 
     public static ThreadPoolManager getInstance() {
-        return instance;
+        return _instance;
     }
 
-    // 存放线程池执行对象
-    private Map<String, ThreadPoolExecutor> executorMap = new ConcurrentHashMap<String, ThreadPoolExecutor>();
 
-    // 存放增强对象
-    private Map<Class<?>, Object> enhancedObjectMap = new ConcurrentHashMap<Class<?>, Object>();
+    private final ServicesFactory _serviceFactory = ServicesFactory.getInstance();
 
-    // 存放线程池执行对象和增强对象的关系，以增强对象类作为key，线程池执行对象name作为value
-    private Map<Class<?>, String> relationMap = new HashMap<Class<?>, String>();
+    // 存放线程池执行对象 key: 线程池执行名; value：线程池执行对象
+    private Map<String, ThreadPoolExecutor> _executorMap = new ConcurrentHashMap<String, ThreadPoolExecutor>();
+
+    // 存放方法标识符，key：方法标识符；value：线程池执行名
+    private Map<String, String> _methodIdentityMap = new ConcurrentHashMap<String, String>();
+
+    // 存放增强对象 key:Class; value: 被增强对象
+    // 解决如果同一个 "被增强类cls" 有多个 "已增强对象object" 如何处理？
+//    private Map<Class<?>, Object> enhancedObjectMap = new ConcurrentHashMap<Class<?>, Object>();
+
+    // 存放线程池执行对象和增强对象的关系，以增强对象类名为key，线程池执行对象name作为value
+//    private Map<Class<?>, String> relationMap = new HashMap<Class<?>, String>();
+
+    /**
+     * 初始化，获取threadPool的配置文件，并依此创建线程池
+     */
+    private void init() {
+        LOGGER.info("init ThreadPoolManager begin...");
+        List<Config> configs = ConfigManager.getInstance().getThreadPoolConfig();
+        configs.stream().map(Config::getConfigEntity).forEach(this::createPools);
+        LOGGER.info("init ThreadPoolManager end...");
+    }
 
     /**
      * 创建线程池.
@@ -44,100 +72,86 @@ public class ThreadPoolManager {
      * @param configEntity 配置实体
      */
     public void createPools(ConfigEntity configEntity) {
+        if (configEntity == null) {
+            return;
+        }
         for (ServiceConfigEntity serviceConfig : configEntity.getServiceConfigEntities()) {
+            LOGGER.info("begin create pool, serviceConfigEntity:{}", serviceConfig.getIdentity());
             // 新建线程池
             ThreadPoolEntity pool = serviceConfig.getThreadPoolEntity();
+            LOGGER.debug("pool:{}", pool);
             ThreadPoolExecutor executor = new ThreadPoolExecutor(pool.getPoolSize(), pool.getMaxPoolSize(),
                     pool.getKeepAliveTime(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+            LOGGER.debug("executor:{}", executor);
             for (TaskEntity task : serviceConfig.getTaskEntities()) {
                 Class classType = null;
+                Method method = null;
                 try {
                     classType = Class.forName(task.getClassName());
-                    // TODO 这里先不管是哪个方法，统一拦截所有方法
-                    Object object = Enhancer.enhance(classType, ThreadTaskInterceptor.class);
-                    add(classType, object, serviceConfig.getIdentity(), executor);
+                    method = classType.getMethod(task.getMethodName());
 
+                    // 根据class，从ServiceFactory中获取对象，若为空，则新建一个增强对象
+                    // 如果存在，则判断是否为增强对象，如果不是，则替换为增强对象；如果是增强对象，则根据新方法增强原有对象
+                    Object object = _serviceFactory.getServiceObject(classType);
+                    if (object == null) {
+                        object = Enhancer.enhance(classType, method, ThreadTaskInterceptor.class);
+                    } else {
+                        object = Enhancer.enhance(object, method, ThreadTaskInterceptor.class);
+                    }
+                    _serviceFactory.addServiceObject(classType, object);
+
+                    addToMap(classType, method, serviceConfig.getIdentity(), executor);
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    LOGGER.error("class not found! detail:{}", e);
+                    throw new IllegalArgumentException("class not found!");
+                } catch (NoSuchMethodException e) {
+                    LOGGER.error("no such method! detail:{}", e);
+                    throw new IllegalArgumentException("no such method!");
                 }
             }
-
+            LOGGER.info("end create pool, serviceConfigEntity:{}", serviceConfig.getIdentity());
         }
     }
 
-
-    public Map<String, ThreadPoolExecutor> getExecutorMap() {
-        return executorMap;
+    private void addToMap(Class<?> cls, Method method, String executorIdentity, ThreadPoolExecutor executor) {
+        LOGGER.debug("add to map, cls:{}, method:{}, executorIdentity:{}, executor:{}",
+                cls, method, executorIdentity, executor);
+        String methodIdentity = AopKit.getMethodIdentity(cls, method);
+        LOGGER.debug("methodIdentity:{}", methodIdentity);
+        addToMap(methodIdentity, executorIdentity, executor);
     }
 
-    public Map<Class<?>, Object> getEnhancedObjectMap() {
-        return enhancedObjectMap;
-    }
-
-    @Deprecated
-    public void add(Class<?> cls, Object object) {
-        enhancedObjectMap.putIfAbsent(cls, object);
-    }
-
-    @Deprecated
-    public void add(String executorName, ThreadPoolExecutor executor) {
-        executorMap.putIfAbsent(executorName, executor);
-    }
-
-    /**
-     * 增加线程.
-     *
-     * @param cls          被增强类
-     * @param object       已增强对象
-     * @param executorName 线程对象名
-     * @param executor     线程执行对象
-     */
-    public void add(Class<?> cls, Object object, String executorName, ThreadPoolExecutor executor) {
-        enhancedObjectMap.putIfAbsent(cls, object);
-        executorMap.putIfAbsent(executorName, executor);
-        relationMap.putIfAbsent(cls, executorName);
-    }
-
-    /**
-     * 根据原类获取已增强对象.
-     *
-     * @param cls 被增强类
-     * @return 已增强对象
-     */
-    public Object getEnhancedObject(Class<?> cls) {
-        return enhancedObjectMap.get(cls);
+    private void addToMap(String methodIdentity, String executorIdentity, ThreadPoolExecutor executor) {
+        LOGGER.debug("add to map, methodIdentity:{}, executorIdentity:{}, executor:{}",
+                methodIdentity, executorIdentity, executor);
+        _executorMap.putIfAbsent(executorIdentity, executor);
+        _methodIdentityMap.putIfAbsent(methodIdentity, executorIdentity);
     }
 
     /**
      * 根据原类获取属于该类的线程池执行对象（即该线程池中运行该类的任务）.
      *
      * @param cls 被增强类
-     * @return 线程吃执行对象
+     * @return 线程池执行对象
      */
-    public ThreadPoolExecutor getExecutor(Class<?> cls) {
-
-        // 首先到关系中根据class找到对应的池子名字, TODO executorName修改为poolServiceName？identity
-        String executorName;
-
+    public ThreadPoolExecutor getExecutor(Class<?> cls, Method method) {
+        // 这里可以不用检查是否为null，如果任意一个为null，最后也将返回null
         // 如果是增强类，则应获取增强类的父类才是原始的业务类
-        if (cls.getName().contains(AopKit.ENHANCED_TAG)) {
-            executorName = relationMap.get(cls.getSuperclass());
-        } else {
-            executorName = relationMap.get(cls);
-        }
-
-        // 然后根据池子名字找到对应的executor
-        return executorMap.get(executorName);
+        String methodIdentity = AopKit.getMethodIdentity(cls, method);
+        // 首先根据方法标识符找到对应的池子标识符
+        String executorIdentity = _methodIdentityMap.get(methodIdentity);
+        // 再根据池子标识符找到对应的池子
+        return getExecutor(executorIdentity);
     }
 
     /**
      * 根据线程执行对象名获取线程执行对象.
      *
-     * @param executorName 线程执行对象名
+     * @param executorIdentity 线程执行对象名
      * @return 线程执行对象
      */
-    public ThreadPoolExecutor getExecutor(String executorName) {
-        return executorMap.get(executorName);
+    public ThreadPoolExecutor getExecutor(String executorIdentity) {
+        return _executorMap.get(executorIdentity);
     }
 
 }

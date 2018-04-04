@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
+import java.io.Reader;
 
 /**
  * xml工具类.
@@ -35,6 +36,17 @@ public class XmlKit {
             return (T) unmarshaller.unmarshal(inputStream);
         } catch (JAXBException e) {
             LOGGER.error("参数错误？cls:{}, inputStream:{}", cls, inputStream);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static <T> T toEntity(Class<T> cls, Reader reader) {
+        try {
+            JAXBContext configContext = JAXBContext.newInstance(cls);
+            Unmarshaller unmarshaller = configContext.createUnmarshaller();
+            return (T) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            LOGGER.error("参数错误？cls:{}, reader:{}", cls, reader);
             throw new IllegalArgumentException(e);
         }
     }

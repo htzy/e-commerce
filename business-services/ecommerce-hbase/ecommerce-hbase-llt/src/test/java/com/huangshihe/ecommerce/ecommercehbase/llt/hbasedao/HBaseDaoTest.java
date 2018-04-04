@@ -1,9 +1,9 @@
 package com.huangshihe.ecommerce.ecommercehbase.llt.hbasedao;
 
-import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
-import com.huangshihe.ecommerce.ecommercehbase.dao.IHBaseDao;
-import com.huangshihe.ecommerce.ecommercehbase.filter.PrefixFuzzyAndTimeFilter;
-import com.huangshihe.ecommerce.ecommercehbase.util.DebugUtil;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.HBaseDaoImpl;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.IHBaseDao;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.filter.PrefixFuzzyAndTimeFilter;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.util.DebugUtil;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -271,8 +271,7 @@ public class HBaseDaoTest {
 
     @When("^前缀模糊和时间范围查询数据$")
     public void 前缀模糊和时间范围查询数据() throws Throwable {
-        // char占2个字节，而String.length为char的个数，TODO 理解有误？？byte长度还是为1
-//        int len = prefix.length() * 2;
+        // TODO 这里如果是中文的话，则len为1，但是存储在HBase中的长度为3，但是一般rowkey中也不会放中文吧！
         int len = prefix.length();
         LOGGER.debug("prefix:{}, start:{}, stop:{}", len, startTime, stopTime);
         Filter filter = new PrefixFuzzyAndTimeFilter(len, startTime, stopTime);
