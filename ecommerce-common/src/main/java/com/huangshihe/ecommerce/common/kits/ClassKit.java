@@ -14,6 +14,7 @@ import java.util.Arrays;
 public class ClassKit {
     /**
      * 获取类的作用域为public的所有方法，不包括继承的方法.
+     * TODO cls为原业务类和增强后的类，返回的方法是否一致？待测试
      *
      * @param cls 类
      * @return 方法
@@ -29,8 +30,7 @@ public class ClassKit {
 
 
     /**
-     * 获取方法标识符：类名+方法名.
-     * TODO 这种方法不可取，没有考虑到方法的重载！
+     * 获取方法标识符：类名+方法名+方法参数类型
      *
      * @param cls    类
      * @param method 方法
@@ -41,26 +41,7 @@ public class ClassKit {
             return null;
         }
         if (StringKit.isAllNotEmpty(cls.getName(), method.getName())) {
-            return cls.getName() + method.getName();
-        }
-        return null;
-    }
-
-    /**
-     * 获取方法标识符：类名+方法名.
-     * <p>
-     * TODO 这种方法不可取，没有考虑到方法的重载！
-     *
-     * @param cls    类
-     * @param method 方法
-     * @return 方法标识符
-     */
-    public static String getMethodIdentity(Class<?> cls, String method) {
-        if (cls == null) {
-            return null;
-        }
-        if (StringKit.isAllNotEmpty(cls.getName(), method)) {
-            return cls.getName() + method;
+            return cls.getName() + method.getName() + Arrays.toString(method.getParameterTypes());
         }
         return null;
     }

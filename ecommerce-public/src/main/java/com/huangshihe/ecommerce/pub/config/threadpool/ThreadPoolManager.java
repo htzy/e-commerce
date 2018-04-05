@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 线程池管理类.
- * 拿到所有的配置文件实体对象，对
+ * 拿到所有的配置文件实体对象进行初始化线程池.
  * <p>
  * Create Date: 2018-03-17 23:01
  *
@@ -40,7 +41,6 @@ public class ThreadPoolManager {
         return _instance;
     }
 
-
     private final ServicesFactory _serviceFactory = ServicesFactory.getInstance();
 
     // 存放线程池执行对象 key: 线程池执行名; value：线程池执行对象
@@ -48,13 +48,6 @@ public class ThreadPoolManager {
 
     // 存放方法标识符，key：方法标识符；value：线程池执行名
     private Map<String, String> _methodIdentityMap = new ConcurrentHashMap<String, String>();
-
-    // 存放增强对象 key:Class; value: 被增强对象
-    // 解决如果同一个 "被增强类cls" 有多个 "已增强对象object" 如何处理？
-//    private Map<Class<?>, Object> enhancedObjectMap = new ConcurrentHashMap<Class<?>, Object>();
-
-    // 存放线程池执行对象和增强对象的关系，以增强对象类名为key，线程池执行对象name作为value
-//    private Map<Class<?>, String> relationMap = new HashMap<Class<?>, String>();
 
     /**
      * 初始化，获取threadPool的配置文件，并依此创建线程池
@@ -81,7 +74,9 @@ public class ThreadPoolManager {
             ThreadPoolEntity pool = serviceConfig.getThreadPoolEntity();
             LOGGER.debug("pool:{}", pool);
             ThreadPoolExecutor executor = new ThreadPoolExecutor(pool.getPoolSize(), pool.getMaxPoolSize(),
-                    pool.getKeepAliveTime(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+                    pool.getKeepAliveTime(), TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>(), new ServiceThreadFactory(serviceConfig.getIdentity()));
+
             LOGGER.debug("executor:{}", executor);
             for (TaskEntity task : serviceConfig.getTaskEntities()) {
                 Class classType = null;

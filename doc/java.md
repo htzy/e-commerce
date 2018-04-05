@@ -209,5 +209,5 @@ class Foo {
 [Java 的方法签名与字段类型表示-\[Ljava.lang.String;](https://unmi.cc/java-signatures-data-types/)  
 [ScheduleExecutorService定时周期执行指定的任务](https://www.jianshu.com/p/4fe0b09fdbfc)  
 [CGLIB动态代理介绍](http://ifeve.com/cglib-desc/)  
-
-
+[详细介绍Java虚拟机（JVM）](https://www.cnblogs.com/IUbanana/p/7067362.html)  
+[JVM内幕：Java虚拟机详解](https://www.cnblogs.com/aishangJava/p/7357867.html)  

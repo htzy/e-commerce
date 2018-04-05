@@ -72,24 +72,13 @@ public class AopKit {
     }
 
     /**
-     * 获取方法标识符：类名+方法名.
+     * 获取方法标识符：类名+方法名+方法参数类型.
      *
      * @param cls    类
      * @param method 方法
      * @return 方法标识符
      */
     public static String getMethodIdentity(Class<?> cls, Method method) {
-        return ClassKit.getMethodIdentity(getTargetClass(cls), method);
-    }
-
-    /**
-     * 获取方法标识符：类名+方法名.
-     *
-     * @param cls    类
-     * @param method 方法
-     * @return 方法标识符
-     */
-    public static String getMethodIdentity(Class<?> cls, String method) {
         return ClassKit.getMethodIdentity(getTargetClass(cls), method);
     }
 

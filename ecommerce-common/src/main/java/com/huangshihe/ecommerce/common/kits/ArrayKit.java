@@ -1,12 +1,9 @@
 package com.huangshihe.ecommerce.common.kits;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -18,6 +15,18 @@ import java.util.Set;
  */
 @SuppressWarnings("unchecked")
 public class ArrayKit {
+
+
+    /**
+     * 合并数组，并去重.
+     * eg: ArrayKit.mergeWithNoSame(result, new Interceptor[]{interceptor});
+     * eg: ArrayKit.mergeWithNoSame(arr1, arr2);
+     *
+     * @param arr1 arr1
+     * @param arr2 arr2
+     * @param <T>  类类型
+     * @return 合并后的数组
+     */
     public static <T> T[] mergeWithNoSame(T[] arr1, T[] arr2) {
         if (arr1 == null) {
             return clone(arr2);
@@ -25,72 +34,59 @@ public class ArrayKit {
             return clone(arr1);
         }
         // 去重
-        Set<T> set = new HashSet<T>();
+        Set<T> set = new HashSet<T>(arr1.length + arr2.length);
         Collections.addAll(set, arr1);
         Collections.addAll(set, arr2);
-//        return (T[]) set.toArray();
-        T[] result = (T[]) Array.newInstance(arr1.getClass().getComponentType(), set.size());
-        int i = 0;
-        for (T item : set) {
-            result[i++] = item;
-        }
-        return result;
+        // 这里不能强转 // return (T[]) set.toArray();
+        return (T[]) Arrays.copyOf(set.toArray(), set.size(), arr1.getClass());
+//        T[] result = (T[]) Array.newInstance(arr1.getClass().getComponentType(), set.size());
+//        System.arraycopy(set.toArray(), 0, result, 0, set.size());
     }
 
-//    public static Object[] mergeWithNoSame(Object[] arr1, Object[] arr2) {
-//        if (arr1 == null) {
-//            return clone(arr2);
-//        } else if (arr2 == null) {
-//            return clone(arr1);
-//        }
-//        ArrayList<Object> list = new ArrayList<Object>(arr1.length + arr2.length);
-//        HashSet<Object> set = new HashSet<>(list);
-//        return set.toArray();
-//    }
-
-
-    public static Object[] addWithNoSame(Object[] arr, Object item) {
+    /**
+     * 追加元素到数组，并去重.
+     * eg: ArrayKit.addWithNoSame(result, interceptor, Interceptor[].class);
+     * eg: ArrayKit.addWithNoSame(result, interceptor, result.getClass()); // 但这种方法一定要确保result不为null
+     *
+     * @param arr  数组
+     * @param item 元素
+     * @param type 数组类型
+     * @param <T>  类类型
+     * @return 数组
+     */
+    public static <T> T[] addWithNoSame(T[] arr, T item, Class<? extends T[]> type) {
         if (arr == null) {
-
-//            return toArray(item);
+            return toArray(item, type);
         } else if (item == null) {
             return clone(arr);
         }
-//        Set<T> set
-
-//        boolean same = false;
-//        for (T i : arr) {
-//            if (i == item) {
-//                same = true;
-//                break;
-//            }
-//        }
-//
-//        // 如果有相同的
-//        if (same) {
-//            return clone(arr);
-//        } else {
-//            T[] result = Arrays.copyOf(arr, arr.length + 1);
-//            result[arr.length] = item;
-//            return result;
-//        }
-        return null;
+        // 去重
+        Set<T> set = new HashSet<T>(arr.length + 1);
+        Collections.addAll(set, arr);
+        set.add(item);
+        return Arrays.copyOf(set.toArray(), set.size(), type);
+//        T[] result = (T[]) Array.newInstance(arr.getClass().getComponentType(), set.size());
+//        System.arraycopy(set.toArray(), 0, result, 0, set.size());
     }
 
-    public static <T> T[] toArray(T item) {
-        if (item == null) {
-            return null;
+    /**
+     * 元素转为数组，当元素为null，则返回长度为0的数组.
+     *
+     * @param item 元素
+     * @param type 元素数组类型
+     * @param <T>  类类型
+     * @return 数组
+     */
+    public static <T> T[] toArray(T item, Class<? extends T[]> type) {
+        if (item != null) {
+            T[] arr = (T[]) Array.newInstance(type.getComponentType(), 1);
+            arr[0] = item;
+            return arr;
+        } else {
+            return (T[]) Array.newInstance(type.getComponentType(), 0);
         }
-        T[] tmp = (T[]) new Object[]{item};
-
-        return (T[]) Array.newInstance(tmp.getClass().getComponentType(), 1);
-//
-//        ArrayList<T> list = new ArrayList<T>();
-//        list.add(item);
-//        list.toArray();
-////        return (T[]) Array.newInstance(T[].class.getComponentType(), 1);
-//        return (T[]) new Object[]{item};
     }
+
 
     /**
      * 数组是否不为空.

@@ -33,23 +33,27 @@ public class ConfigManager {
      * 私有的构造方法.
      */
     private ConfigManager() {
-        // TODO 部署任务也将归至public组件中？部署任务需要解压配置文件
-        // 部署任务任务之一为：将所有的config包下的配置都复制到当前jar包下的resources目录下
-        // 这里需读取所有的配置文件，都在当前jar包下的resources目录下
-
-        List<File> list = FileKit.getAllFiles(Constants.CONFIG_FILE_DIR, Constants.CONFIG_FILE_PATTERN);
-        if (list != null) {
-            for (File file : list) {
-                load(file.getAbsolutePath());
-            }
-        }
-
+        // 使用单例，将加载配置放入构造方法，作为初始化任务，如果没有执行到该ConfigManager，那么将不会执行初始化任务。
+        // 如果主动执行，如果配置文件出现问题？获取失败了，如何重新加载处理？如果配置文件过多，而只有启动前期使用过，但长期占用内存，却无法释放？
+        // 归放到Main包中
     }
 
     private static ConfigManager _configManager = new ConfigManager();
 
     public static ConfigManager getInstance() {
         return _configManager;
+    }
+
+    /**
+     * 初始化.
+     */
+    public void init() {
+        List<File> list = FileKit.getAllFiles(Constants.CONFIG_FILE_DIR, Constants.CONFIG_FILE_PATTERN);
+        if (list != null) {
+            for (File file : list) {
+                load(file.getAbsolutePath());
+            }
+        }
     }
 
     /**
@@ -80,17 +84,6 @@ public class ConfigManager {
         LOGGER.info("loaded config, filename:{}", fileName);
         return result;
     }
-
-
-    // 一启动时，即加载所有的配置文件。
-    // 这里不使用单例模式的原因是：使用单例模式还需要被动调用执行，而加载配置是必须的，因此不如直接让它自己主动执行。
-    // TODO 如果主动执行，如果配置文件出现问题？获取失败了，如何重新加载处理？如果配置文件过多，而只有启动前期使用过，但长期占用内存，却无法释放？
-//    static {
-//        LOGGER.info("load basic.properties begin...");
-//        load(Constants.BASIC_CONFIG);
-//        LOGGER.info("load basic.properties end...");
-//    }
-
 
     /**
      * 根据文件名获取配置类.

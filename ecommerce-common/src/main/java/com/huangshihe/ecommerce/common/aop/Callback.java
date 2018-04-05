@@ -44,7 +44,7 @@ public class Callback implements MethodInterceptor {
 //            }
         }
         // 拦截方法与拦截器对象对应管理存储在interceptorManager中，具体拦截器对象需要实时查询
-        Invocation invocation = new Invocation(target, method, args, methodProxy, _interMan.query(method));
+        Invocation invocation = new Invocation(target, method, args, methodProxy, _interMan.queryMethodInters(method));
         invocation.invoke();
         // 若需要返回自定义return value，需要自定义：MethodInterceptor方法，示例：com.jfinal.aop.Callback
         // 被拦截后的方法的执行结果，若原方法为void，则这里返回null
