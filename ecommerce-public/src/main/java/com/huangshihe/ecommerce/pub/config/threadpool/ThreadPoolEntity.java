@@ -13,12 +13,24 @@ import java.io.Serializable;
 //@XmlRootElement(name = "threadPool")
 public class ThreadPoolEntity implements Serializable {
 
+    /**
+     * 核心线程数.
+     */
     private Integer poolSize;
 
+    /**
+     * 最大线程数.
+     */
     private Integer maxPoolSize;
 
+    /**
+     * 队列大小.
+     */
     private Integer queueSize;
 
+    /**
+     * 除核心线程数之外的空闲线程存活时间，单位毫秒.
+     */
     private long keepAliveTime;
 
 //    private Integer priority;

@@ -1,5 +1,6 @@
 package com.huangshihe.ecommerce.pub.config.threadpool;
 
+import com.huangshihe.ecommerce.common.kits.ClassKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,6 @@ public class ThreadTask implements Runnable {
 
     /**
      * 日志.
-     * TODO 日志中的线程名显示：pool-1-thread-1 修改改为服务名+线程名
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadTask.class);
 
@@ -26,6 +26,10 @@ public class ThreadTask implements Runnable {
      */
     private TaskEntity taskEntity;
 
+    private Class<?> classType;
+
+    private Method method;
+
     /**
      * 构造方法.
      *
@@ -33,8 +37,26 @@ public class ThreadTask implements Runnable {
      */
     public ThreadTask(TaskEntity taskEntity) {
         this.taskEntity = taskEntity;
+
+        try {
+            classType = Class.forName(taskEntity.getClassName());
+            method = classType.getMethod(taskEntity.getMethodName());
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("class {} not found, {}", taskEntity.getClassName(), e);
+        } catch (NoSuchMethodException e) {
+            LOGGER.error("method {} not found, {}", taskEntity.getMethodName(), e);
+        }
     }
 
+
+    /**
+     * 返回方法标识符.
+     *
+     * @return 方法标识符
+     */
+    public String getMethodIdentity() {
+        return ClassKit.getMethodIdentity(classType, method);
+    }
 
     /**
      * When an object implementing interface <code>Runnable</code> is used
@@ -50,18 +72,18 @@ public class ThreadTask implements Runnable {
     @Override
     public void run() {
         try {
-            Class<?> classType = Class.forName(taskEntity.getClassName());
-            Method method = classType.getMethod(taskEntity.getMethodName());
+            // 这里是只能执行静态方法，否则将无法执行
             method.invoke(classType);
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("class {} not found, {}", taskEntity.getClassName(), e);
-        } catch (NoSuchMethodException e) {
-            LOGGER.error("method {} not found, {}", taskEntity.getMethodName(), e);
         } catch (IllegalAccessException e) {
             LOGGER.error("method {} in class {} , illegal access, {}",
                     taskEntity.getMethodName(), taskEntity.getClassName(), e);
         } catch (InvocationTargetException e) {
-            LOGGER.error("method {} in class {} invocation target error, e",
+            LOGGER.error("method {} in class {} invocation target error, detail:{}",
+                    taskEntity.getMethodName(), taskEntity.getClassName(), e);
+        } catch (IllegalArgumentException e) {
+            // 这里是只能执行静态方法，否则这里将报错
+            // java.lang.IllegalArgumentException: object is not an instance of declaring class
+            LOGGER.error("method {} in class {} unknown target error, detail:{}",
                     taskEntity.getMethodName(), taskEntity.getClassName(), e);
         }
     }

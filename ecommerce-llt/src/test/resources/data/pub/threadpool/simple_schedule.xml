@@ -2,10 +2,9 @@
     <serviceConfigs>
         <serviceConfig>
             <service namespace="ecommerce" name="demo_schedule" description="demo schedule on ecommerce"/>
-            <scheduledThreadPool poolSize="1" maxPoolSize="1"></scheduledThreadPool>
-            <threadPool poolSize="1" maxPoolSize="1" queueSize="20" keepAliveTime="200"/>
+            <scheduledThreadPool poolSize="1" beginTime="now()" period="1000"/>
             <tasks>
-                <task class="com.huangshihe.ecommerce.llt.pub.threadpool.SimpleService1" method="drawLine"/>
+                <task class="com.huangshihe.ecommerce.llt.pub.threadpool.SimpleService1" method="increaseCount"/>
             </tasks>
         </serviceConfig>
     </serviceConfigs>

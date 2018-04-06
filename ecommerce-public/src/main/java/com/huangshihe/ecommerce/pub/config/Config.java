@@ -8,20 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Properties;
 
 /**
  * 配置类.
- * TODO 读取配置文件，读取xml类型的，同时在common中新建xmlkit工具类，
- * TODO 问题：因为配置文件太多类了，如何抽象？或者是否需要抽象？如线程池的有配置文件，spark的有配置文件，用一个共同的格式显示也不合适
- * TODO 暂时使用抽象一层，其他配置文件继承，抽象的或者使用接口！
- * 1. 如果使用接口，那么对于线程池而言，线程池的配置文件在线程池中，部署时统一归置到某文件夹中，那么继承配置文件的专门处理线程池的java类呢？放哪？
- * 配置文件是否还有必要部署时统一部署到某文件夹中？（必要！部署时统一将配置文件读取到内存中，之后的业务只需要调用即可）
- * 那么问题是：如何将内存中的配置文件转为配置的实体对象？
- * <p>
+ * 1. 对于线程池而言，线程池的配置类在config/threadpool下，部署时统一将配置文件归置到pub的resources下，Main中统一读取配置文件到内存。
  * 2. 可以将配置中的配置项转为实体类，既然是配置，肯定会用到，那么既然会用到，那么肯定要有对应的实体类。
- * <p>
- * TODO 当前要做的是：怎么把配置文件读到内存里，读到内存里之后，如何与配置的实体类关联？因为配置文件有很多，同类型的配置文件可能也有很多，需要打开全部的配置文件
  * <p>
  * 参考：http://blog.csdn.net/melody_wkx/article/details/73205316
  * http://blog.csdn.net/qq_23039605/article/details/71080190

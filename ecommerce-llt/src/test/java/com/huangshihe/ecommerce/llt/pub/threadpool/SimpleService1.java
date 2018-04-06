@@ -12,16 +12,26 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleService1 {
 
+    private static Integer count = 0;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleService1.class);
 
     public void drawLine() {
-        LOGGER.info("{}+{}-----------------------------------------",
+        LOGGER.info("{}++++{}-----------------------------------------",
                 Thread.currentThread().getId(), Thread.currentThread().getName());
+    }
+
+    public static void increaseCount() {
+        count++;
+    }
+
+    public static int getCount() {
+        return count;
     }
 
     @Override
     public String toString() {
-        LOGGER.info("{}+{}-----------------", Thread.currentThread().getId(), Thread.currentThread().getName());
+        LOGGER.info("{}++++{}-----------------", Thread.currentThread().getId(), Thread.currentThread().getName());
         return "SimpleService1{}";
     }
 }

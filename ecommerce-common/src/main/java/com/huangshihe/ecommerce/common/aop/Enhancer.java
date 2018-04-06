@@ -61,6 +61,7 @@ public class Enhancer {
      */
     public static <T> T enhance(Class<T> targetClass, Class<? extends Interceptor> injectInterClass) {
         _interMan.createMethodInterceptor(targetClass, injectInterClass);
+        // 在Callback中动态查询方法的拦截器
         return (T) net.sf.cglib.proxy.Enhancer.create(targetClass, new Callback());
     }
 

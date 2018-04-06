@@ -19,6 +19,8 @@ public class ServiceConfigEntity {
 
     private List<TaskEntity> taskEntities;
 
+    private ScheduledThreadPoolEntity scheduledThreadPoolEntity;
+
     @XmlElement(name = "service", required = true)
     public ServiceEntity getServiceEntity() {
         return serviceEntity;
@@ -33,10 +35,17 @@ public class ServiceConfigEntity {
         return threadPoolEntity;
     }
 
-    // 多种类型用枚举 TODO
-
     public void setThreadPoolEntity(ThreadPoolEntity threadPoolEntity) {
         this.threadPoolEntity = threadPoolEntity;
+    }
+
+    @XmlElement(name = "scheduledThreadPool")
+    public ScheduledThreadPoolEntity getScheduledThreadPoolEntity() {
+        return scheduledThreadPoolEntity;
+    }
+
+    public void setScheduledThreadPoolEntity(ScheduledThreadPoolEntity scheduledThreadPoolEntity) {
+        this.scheduledThreadPoolEntity = scheduledThreadPoolEntity;
     }
 
     @XmlElementWrapper(name = "tasks")
@@ -59,6 +68,7 @@ public class ServiceConfigEntity {
                 "serviceEntity=" + serviceEntity +
                 ", threadPoolEntity=" + threadPoolEntity +
                 ", taskEntities=" + taskEntities +
+                ", scheduledThreadPoolEntity=" + scheduledThreadPoolEntity +
                 '}';
     }
 }

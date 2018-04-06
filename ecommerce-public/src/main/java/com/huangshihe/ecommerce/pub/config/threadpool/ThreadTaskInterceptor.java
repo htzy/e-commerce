@@ -24,7 +24,7 @@ public class ThreadTaskInterceptor implements Interceptor {
         // inv.getTarget().getClass() 为增强类，即原业务类的子类
         // 获取线程池执行对象
         ThreadPoolExecutor executor = ThreadPoolManager.getInstance()
-                .getExecutor(inv.getTarget().getClass(), inv.getMethod());
+                .getThreadPoolExecutor(inv.getTarget().getClass(), inv.getMethod());
         if (executor != null) {
             try {
                 // 提交到线程池中执行
