@@ -4,3 +4,8 @@ out/
 build/
 *.jar
 *.class
+target/
+*.log
+logs/
+.DS_Store
+classes/

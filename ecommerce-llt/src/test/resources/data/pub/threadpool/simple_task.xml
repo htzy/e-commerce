@@ -1,0 +1,11 @@
+<config>
+    <serviceConfigs>
+        <serviceConfig>
+            <service namespace="ecommerce" name="demo_service" description="demo service on ecommerce"/>
+            <threadPool poolSize="1" maxPoolSize="1" queueSize="20" keepAliveTime="200"/>
+            <tasks>
+                <task class="com.huangshihe.ecommerce.llt.pub.threadpool.SimpleService1" method="drawLine"/>
+            </tasks>
+        </serviceConfig>
+    </serviceConfigs>
+</config>
