@@ -1,9 +1,8 @@
-package com.huangshihe.ecommerce.ecommercehbase.dao;
+package com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ public interface IHBaseDao {
      *
      * @param tableNameStr 表名
      * @param familyNames  列族名
-     * @param ttl          老化时间
+     * @param ttl          老化时间，单位为秒
      */
     void createTable(String tableNameStr, String[] familyNames, int ttl);
 

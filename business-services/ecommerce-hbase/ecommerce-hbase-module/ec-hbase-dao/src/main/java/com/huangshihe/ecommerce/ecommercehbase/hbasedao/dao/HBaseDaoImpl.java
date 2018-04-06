@@ -1,7 +1,7 @@
-package com.huangshihe.ecommerce.ecommercehbase.dao;
+package com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao;
 
-import com.huangshihe.ecommerce.ecommercehbase.manager.HBaseConnectionManager;
-import com.huangshihe.ecommerce.ecommercehbase.util.HBaseDaoUtil;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.util.HBaseDaoUtil;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -18,7 +18,6 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.IOUtils;

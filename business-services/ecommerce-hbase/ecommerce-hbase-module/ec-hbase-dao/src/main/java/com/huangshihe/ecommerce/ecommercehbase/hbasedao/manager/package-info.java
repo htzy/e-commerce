@@ -5,4 +5,4 @@
  *
  * @author huangshihe
  */
-package com.huangshihe.ecommerce.ecommercehbase.manager;
+package com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager;

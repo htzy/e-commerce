@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author huangshihe
  */
+@Deprecated
 public final class ECConfigurationManager {
 
     /**

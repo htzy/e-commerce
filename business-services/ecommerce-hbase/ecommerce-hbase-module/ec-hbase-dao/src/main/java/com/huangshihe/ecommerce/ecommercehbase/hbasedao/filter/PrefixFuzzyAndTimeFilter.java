@@ -1,8 +1,8 @@
-package com.huangshihe.ecommerce.ecommercehbase.filter;
+package com.huangshihe.ecommerce.ecommercehbase.hbasedao.filter;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.huangshihe.ecommerce.ecommercehbase.proto.PrefixFuzzyAndTimeFilterProto;
-import com.huangshihe.ecommerce.ecommercehbase.util.DebugUtil;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.proto.PrefixFuzzyAndTimeFilterProto;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.util.DebugUtil;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.exceptions.DeserializationException;

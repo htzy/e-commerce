@@ -1,4 +1,4 @@
-package com.huangshihe.ecommerce.ecommercehbase.util;
+package com.huangshihe.ecommerce.ecommercehbase.hbasedao.util;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.client.Result;

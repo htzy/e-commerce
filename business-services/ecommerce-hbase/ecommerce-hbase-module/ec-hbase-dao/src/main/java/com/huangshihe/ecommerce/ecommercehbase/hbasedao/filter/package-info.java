@@ -6,4 +6,4 @@
  *
  * @author huangshihe
  */
-package com.huangshihe.ecommerce.ecommercehbase.filter;
+package com.huangshihe.ecommerce.ecommercehbase.hbasedao.filter;

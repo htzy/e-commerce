@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author huangshihe
  */
+@Deprecated
 public class ECConfiguration {
 
     /**

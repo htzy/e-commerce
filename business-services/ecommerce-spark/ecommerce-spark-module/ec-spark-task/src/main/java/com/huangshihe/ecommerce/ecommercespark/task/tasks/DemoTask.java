@@ -1,6 +1,6 @@
 package com.huangshihe.ecommerce.ecommercespark.task.tasks;
 
-import com.huangshihe.ecommerce.ecommercehbase.manager.HBaseConnectionManager;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager;
 import com.huangshihe.ecommerce.ecommercespark.commonconfig.entity.ECConfiguration;
 import com.huangshihe.ecommerce.ecommercespark.commonconfig.manager.ECConfigurationManager;
 import com.huangshihe.ecommerce.ecommercespark.task.constants.SparkConstants;
@@ -49,6 +49,7 @@ public class DemoTask {
 
     public static void main(String[] args) {
         // 先统一写到main方法里，实现功能再优化代码
+        // TODO 这里的配置，使用common包中的ConfigKit来调用
         ECConfiguration demoConf = ECConfigurationManager.getConfiguration(SparkConstants.DEMO_CONF_FILENAME);
         final String master = demoConf.getProperty(SparkConstants.CONF_SPARK_MASTER);
         LOGGER.info("master:{}", master);

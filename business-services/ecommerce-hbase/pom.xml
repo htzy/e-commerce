@@ -19,6 +19,7 @@
     <modules>
         <module>ecommerce-hbase-module</module>
         <module>ecommerce-hbase-llt</module>
+        <module>ecommerce-hbase-config</module>
     </modules>
 
     <properties>

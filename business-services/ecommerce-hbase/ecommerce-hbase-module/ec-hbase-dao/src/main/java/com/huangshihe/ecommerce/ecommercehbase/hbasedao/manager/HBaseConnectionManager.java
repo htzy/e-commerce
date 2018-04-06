@@ -1,6 +1,6 @@
-package com.huangshihe.ecommerce.ecommercehbase.manager;
+package com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager;
 
-import com.huangshihe.ecommerce.ecommercehbase.dao.HBaseDaoImpl;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.HBaseDaoImpl;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Connection;
