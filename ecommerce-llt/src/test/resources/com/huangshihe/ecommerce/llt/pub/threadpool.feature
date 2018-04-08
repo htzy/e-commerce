@@ -19,6 +19,16 @@ Feature: 线程池
       | xml_file_name   |
       | simple_task.xml |
 
+  Scenario Outline: 线程池解析xml并将方法中的所有方法作为任务提交到线程池中
+    Given 待转换的xml文件名为"<xml_file_name>"
+    When 线程池xml转bean
+    And 新建线程池
+    And 调用有返回值的方法
+    Then 任务运行在线程池中并可以获取正确返回值
+    Examples:
+      | xml_file_name    |
+      | simple_tasks.xml |
+
 
   Scenario Outline: 线程池解析xml并将任务提交到线程池中，定时运行
     Given 待转换的xml文件名为"<xml_file_name>"

@@ -67,7 +67,6 @@ public final class DebugUtil {
 
     /**
      * debug用：打印Result中的信息：1.rowKey；2.families；3.qualifiers；4.values
-     * TODO 移到DebugUtil
      *
      * @param result result
      */
@@ -89,7 +88,6 @@ public final class DebugUtil {
 
     /**
      * debug用：打印多个Result中的信息：1.rowKey；2.families；3.qualifiers；4.values
-     * TODO 移到DebugUtil
      *
      * @param results results
      */

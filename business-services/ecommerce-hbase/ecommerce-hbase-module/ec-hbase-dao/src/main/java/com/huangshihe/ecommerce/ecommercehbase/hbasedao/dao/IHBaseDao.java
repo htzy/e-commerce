@@ -125,6 +125,14 @@ public interface IHBaseDao {
      * @return 是否存在
      */
     boolean isExists(String tableNameStr);
+
+    /**
+     * 检查表是否启动.
+     *
+     * @param tableNameStr 表名
+     * @return 是否启动
+     */
+    boolean isActive(String tableNameStr);
 //
 //    public void deleteByRowKey();
 //

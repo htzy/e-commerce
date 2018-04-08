@@ -1,5 +1,6 @@
 package com.huangshihe.ecommerce.common.aop;
 
+import com.huangshihe.ecommerce.common.kits.ClassKit;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 public class Callback implements MethodInterceptor {
 
-    private static final Set<String> excludedMethodName = buildExcludedMethodName();
+    private static final Set<String> excludedMethodName = ClassKit.buildExcludedMethodName();
 
     private static final InterceptorManager _interMan = InterceptorManager.getInstance();
 
@@ -51,20 +52,4 @@ public class Callback implements MethodInterceptor {
         return invocation.getReturnValue();
     }
 
-    /**
-     * 生成Class自带的所有作用域修饰符修饰的方法（即：private、protected、default、public；不含继承的）
-     *
-     * @return Class自带的所有作用域修饰符修饰的方法集合
-     */
-    private static final Set<String> buildExcludedMethodName() {
-        Set<String> excludedMethodName = new HashSet<String>();
-        Method[] methods = Object.class.getDeclaredMethods();
-        for (Method m : methods) {
-            excludedMethodName.add(m.getName());
-        }
-        // getClass() registerNatives() can not be enhanced
-        // excludedMethodName.remove("getClass");
-        // excludedMethodName.remove("registerNatives");
-        return excludedMethodName;
-    }
 }

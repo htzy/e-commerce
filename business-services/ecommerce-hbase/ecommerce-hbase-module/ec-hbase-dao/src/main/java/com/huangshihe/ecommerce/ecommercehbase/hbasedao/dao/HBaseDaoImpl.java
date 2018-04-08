@@ -399,4 +399,23 @@ public class HBaseDaoImpl implements IHBaseDao {
         return result;
     }
 
+    /**
+     * 检查表是否启动.
+     *
+     * @param tableNameStr 表名
+     * @return 是否启动
+     */
+    @Override
+    public boolean isActive(String tableNameStr) {
+        boolean result = false;
+        try (Admin admin = connection.getAdmin()) {
+//            admin.isTableAvailable(TableName.valueOf(tableNameStr))
+            // 检查表是否启用
+            result = admin.isTableEnabled(TableName.valueOf(tableNameStr));
+        } catch (IOException e) {
+            LOGGER.error("check table active failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+        }
+        return result;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.huangshihe.ecommerce.llt.pub;
 
 import com.huangshihe.ecommerce.common.factory.ServicesFactory;
 import com.huangshihe.ecommerce.common.kits.XmlKit;
+import com.huangshihe.ecommerce.llt.common.Simple;
 import com.huangshihe.ecommerce.llt.pub.threadpool.SimpleService1;
 import com.huangshihe.ecommerce.pub.config.ConfigEntity;
 import com.huangshihe.ecommerce.pub.config.threadpool.ThreadPoolManager;
@@ -28,6 +29,8 @@ public class ThreadPoolTest {
     private static String xmlFileName;
     private static ConfigEntity configEntity;
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolTest.class);
+    private static String resultStr;
+    private static int resultInt;
 
     @Given("^待转换的xml文件名为\"([^\"]*)\"$")
     public void 待转换的xml文件名为(String arg0) throws Throwable {
@@ -90,5 +93,22 @@ public class ThreadPoolTest {
             Thread.sleep(1000);
             Assert.assertTrue(count == SimpleService1.getCount());
         }
+    }
+
+    @And("^调用有返回值的方法$")
+    public void 调用有返回值的方法() throws Throwable {
+        Simple simple = ServicesFactory.getInstance().getServiceObject(Simple.class);
+        simple.setName("hello llt");
+        simple.setId(668);
+
+        resultStr = simple.getName();
+        resultInt = simple.getId();
+        LOGGER.debug("simple toString():: {}", simple.toString());
+    }
+
+    @Then("^任务运行在线程池中并可以获取正确返回值$")
+    public void 任务运行在线程池中并可以获取正确返回值() throws Throwable {
+        Assert.assertEquals(resultStr, "hello llt");
+        Assert.assertTrue(resultInt == 668);
     }
 }

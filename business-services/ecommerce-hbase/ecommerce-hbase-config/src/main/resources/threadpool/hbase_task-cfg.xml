@@ -1,0 +1,12 @@
+<config>
+    <serviceConfigs>
+        <serviceConfig>
+            <service namespace="ecommerce" name="hbase_services" description="hbase service on ecommerce"/>
+            <threadPool poolSize="1" maxPoolSize="5" queueSize="20" keepAliveTime="200"/>
+            <tasks>
+                <!--<task class="com.huangshihe.ecommerce.ecommercehbase.hbaseservice.services.OriginalServiceImpl" method="*"/>-->
+                <!--<task class="com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager" method="*"/>-->
+            </tasks>
+        </serviceConfig>
+    </serviceConfigs>
+</config>

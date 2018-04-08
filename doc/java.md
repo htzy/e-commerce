@@ -184,6 +184,22 @@ class Foo {
 
 ```
 
+# mvn
+```shell
+# 打包，并跳过测试代码
+mvn clean install -Dmaven.test.skip=true
+
+```
+
+# 解压jar
+```shell
+# 以下命令不可用：C只有在创建或者更新jar包时作用才是指定目录 
+# jar xvf *.jar -C 路径
+
+unzip *.jar -d 路径
+
+
+```
 
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
@@ -211,3 +227,10 @@ class Foo {
 [CGLIB动态代理介绍](http://ifeve.com/cglib-desc/)  
 [详细介绍Java虚拟机（JVM）](https://www.cnblogs.com/IUbanana/p/7067362.html)  
 [JVM内幕：Java虚拟机详解](https://www.cnblogs.com/aishangJava/p/7357867.html)  
+[Java基础之实现解压和压缩jar、zip、rar等源码分享](https://blog.yoodb.com/yoodb/article/detail/1319)  
+[一心多用多线程-细谈java线程池submit与execute的区别](https://blog.csdn.net/hayre/article/details/53314599)  
+[java-源码解读-线程池提交之execute和submit有何不同](https://blog.csdn.net/abountwinter/article/details/78123422)  
+[13.ThreadPoolExecutor线程池之submit方法](https://www.cnblogs.com/yulinfeng/p/7039979.html)  
+[Java并发编程：线程池的使用](https://www.cnblogs.com/dolphin0520/p/3932921.html)  
+[聊聊并发（三）Java线程池的分析和使用](http://ifeve.com/java-threadpool/)  
+

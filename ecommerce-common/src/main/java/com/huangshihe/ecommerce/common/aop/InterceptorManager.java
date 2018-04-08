@@ -3,8 +3,11 @@ package com.huangshihe.ecommerce.common.aop;
 import com.huangshihe.ecommerce.common.kits.AopKit;
 import com.huangshihe.ecommerce.common.kits.ArrayKit;
 import com.huangshihe.ecommerce.common.kits.ClassKit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -17,6 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author huangshihe
  */
 public class InterceptorManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InterceptorManager.class);
+
 
     private static InterceptorManager _instance = new InterceptorManager();
 
@@ -193,9 +199,9 @@ public class InterceptorManager {
                 }
             }
             return result;
-            // TODO 细化异常
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IllegalAccessException | InstantiationException e) {
+            LOGGER.error("create interceptorClasses:{} error! detail:{}", Arrays.toString(interceptorClasses), e);
+            throw new IllegalArgumentException("create interceptorClasses error");
         }
     }
 
@@ -216,9 +222,9 @@ public class InterceptorManager {
                 _intersMap.put(interceptorClass, interceptor);
             }
             return interceptor;
-            // TODO 细化异常
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IllegalAccessException | InstantiationException e) {
+            LOGGER.error("create interceptorClass:{} error! detail:{}", interceptorClass, e);
+            throw new IllegalArgumentException("create interceptorClasses error");
         }
     }
 }

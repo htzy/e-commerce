@@ -1,6 +1,8 @@
 package com.huangshihe.ecommerce.pub.config;
 
 import com.huangshihe.ecommerce.common.kits.FileKit;
+import com.huangshihe.ecommerce.common.kits.StringKit;
+import com.huangshihe.ecommerce.pub.constants.ConfigConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +50,7 @@ public class ConfigManager {
      * 初始化.
      */
     public void init() {
-        List<File> list = FileKit.getAllFiles(Constants.CONFIG_FILE_DIR, Constants.CONFIG_FILE_PATTERN);
+        List<File> list = FileKit.getAllFiles(ConfigConstant.CONFIG_FILE_DIR, ConfigConstant.CONFIG_FILE_PATTERN);
         if (list != null) {
             for (File file : list) {
                 load(file.getAbsolutePath());
@@ -71,14 +73,14 @@ public class ConfigManager {
             // 这里需要注意的是"同步"若加在方法上，则造成load成功之后，再次执行load，
             // 则每次都需要进行无用的"同步"，因为配置已存在，不需要再次"同步"新建配置
             // TODO 这里同步可以优化为：锁住一个内部无用的对象，还是锁住整个类？
-            synchronized (ConfigManager.class) {
+            synchronized (this) {
 //                result = map.get(fileName);
 //                if (result == null) {
 //                    result = new ECConfiguration(fileName);
 //                    map.put(fileName, result);
 //                }
                 // 这里仍需检查是否为空，如果为空，则新建
-                result = _map.computeIfAbsent(fileName, key -> new Config(fileName));
+                result = _map.computeIfAbsent(fileName, key -> new Config(fileName, Config.ConfigType.FILETYPE));
             }
         }
         LOGGER.info("loaded config, filename:{}", fileName);
@@ -107,11 +109,14 @@ public class ConfigManager {
      */
     public List<Config> getConfigs(final String dirName) {
         List<Config> list = new ArrayList<Config>();
-        for (Map.Entry<String, Config> item : _map.entrySet()) {
-            if (item.getKey().contains(dirName)) {
-                list.add(item.getValue());
+        if (StringKit.isNotEmpty(dirName)) {
+            for (Map.Entry<String, Config> item : _map.entrySet()) {
+                if (item.getKey().toLowerCase().contains(dirName.toLowerCase())) {
+                    list.add(item.getValue());
+                }
             }
         }
+
         return list;
     }
 
@@ -121,7 +126,7 @@ public class ConfigManager {
      * @return 线程池配置
      */
     public List<Config> getThreadPoolConfig() {
-        return getConfigs(Constants.THREAD_POOL_CONFIG_DIR);
+        return getConfigs(ConfigConstant.THREAD_POOL_CONFIG_DIR);
     }
 
 }

@@ -37,7 +37,7 @@ public class TaskEntity {
 
     public String getTaskName() {
         if (StringKit.isContainEmpty(className, methodName)) {
-            throw new IllegalArgumentException("error className or methodName");
+            throw new IllegalArgumentException("error! className or methodName contain empty");
         }
         return className + methodName;
     }

@@ -1,0 +1,23 @@
+<config>
+    <serviceConfigs>
+        <serviceConfig>
+            <service namespace="ecommerce" name="hbase_schedule_originalTask" description="hbase schedule on ecommerce"/>
+            <!--每天凌晨新建原始表，间隔时间为一天-->
+            <scheduledThreadPool poolSize="1" beginTime="00:00:00 00:00:00" period="86400000"/>
+            <tasks>
+                <task class="com.huangshihe.ecommerce.ecommercehbase.hbaseservice.tasks.OriginalTask" method="createDaily"/>
+            </tasks>
+        </serviceConfig>
+    </serviceConfigs>
+
+    <serviceConfigs>
+        <serviceConfig>
+            <service namespace="ecommerce" name="hbase_schedule" description="hbase schedule on ecommerce"/>
+            <!--十秒钟检查一次-->
+            <scheduledThreadPool poolSize="1" beginTime="now()" period="10000"/>
+            <tasks>
+                <task class="com.huangshihe.ecommerce.ecommercehbase.hbaseservice.tasks.CheckHBaseTask" method="check"/>
+            </tasks>
+        </serviceConfig>
+    </serviceConfigs>
+</config>

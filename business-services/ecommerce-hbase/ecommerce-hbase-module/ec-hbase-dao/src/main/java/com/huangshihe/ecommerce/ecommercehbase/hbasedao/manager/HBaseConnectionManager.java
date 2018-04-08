@@ -17,7 +17,7 @@ import java.io.IOException;
  *
  * @author huangshihe
  */
-public final class HBaseConnectionManager {
+public class HBaseConnectionManager {
 
     /**
      * 日志.
@@ -139,6 +139,7 @@ public final class HBaseConnectionManager {
                         configuration = createConfiguration();
                     }
                     connection = createConnection(configuration);
+                    LOGGER.info("[HBaseConnectionManager] init connection success.");
                 } catch (IOException e) {
                     LOGGER.error("[HBaseConnectionManager] init failed! {}", e);
                 } finally {

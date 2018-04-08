@@ -27,4 +27,24 @@ public interface IOriginalService {
      * 每日新建表.
      */
     void createDaily();
+
+    /**
+     * 检查当天表是否存在.
+     *
+     * @return 是否存在
+     */
+    boolean isTodayTableExists();
+
+    /**
+     * 检查当天表是否存在且为active状态.
+     *
+     * @return 是否启动
+     */
+    boolean isTodayTableActive();
+
+    /**
+     * 删除当天表，由于设置了ttl，将会自动删除，目前没有需要手动删除的场景，但暂时保留该方法。
+     */
+    @Deprecated
+    void deleteTodayTable();
 }
