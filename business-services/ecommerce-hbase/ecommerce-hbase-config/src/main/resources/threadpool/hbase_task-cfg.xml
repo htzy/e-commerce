@@ -4,6 +4,8 @@
             <service namespace="ecommerce" name="hbase_services" description="hbase service on ecommerce"/>
             <threadPool poolSize="1" maxPoolSize="5" queueSize="20" keepAliveTime="200"/>
             <tasks>
+                <!--Service不能放到线程池中！由A线程池中的线程B调用Service中的方法，那么Service也在线程B中执行，因此没有必要将Service也放到线程池中-->
+                <!--如果将Service中放到线程池中，线程B调用Service中的方法，则会有问题：一直都拿不到结果，只能超时失败？TODO 为啥？-->
                 <!--<task class="com.huangshihe.ecommerce.ecommercehbase.hbaseservice.services.OriginalServiceImpl" method="*"/>-->
                 <!--<task class="com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager" method="*"/>-->
             </tasks>

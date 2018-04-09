@@ -22,6 +22,7 @@ public class CheckHBaseTask {
 //            ServicesFactory.getInstance().getServiceObject(OriginalServiceImpl.class);
 //     TODO 这里如果取线程池中的originalService对象，就会出现莫名其妙的问题？？？
     // 当前表现出的问题为：检查任务（某线程池中）只能进行一半，而不管主线程等待多久，都等不到结果？
+
     // 配置文件：hbase_task-cfg.xml中设置
 
     public static void check() {
