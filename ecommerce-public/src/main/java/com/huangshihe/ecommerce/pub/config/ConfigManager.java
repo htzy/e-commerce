@@ -66,23 +66,8 @@ public class ConfigManager {
      */
     private Config load(final String fileName) {
         LOGGER.info("loading config, filename:{}", fileName);
-        Config result = _map.get(fileName);
-        // 两步检查机制
-        if (result == null) {
-            // 同一时间，只能有一个线程获取到ConfigurationManager对象的锁
-            // 这里需要注意的是"同步"若加在方法上，则造成load成功之后，再次执行load，
-            // 则每次都需要进行无用的"同步"，因为配置已存在，不需要再次"同步"新建配置
-            // TODO 这里同步可以优化为：锁住一个内部无用的对象，还是锁住整个类？
-            synchronized (this) {
-//                result = map.get(fileName);
-//                if (result == null) {
-//                    result = new ECConfiguration(fileName);
-//                    map.put(fileName, result);
-//                }
-                // 这里仍需检查是否为空，如果为空，则新建
-                result = _map.computeIfAbsent(fileName, key -> new Config(fileName, Config.ConfigType.FILETYPE));
-            }
-        }
+        // 这里不需要另外加"同步"，也不需要"两步检查"，computeIfAbsent中已完成。
+        Config result = _map.computeIfAbsent(fileName, key -> new Config((fileName), Config.ConfigType.FILETYPE));
         LOGGER.info("loaded config, filename:{}", fileName);
         return result;
     }

@@ -19,6 +19,25 @@ class Foo {
 class Helper {
 
 }
+
+public class Temp {
+    private static volatile Temp t;
+
+    private Temp() {
+
+    }
+
+    public static Temp getInstance() {
+        if (t == null) {
+            synchronized (Temp.class) {
+                if (t == null) {
+                    t = new Temp();
+                }
+            }
+        }
+        return t;
+    }
+}
 ```
 
 ### 对于静态类而言
@@ -30,6 +49,95 @@ public class Foo {
 class Helper {
 
 }
+```
+
+### 例子
+```java
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Main {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
+    private static Main main = new Main();
+
+    private final Object object = new Object();
+
+    private volatile int count;
+
+    public void increase() {
+        LOGGER.debug("111 current thread:{} , count:{}, time", Thread.currentThread(), count);
+        synchronized (this.object) {
+            LOGGER.debug("000 current thread:{}, count:{}", Thread.currentThread(), count);
+            if (count == 0) {
+                count++;
+                LOGGER.debug("*** current thread:{}, count:{}", Thread.currentThread(), count);
+            }
+        }
+        LOGGER.debug("222 current thread:{} , count:{}", Thread.currentThread(), count);
+    }
+
+    private Main() {
+
+    }
+
+    public static Main getInstance() {
+        return main;
+    }
+
+    public static void main(String[] args) {
+        Main m1 = Main.getInstance();
+        LOGGER.debug("m1:{}", m1.hashCode());
+        Main m2 = Main.getInstance();
+        LOGGER.debug("m2:{}", m2.hashCode());
+        Main m3 = Main.getInstance();
+        LOGGER.debug("m3:{}", m3.hashCode());
+        Main m4 = Main.getInstance();
+        LOGGER.debug("m4:{}", m4.hashCode());
+        Main m5 = Main.getInstance();
+        LOGGER.debug("m5:{}", m5.hashCode());
+
+        Thread t1 = new Thread(m1::increase);
+        Thread t2 = new Thread(m2::increase);
+        Thread t3 = new Thread(m3::increase);
+        Thread t4 = new Thread(m4::increase);
+        Thread t5 = new Thread(m5::increase);
+
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();
+    }
+}
+
+// 结果：
+//2018-04-10 21:58:28,899 | [DEBUG] | main | com.huangshihe.ecommerce.pub.config.Main.main(Main.java:44) | m1:204349222
+//2018-04-10 21:58:28,903 | [DEBUG] | main | com.huangshihe.ecommerce.pub.config.Main.main(Main.java:46) | m2:204349222
+//2018-04-10 21:58:28,903 | [DEBUG] | main | com.huangshihe.ecommerce.pub.config.Main.main(Main.java:48) | m3:204349222
+//2018-04-10 21:58:28,906 | [DEBUG] | main | com.huangshihe.ecommerce.pub.config.Main.main(Main.java:50) | m4:204349222
+//2018-04-10 21:58:28,906 | [DEBUG] | main | com.huangshihe.ecommerce.pub.config.Main.main(Main.java:52) | m5:204349222
+//2018-04-10 21:58:29,007 | [DEBUG] | Thread-0 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:23) | 111 current thread:Thread[Thread-0,5,main] , count:0
+//2018-04-10 21:58:29,007 | [DEBUG] | Thread-0 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:25) | 000 current thread:Thread[Thread-0,5,main], count:0
+//2018-04-10 21:58:29,007 | [DEBUG] | Thread-2 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:23) | 111 current thread:Thread[Thread-2,5,main] , count:0
+//2018-04-10 21:58:29,007 | [DEBUG] | Thread-1 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:23) | 111 current thread:Thread[Thread-1,5,main] , count:0
+//2018-04-10 21:58:29,007 | [DEBUG] | Thread-3 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:23) | 111 current thread:Thread[Thread-3,5,main] , count:1
+//2018-04-10 21:58:29,007 | [DEBUG] | Thread-0 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:28) | *** current thread:Thread[Thread-0,5,main], count:1
+//2018-04-10 21:58:29,008 | [DEBUG] | Thread-4 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:23) | 111 current thread:Thread[Thread-4,5,main] , count:1
+//2018-04-10 21:58:29,009 | [DEBUG] | Thread-0 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:31) | 222 current thread:Thread[Thread-0,5,main] , count:1
+//2018-04-10 21:58:29,009 | [DEBUG] | Thread-3 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:25) | 000 current thread:Thread[Thread-3,5,main], count:1
+//2018-04-10 21:58:29,010 | [DEBUG] | Thread-3 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:31) | 222 current thread:Thread[Thread-3,5,main] , count:1
+//2018-04-10 21:58:29,010 | [DEBUG] | Thread-1 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:25) | 000 current thread:Thread[Thread-1,5,main], count:1
+//2018-04-10 21:58:29,012 | [DEBUG] | Thread-1 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:31) | 222 current thread:Thread[Thread-1,5,main] , count:1
+//2018-04-10 21:58:29,012 | [DEBUG] | Thread-2 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:25) | 000 current thread:Thread[Thread-2,5,main], count:1
+//2018-04-10 21:58:29,012 | [DEBUG] | Thread-2 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:31) | 222 current thread:Thread[Thread-2,5,main] , count:1
+//2018-04-10 21:58:29,012 | [DEBUG] | Thread-4 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:25) | 000 current thread:Thread[Thread-4,5,main], count:1
+//2018-04-10 21:58:29,013 | [DEBUG] | Thread-4 | com.huangshihe.ecommerce.pub.config.Main.increase(Main.java:31) | 222 current thread:Thread[Thread-4,5,main] , count:1
+
+
+
 ```
 
 # Java7以上的try-with-resources，自动资源释放
@@ -184,6 +292,30 @@ class Foo {
 
 ```
 
+# Map
+```java
+//import java.util.Map;
+//import java.util.concurrent.ConcurrentHashMap;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, String> map = new ConcurrentHashMap<>();
+        map.put("1", "1");
+        String result = map.computeIfAbsent("1", string -> "3");
+        System.out.println(result);     // 1
+        result = map.get("1");
+        System.out.println(result);     // 1
+
+        result = map.computeIfAbsent("2", string -> "5");
+        System.out.println(result);     // 5
+        result = map.get("2");
+        System.out.println(result);     // 5
+    }
+}
+
+```
+
+
 # mvn
 ```shell
 # 打包，并跳过测试代码
@@ -233,4 +365,6 @@ unzip *.jar -d 路径
 [13.ThreadPoolExecutor线程池之submit方法](https://www.cnblogs.com/yulinfeng/p/7039979.html)  
 [Java并发编程：线程池的使用](https://www.cnblogs.com/dolphin0520/p/3932921.html)  
 [聊聊并发（三）Java线程池的分析和使用](http://ifeve.com/java-threadpool/)  
+[volatile关键字解析(jdk1.5之后)](https://blog.csdn.net/canot/article/details/51295228)  
+
 

@@ -37,10 +37,10 @@ public class HBaseConnectionManager {
     /**
      * 连接对象.
      */
-    private Connection connection = null;
+    private volatile Connection connection = null;
 
     /**
-     * 用于同步的对象？
+     * 用于同步的对象
      */
     private final Object object = new Object();
 
@@ -62,10 +62,16 @@ public class HBaseConnectionManager {
      * @return 连接对象
      */
     public Connection getConnection() {
-        // 如果connection被关闭，重新初始化，TODO 那么如何处理同步问题？两步检查机制可能不满足要求
+        // 如果connection被关闭，重新初始化，两步检查机制需要对 对象加上volatile关键字
         if (connection == null || connection.isClosed() || connection.isAborted()) {
-            LOGGER.info("[HBaseConnectionManager] connection is not init");
-            init();
+            synchronized (this) {
+                if (connection == null || connection.isClosed() || connection.isAborted()) {
+                    LOGGER.info("[HBaseConnectionManager] connection is not init");
+                    init();
+                    LOGGER.info("[HBaseConnectionManager] init connection success.");
+                }
+            }
+
         }
         return connection;
     }
@@ -125,8 +131,7 @@ public class HBaseConnectionManager {
      * 初始化.
      */
     private void init() {
-        // TODO 同步使用object对象，具体如何处理
-        Object obj = this.object;
+        // 同步使用object对象
         synchronized (this.object) {
             if (connection != null && !connection.isClosed() && !connection.isAborted()) {
                 LOGGER.info("[HBaseConnectionManager] connection has been inited.");
@@ -134,12 +139,12 @@ public class HBaseConnectionManager {
                 LOGGER.info("[HBaseConnectionManager] init connection.");
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 try {
+                    // 方便加载hbase.jar包中默认的配置
                     Thread.currentThread().setContextClassLoader(Configuration.class.getClassLoader());
                     if (configuration == null) {
                         configuration = createConfiguration();
                     }
                     connection = createConnection(configuration);
-                    LOGGER.info("[HBaseConnectionManager] init connection success.");
                 } catch (IOException e) {
                     LOGGER.error("[HBaseConnectionManager] init failed! {}", e);
                 } finally {
