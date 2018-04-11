@@ -1,4 +1,7 @@
-package com.huangshihe.ecommerce.ecommercespark.commonconfig.entity;
+package com.huangshihe.ecommerce.common.configs;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,23 +9,19 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * 配置信息类.
+ * 简单配置类.
  * <p>
- * Create Date: 2017-12-02 23:24
+ * Create Date: 2018-04-11 10:58
  *
  * @author huangshihe
  */
-@Deprecated
-public class ECConfiguration {
+public class SimpleConfig {
 
     /**
      * 日志.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ECConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleConfig.class);
 
     /**
      * 配置.
@@ -34,7 +33,7 @@ public class ECConfiguration {
      *
      * @param fileName 配置文件名
      */
-    public ECConfiguration(final String fileName) {
+    public SimpleConfig(final String fileName) {
 
         try (InputStream inputStream = getClassLoader().getResourceAsStream(fileName);
              Reader reader = new InputStreamReader(inputStream, "UTF-8")) {
