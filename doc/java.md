@@ -339,6 +339,7 @@ unzip *.jar -d 路径
 [jackson readTree](https://www.cnblogs.com/yangy608/p/3939315.html)  
 [使用 Jackson 树模型(tree model) API 处理 JSON](http://blog.csdn.net/gao1440156051/article/details/54091702)    
 [JavaFX 8 教程](http://code.makery.ch/library/javafx-8-tutorial/zh-cn/part1/)  
+[javafx中固定Stage窗口大小](https://blog.csdn.net/littlesshark/article/details/51804870)  
 [EA如何打包可运行jar的一个问题](http://bglmmz.iteye.com/blog/2058785)    
 [Protobuf的那些事](http://blog.csdn.net/u013022222/article/details/50521835)  
 [利用JAXB实现xml和bean之间的转换（一）](http://blog.csdn.net/lchinam/article/details/51785036)  
@@ -366,5 +367,9 @@ unzip *.jar -d 路径
 [Java并发编程：线程池的使用](https://www.cnblogs.com/dolphin0520/p/3932921.html)  
 [聊聊并发（三）Java线程池的分析和使用](http://ifeve.com/java-threadpool/)  
 [volatile关键字解析(jdk1.5之后)](https://blog.csdn.net/canot/article/details/51295228)  
+[Java随机生成Mac地址（GitHub源码下载）](https://blog.csdn.net/kyyee/article/details/72873148)  
+[JavaFX TextField文本域值改变监听事件](https://blog.csdn.net/qq_20336817/article/details/53213430)  
+[用MR生成HFile文件格式后，数据批量导入HBase](https://www.cnblogs.com/zhanggl/p/5562993.html)  
+
 
 

@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -26,6 +27,21 @@ import java.util.jar.JarFile;
 public class FileKit {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileKit.class);
+
+    /**
+     * 获取绝对路径.
+     *
+     * @param folderName 文件夹名/文件名
+     * @return 绝对路径
+     */
+    public static String getAbsolutePath(String folderName) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(folderName);
+        if (url == null) {
+            LOGGER.warn("给定的文件夹路径不存在");
+            return null;
+        }
+        return url.getPath();
+    }
 
     /**
      * 读取某文件夹下的所有文件，使用递归方法

@@ -48,6 +48,22 @@ public class SimpleConfig {
     }
 
     /**
+     * 可以任意指定输入流生成配置信息类.
+     *
+     * @param inputStream 配置文件输入流
+     */
+    public SimpleConfig(InputStream inputStream) {
+        properties = new Properties();
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            // 可能是文件格式或字符编码不对
+            LOGGER.error("Properties file not found in classpath or loading properties file error, {}", e);
+            throw new IllegalArgumentException("Properties file not found in classpath or loading properties file error", e);
+        }
+    }
+
+    /**
      * 获取class loader.
      *
      * @return 当前线程的class loader
@@ -75,5 +91,14 @@ public class SimpleConfig {
     public boolean getBoolean(final String key) {
         // 内部实现：只要key不是"true"，返回值就是false
         return Boolean.parseBoolean(properties.getProperty(key));
+    }
+
+    /**
+     * 直接获取配置.
+     *
+     * @return properties
+     */
+    public Properties getProperties() {
+        return properties;
     }
 }
