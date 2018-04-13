@@ -1,5 +1,6 @@
 package com.huangshihe.ecommerce.common.kits;
 
+import com.csvreader.CsvWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -74,7 +76,7 @@ public class FileKit {
      *
      * @param path    文件夹路径
      * @param pattern 文件名匹配符
-     * @return
+     * @return 所有文件
      */
     public static List<File> getAllFiles(String path, String pattern) {
         List<File> results = new ArrayList<File>();
@@ -96,6 +98,47 @@ public class FileKit {
             }
         }
         return results;
+    }
+
+    /**
+     * 在某路径下创建文件，如果文件存在则不予覆盖，但返回false.
+     *
+     * @param path     路径
+     * @param fileName 文件名
+     * @return 创建结果
+     */
+    public static boolean createFile(String path, String fileName) {
+        if (StringKit.isAllEmpty(path, fileName)) {
+            return false;
+        }
+        File pathFile = new File(path);
+        if (!pathFile.exists()) {
+            // 如果文件夹不存在，则创建文件夹，并创建文件
+            if (pathFile.mkdirs()) {
+                File file = new File(pathFile, fileName);
+                try {
+                    return file.createNewFile();
+                } catch (IOException e) {
+                    LOGGER.error("io exception... detail:{}", e);
+                    throw new IllegalArgumentException(e);
+                }
+            } else {
+                return false;
+            }
+        } else {
+            // 如果文件夹已经存在
+            File file = new File(pathFile, fileName);
+            if (file.exists() && file.isFile()) {
+                return false;
+            } else {
+                try {
+                    return file.createNewFile();
+                } catch (IOException e) {
+                    LOGGER.error("io exception... detail:{}", e);
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        }
     }
 
     // 检查文件夹是否存在
@@ -178,6 +221,30 @@ public class FileKit {
             }
         }
     }
+
+
+    /**
+     * 将list写到csv文件中，注意这里是覆盖写模式！会丢失文件原有内容！
+     *
+     * @param list     多条记录
+     * @param filePath 文件路径
+     */
+    public static void writeToCsv(List<String[]> list, String filePath) {
+        CsvWriter writer = new CsvWriter(filePath, ',', Charset.forName("UTF-8"));
+        try {
+            for (String[] strs : list) {
+                writer.writeRecord(strs);
+                //cwriter.endRecord();//在使用write()的情况下使用，进行换行
+            }
+            //            writer.flush();// 加上会报空指针
+        } catch (IOException e) {
+            LOGGER.error("io exception, detail:{}", e);
+            throw new IllegalArgumentException(e);
+        } finally {
+            writer.close();
+        }
+    }
+
 
     @Deprecated
     public static void main(String[] args) {

@@ -17,4 +17,9 @@ public class Constants {
     public static final String ROOT_DIR = File.separator + "usr" + File.separator + "local" + File.separator
             + "opt" + File.separator + "ecommerce" + File.separator;
 
+    /**
+     * 模拟数据csv格式的保存目录 /usr/local/opt/ecommerce/data/simulation/csv/
+     */
+    public static final String SIMULATION_DIR = ROOT_DIR + "data" +
+            File.separator + "simulation" + File.separator + "csv" + File.separator;
 }

@@ -64,6 +64,16 @@ public class TimeKit {
     }
 
     /**
+     * date转为时间格式的字符串.
+     *
+     * @param time date
+     * @return 时间格式
+     */
+    public static String toTimeStr(Date time) {
+        return _timePattern.format(time);
+    }
+
+    /**
      * 时间戳转为时间格式.
      *
      * @param timestamp 时间戳

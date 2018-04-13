@@ -3,7 +3,9 @@ package com.huangshihe.ecommerce.hbasesimulation;
 import com.huangshihe.ecommerce.common.configs.SimpleConfig;
 import com.huangshihe.ecommerce.common.kits.DigitKit;
 import com.huangshihe.ecommerce.common.kits.StringKit;
+import com.huangshihe.ecommerce.common.kits.TimeKit;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  * 模拟生成数据.
+ * 将明文写到日志系统里，返回值是字节
  * <p>
  * Create Date: 2018-04-11 19:38
  *
@@ -41,9 +44,11 @@ public class Simulation {
 
     private List<Record> _qualifier = new ArrayList<>();
 
+    private Random _random = new Random();
+
     public Simulation(LocalDate begin, LocalDate end, SimpleConfig config) {
-        _begin = new Date(begin.getYear(), begin.getMonthValue() - 1, begin.getDayOfMonth());
-        _end = new Date(end.getYear(), end.getMonthValue() - 1, end.getDayOfMonth());
+        _begin = new Date(begin.getYear() - 1900, begin.getMonthValue() - 1, begin.getDayOfMonth());
+        _end = new Date(end.getYear() - 1900, end.getMonthValue() - 1, end.getDayOfMonth());
 
         _config = config;
 
@@ -66,58 +71,6 @@ public class Simulation {
         }
     }
 
-    @Deprecated
-    private String getIdentity(String str) {
-        if (StringKit.isEmpty(str)) {
-            LOGGER.error("get identity failed! str:{}", str);
-            return null;
-        }
-        String[] results = str.split(".");
-        if (results.length != 2) {
-            LOGGER.error("get identity failed! str:{}", str);
-            return null;
-        }
-        return results[1];
-    }
-
-
-    /**
-     * 生成一条以,分割的模拟数据.
-     *
-     * @return 模拟数据
-     */
-    public String simulate(Date currentTime) {
-        StringBuilder sb = new StringBuilder();
-
-        _rowkey.forEach(record -> record.setCurrentTime(currentTime));
-        _qualifier.forEach(record -> record.setCurrentTime(currentTime));
-
-        // 获取rowkey
-        List<byte[]> rowkeyList = _rowkey.stream()
-                .sorted(Comparator.comparingInt(Record::getIndex))
-                .map(Record::getRandomValue)
-                .collect(Collectors.toList());
-
-        StringBuilder rowkey = new StringBuilder();
-        for (byte[] b : rowkeyList) {
-            rowkey.append(Arrays.toString(b));
-        }
-        sb.append(rowkey);
-
-        // 获取qualifier
-        List<byte[]> qualifierList = _qualifier.stream()
-                .sorted(Comparator.comparingInt(Record::getIndex))
-                .map(Record::getRandomValue)
-                .collect(Collectors.toList());
-
-        StringBuilder qualifier = new StringBuilder();
-        for (byte[] b : qualifierList) {
-            qualifier.append(Arrays.toString(b));
-        }
-        sb.append(qualifier);
-
-        return sb.toString();
-    }
 
     /**
      * 生成多条模拟数据.
@@ -125,19 +78,90 @@ public class Simulation {
      * @param count 条数
      * @return 模拟数据
      */
-    public String[] toSimulate(int count) {
+    public List<Pair<Pair<String, String>, Pair<String, String>>> toSimulate(int count) {
         // 模拟时间，5秒5秒的过
-        String[] results = new String[count];
-        for (int i = 0; i < count; i++) {
-            results[i] = simulate(new Date(_begin.getTime() + i * 5000));
+        // key为rowkey，value为qualifier
+        List<Pair<Pair<String, String>, Pair<String, String>>> pairs = new ArrayList<>(count);
+        for (int i = 0; i < count && i < (_end.getTime() / 1000 - _begin.getTime() / 1000); i++) {
+            // 每5秒可能有1000条数据？
+            int random = _random.nextInt(1000);
+            for (int j = 0; j < random; j++) {
+                // 这里删除key为null的pair
+                Pair<Pair<String, String>, Pair<String, String>> pair =
+                        simulate(new Date(_begin.getTime() + i * 5000));
+
+                if (pair.getFirst() != null && pair.getFirst().getFirst() != null && count > pairs.size()) {
+                    pairs.add(pair);
+                }
+            }
         }
-        return results;
+        return pairs;
     }
+
+    /**
+     * 生成一对值，key明文(rowkey+qualifier)，value为byte数组(rowkey+qualifier).
+     *
+     * @return 模拟数据
+     */
+    public Pair<Pair<String, String>, Pair<String, String>> simulate(Date currentTime) {
+        Pair<Pair<String, String>, Pair<String, String>> result = new Pair<>();
+
+        // 设置当前时间
+        _rowkey.forEach(record -> record.setCurrentTime(currentTime));
+        _qualifier.forEach(record -> record.setCurrentTime(currentTime));
+        // 获取rowkey
+        Pair<String, String> rowkey = simulate(_rowkey, '|');
+        // 获取qualifier
+        Pair<String, String> qualifier = simulate(_qualifier, ',');
+
+        result.setFirst(rowkey);
+        result.setSecond(qualifier);
+        return result;
+    }
+
+    /**
+     * @param records records
+     * @param c       明文分隔符
+     * @return pair
+     */
+    private Pair<String, String> simulate(List<Record> records, char c) {
+        Pair<String, String> result = new Pair<>();
+
+        // 流只能用一次！
+        List<Pair<String, byte[]>> list = records.stream()
+                .sorted(Comparator.comparingInt(Record::getIndex))
+                .map(Record::getRandomValue).collect(Collectors.toList());
+
+        StringBuilder key = new StringBuilder();
+        StringBuilder value = new StringBuilder();
+        for (Pair<String, byte[]> pair : list) {
+            // 拼接明文
+            key.append(pair.getFirst());
+            key.append(c);
+            // 拼接byte数组
+            value.append(Arrays.toString(pair.getSecond()));
+        }
+        // 删掉最后一个分隔符
+        if (key.length() > 0) {
+            key.deleteCharAt(key.length() - 1);
+        }
+        if (key.toString().contains(Record.ILLEGAL_VALUE)) {
+            // 如果有任意匹配到非法值，则返回空
+            LOGGER.debug("illegal value, drop it...");
+            return null;
+        }
+        result.setFirst(key.toString());
+        result.setSecond(value.toString());
+        return result;
+    }
+
 }
 
 class Record {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Record.class);
+
+    public static final String ILLEGAL_VALUE = "illegal value";
 
     private String _name;
     private int _index;
@@ -222,25 +246,57 @@ class Record {
         this._index = index;
     }
 
-    public byte[] getRandomValue() {
-        byte[] result = new byte[0];
+    /**
+     * 判断该数据是否保留.
+     *
+     * @return
+     */
+    @Deprecated
+    public Record isUsed() {
+        if (_type == RecordType.TIME) {
+            // 若不在Set里，则生成范围为24的随机数，如果生成的随机数在范围里，那么该数据将保留；否则返回空
+            int randomHour = _random.nextInt(24);
+            if (_timeRangeSet.contains(randomHour)) {
+                return this;
+            } else {
+                return null;
+            }
+        }
+        return this;
+    }
 
+    /**
+     * 生成当前Record的随机值，key为明文，value为byte数组.
+     *
+     * @return pair
+     */
+    public Pair<String, byte[]> getRandomValue() {
+        Pair<String, byte[]> result = new Pair<>();
+        byte[] bytes = new byte[0];
+        String str = "";
         switch (_type) {
             case HASHCODE: {
                 if (_range == 0) {
-                    result = new byte[_len];
+                    bytes = new byte[_len];
+                    str = "";
                 } else {
-                    result = Bytes.toBytes(_random.nextInt(_range));
-                    result = DigitKit.adjustLen(result, _len);
+                    int value = _random.nextInt(_range);
+                    bytes = Bytes.toBytes(value);
+                    bytes = DigitKit.adjustLen(bytes, _len);
+                    str += value;
                 }
             }
             break;
             case MAC: {
                 if (_range == 0) {
-                    result = DigitKit.adjustLen(result, _len, (byte) 'F');
+                    bytes = DigitKit.adjustLen(bytes, _len, (byte) 'F');
+                    str = StringKit.fillChar(_len, 'F');
                 } else {
-                    result = Bytes.toBytes(_random.nextInt(_range));
-                    result = DigitKit.adjustLen(result, _len, (byte) 'F');
+                    int value = _random.nextInt(_range);
+                    bytes = Bytes.toBytes(value);
+                    bytes = DigitKit.adjustLen(bytes, _len, (byte) 'F');
+                    str += value;
+                    str = StringKit.fillChar(str, _len, 'F');
                 }
             }
             break;
@@ -249,40 +305,51 @@ class Record {
                 int currentHour = _currentTime.getHours();
                 // 如果该小时在List里，那么生成数据，
                 if (_timeRangeSet.contains(currentHour)) {
-                    result = Bytes.toBytes(_currentTime.getTime());
-                    result = DigitKit.adjustLen(result, _len);
+                    bytes = Bytes.toBytes(_currentTime.getTime());
+                    bytes = DigitKit.adjustLen(bytes, _len);
+
+                    str += TimeKit.toTimeStr(_currentTime);
                 } else {
-                    // 若不在List里，则生成范围为24的随机数，如果生成的随机数在范围里，那么则放当前时间；否则返回空
+                    // 若不在Set里，则生成范围为24的随机数，如果生成的随机数在范围里，那么则放当前时间；否则返回空
                     int randomHour = _random.nextInt(24);
                     if (_timeRangeSet.contains(randomHour)) {
-                        result = Bytes.toBytes(_currentTime.getTime());
-                        result = DigitKit.adjustLen(result, _len);
+                        bytes = Bytes.toBytes(_currentTime.getTime());
+                        bytes = DigitKit.adjustLen(bytes, _len);
+                        str += TimeKit.toTimeStr(_currentTime);
                     } else {
-                        result = DigitKit.adjustLen(result, _len);
+                        bytes = DigitKit.adjustLen(bytes, _len);
+                        // 若不在范围里，算为非法值
+                        str += ILLEGAL_VALUE;
                     }
                 }
             }
             break;
             case NUM: {
-                result = Bytes.toBytes(_random.nextInt(_range));
+                int value = _random.nextInt(_range);
+                bytes = Bytes.toBytes(value);
+                str += value;
             }
             break;
             case _NUM: {
-                result = Bytes.toBytes(0 - _random.nextInt(_range));
+                int value = _random.nextInt(_range);
+                bytes = Bytes.toBytes(0 - value);
+                str += (-value);
             }
             break;
             case BOOL: {
                 if (_random.nextInt(2) == 1) {
-                    result = new byte[]{1};
+                    bytes = new byte[]{1};
+                    str += 1;
                 } else {
-                    result = new byte[]{0};
+                    bytes = new byte[]{0};
+                    str += 0;
                 }
             }
         }
+        result.setFirst(str);
+        result.setSecond(bytes);
         return result;
     }
-
-
 }
 
 
@@ -290,10 +357,10 @@ enum RecordType {
 
     HASHCODE("hashcode"), MAC("mac"), TIME("time"), NUM("num"), _NUM("_num"), BOOL("bool");
 
-    private String _name;
+    private String name;
 
     RecordType(String name) {
-        this._name = name;
+        this.name = name;
     }
 
 }

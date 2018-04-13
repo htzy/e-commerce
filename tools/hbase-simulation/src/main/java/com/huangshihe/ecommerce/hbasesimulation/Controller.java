@@ -1,21 +1,26 @@
 package com.huangshihe.ecommerce.hbasesimulation;
 
+import com.csvreader.CsvWriter;
 import com.huangshihe.ecommerce.common.configs.SimpleConfig;
+import com.huangshihe.ecommerce.common.constants.Constants;
 import com.huangshihe.ecommerce.common.kits.DigitKit;
+import com.huangshihe.ecommerce.common.kits.FileKit;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import org.apache.hadoop.hbase.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,12 +81,13 @@ public class Controller {
 
                 Simulation simulation = new Simulation(beginTime.getValue(), endTime.getValue(), config);
                 int count = Integer.valueOf(recordCount.getText());
-                String[] result = simulation.toSimulate(count);
+                // List结果为：rowkey+qualifier组成的pair，其中rowkey/qualifier的key为明文，value为byte数组
+                List<Pair<Pair<String, String>, Pair<String, String>>> result = simulation.toSimulate(count);
                 // 生成的是：byte数组，如：[0,1,2,-1]
-                LOGGER.debug("simulations:{}", Arrays.toString(result));
+                // 将rowkey的key和qualifier的key写到csv文件中
+                saveToCsv(result);
+                // TODO 增加写到HFile的方法
 
-
-//                、、如何写到文件？如何从文件中读出结果？？
 //                、、或者直接将该byte生成HFile文件
 
                 LOGGER.debug("end simulation data...");
@@ -92,6 +98,37 @@ public class Controller {
             thread.start();
         }
     }
+
+    /**
+     * 将生成的数据写入到文件.
+     *
+     * @param list 生成的数据
+     */
+    private void saveToCsv(List<Pair<Pair<String, String>, Pair<String, String>>> list) {
+        if (list == null) {
+            return;
+        }
+        String fileName = beginTime.getValue().getYear() + "-"
+                + beginTime.getValue().getMonthValue() + "-" +
+                beginTime.getValue().getDayOfMonth() + ".csv";
+        // 创建文件，如果文件已存在，这里不会删除原文件，但是writer会覆盖写！
+        FileKit.createFile(Constants.SIMULATION_DIR, fileName);
+
+        CsvWriter writer = new CsvWriter(Constants.SIMULATION_DIR + fileName, ',', Charset.forName("UTF-8"));
+        try {
+            for (Pair<Pair<String, String>, Pair<String, String>> pair : list) {
+                writer.writeRecord(new String[]{pair.getFirst().getFirst(), pair.getSecond().getFirst()});
+            }
+//            writer.flush();// 加上会报空指针
+        } catch (IOException e) {
+            LOGGER.error("io exception... detail:{}", e);
+            throw new IllegalArgumentException(e);
+        } finally {
+            writer.close();
+        }
+
+    }
+
 
     public void buildItems(List<File> configs) {
         List<Object> fileNames = new ArrayList<>(configs.size());
