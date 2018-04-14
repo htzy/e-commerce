@@ -17,6 +17,7 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.exceptions.IllegalArgumentIOException;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -47,13 +48,25 @@ public class HBaseDaoImpl implements IHBaseDao {
     /**
      * HBase数据的连接对象.
      */
-    private final Connection connection; //NOPMD
+    private Connection connection; //NOPMD
 
     /**
      * 构造方法.
      */
     public HBaseDaoImpl() {
         connection = HBaseConnectionManager.getInstance().getConnection();
+    }
+
+    /**
+     * 这里检查connection，如果异常，则从HBaseConnectionManager中获取connect
+     * @return connection
+     */
+    private Connection getConnection() {
+        // 如果关闭了，那么重新从manager中获取
+        if (connection == null || connection.isClosed() || connection.isAborted()) {
+            connection = HBaseConnectionManager.getInstance().getConnection();
+        }
+        return connection;
     }
 
 
@@ -66,9 +79,9 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void createTable(final String tableNameStr, final String[] familyNames, final int ttl) { //NOPMD
-        LOGGER.info("tableNameStr:{}, familyName:{}, ttl:{}", tableNameStr, familyNames, ttl);
+        LOGGER.info("tableNameStr:{}, familyNames:{}, ttl:{}", tableNameStr, familyNames, ttl);
         // 数据库元数据操作对象
-        try (Admin admin = connection.getAdmin()) {
+        try (Admin admin = getConnection().getAdmin()) {
             // 检查表是否存在
             final TableName tableName = TableName.valueOf(tableNameStr);
             if (admin.tableExists(tableName)) {
@@ -86,12 +99,56 @@ public class HBaseDaoImpl implements IHBaseDao {
             }
         } catch (IllegalArgumentException e) {
             LOGGER.error("create table '{}' failed! this table name is reserved, detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         } catch (MasterNotRunningException e) {
             LOGGER.error("create table '{}' failed! hbase master is not running, detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         } catch (TableExistsException e) {
             LOGGER.error("create table '{}' failed! the table is exists, detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         } catch (IOException e) {
             LOGGER.error("create table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * 创建表.
+     *
+     * @param tableNameStr 表名
+     * @param familyName   列族名
+     * @param ttl          老化时间，单位为秒
+     */
+    @Override
+    public void createTable(String tableNameStr, String familyName, int ttl) {
+        LOGGER.info("tableNameStr:{}, familyName:{}, ttl:{}", tableNameStr, familyName, ttl);
+        // 数据库元数据操作对象
+        try (Admin admin = getConnection().getAdmin()) {
+            // 检查表是否存在
+            final TableName tableName = TableName.valueOf(tableNameStr);
+            if (admin.tableExists(tableName)) {
+                LOGGER.error("create table failed！table: '{}' is exists!", tableNameStr);
+            } else {
+                // 数据表描述对象
+                final HTableDescriptor tableDesc = new HTableDescriptor(tableName);
+                // 列族描述对象
+                final HColumnDescriptor family = new HColumnDescriptor(familyName); //NOPMD
+                family.setTimeToLive(ttl);
+                tableDesc.addFamily(family);
+                admin.createTable(tableDesc);
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("create table '{}' failed! this table name is reserved, detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
+        } catch (MasterNotRunningException e) {
+            LOGGER.error("create table '{}' failed! hbase master is not running, detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
+        } catch (TableExistsException e) {
+            LOGGER.error("create table '{}' failed! the table is exists, detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
+        } catch (IOException e) {
+            LOGGER.error("create table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -109,7 +166,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         }
 
         Result result = null;
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
             final Get get = new Get(Bytes.toBytes(rowKey));
             result = table.get(get); //NOPMD
@@ -117,6 +174,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, e);
+            throw new IllegalArgumentException(e);
         }
         return HBaseDaoUtil.getCells(result);
     }
@@ -138,7 +196,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         }
 
         Result result = null;
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             // 这里的table名需要注意是否为default命名空间，即：default.tableName
             final Get get = new Get(Bytes.toBytes(rowKey));
             for (final String family : column.keySet()) {
@@ -151,6 +209,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, column: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, column, e);
+            throw new IllegalArgumentException(e);
         }
         return HBaseDaoUtil.getCells(result);
     }
@@ -169,14 +228,15 @@ public class HBaseDaoImpl implements IHBaseDao {
         }
         ResultScanner resultScanner = null;
         List<Result> results = new ArrayList<Result>();
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             Scan scan = new Scan();
             resultScanner = table.getScanner(scan);
             for (Result result : resultScanner) {
                 results.add(result);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("query all failed! table: {},network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         } finally {
             IOUtils.closeStream(resultScanner);
         }
@@ -199,7 +259,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         }
         ResultScanner resultScanner = null;
         List<Result> results = new ArrayList<Result>();
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             Scan scan = new Scan();
             scan.setStartRow(Bytes.toBytes(startRowKey));
             scan.setStopRow(Bytes.toBytes(stopRowKey));
@@ -209,7 +269,9 @@ public class HBaseDaoImpl implements IHBaseDao {
                 results.add(result);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("query failed! table: {} startRowKey:{}, stopRowKey:{},network exception occurs? detail: {}",
+                    tableNameStr, startRowKey, stopRowKey, e);
+            throw new IllegalArgumentException(e);
         } finally {
             IOUtils.closeStream(resultScanner);
         }
@@ -233,7 +295,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         }
         ResultScanner resultScanner = null;
         List<Result> results = new ArrayList<Result>();
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             Scan scan = new Scan();
             if (startRowKey != null && !startRowKey.isEmpty()) {
                 scan.setStartRow(Bytes.toBytes(startRowKey));
@@ -253,7 +315,9 @@ public class HBaseDaoImpl implements IHBaseDao {
                 results.add(result);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("query failed! table:{} startRowKey:{}, stopRowKey:{},pageSize:{}, network exception occurs? detail: {}",
+                    tableNameStr, startRowKey, stopRowKey, pageSize, e);
+            throw new IllegalArgumentException(e);
         } finally {
             IOUtils.closeStream(resultScanner);
         }
@@ -275,7 +339,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         }
         ResultScanner resultScanner = null;
         List<Result> results = new ArrayList<Result>();
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             Scan scan = new Scan();
             scan.setFilter(filter);
             resultScanner = table.getScanner(scan);
@@ -283,11 +347,29 @@ public class HBaseDaoImpl implements IHBaseDao {
                 results.add(result);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("query failed! table:{} filter:{},network exception occurs? detail: {}",
+                    tableNameStr, filter, e);
+            throw new IllegalArgumentException(e);
         } finally {
             IOUtils.closeStream(resultScanner);
         }
         return results;
+    }
+
+    /**
+     * 获取Table.
+     *
+     * @param tableNameStr 表名
+     * @return table
+     */
+    @Override
+    public Table getTable(String tableNameStr) {
+        try {
+            return getConnection().getTable(TableName.valueOf(tableNameStr));
+        } catch (IOException e) {
+            LOGGER.error("table failed! table:{},network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -311,7 +393,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         LOGGER.debug("tableNameStr:{}, rowKey:{}, qualifierValues:{}, qualifierValues.size: {}",
                 tableNameStr, rowKey, qualifierValues, qualifierValues.size());
 
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             Put put = new Put(Bytes.toBytes(rowKey));
             for (String qualifier : qualifierValues.keySet()) {
                 put.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(qualifierValues.get(qualifier)));
@@ -321,6 +403,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -341,7 +424,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         LOGGER.debug("tableNameStr:{}, rowKey:{}, qualifierValues:{}, qualifierValues.size: {}",
                 tableNameStr, rowKey, qualifierValues, qualifierValues.size());
 
-        try (Table table = connection.getTable(TableName.valueOf(tableNameStr))) {
+        try (Table table = getConnection().getTable(TableName.valueOf(tableNameStr))) {
             Put put = new Put(rowKey);
             for (String qualifier : qualifierValues.keySet()) {
                 put.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(qualifierValues.get(qualifier)));
@@ -351,6 +434,7 @@ public class HBaseDaoImpl implements IHBaseDao {
         } catch (IOException e) {
             LOGGER.error("query table by rowKey failed! table: {}, rowKey: {}, network exception occurs? detail: {}",
                     tableNameStr, rowKey, e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -362,7 +446,7 @@ public class HBaseDaoImpl implements IHBaseDao {
      */
     @Override
     public void deleteTable(final String tableNameStr) {
-        try (Admin admin = connection.getAdmin()) {
+        try (Admin admin = getConnection().getAdmin()) {
             final TableName tableName = TableName.valueOf(tableNameStr);
             // 删除前检查表是否不存在，不存在，则警告。
             if (!admin.tableExists(tableName)) {
@@ -376,8 +460,10 @@ public class HBaseDaoImpl implements IHBaseDao {
         } catch (TableNotFoundException e) {
             // 删除表为同步操作，之前检查过，仍有可能是因为表不存在而失败！
             LOGGER.warn("delete table failed! table: {}, not exists! detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         } catch (IOException e) {
             LOGGER.error("delete table failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -390,11 +476,12 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public boolean isExists(final String tableNameStr) {
         boolean result = false; //NOPMD
-        try (Admin admin = connection.getAdmin()) {
+        try (Admin admin = getConnection().getAdmin()) {
             result = admin.tableExists(TableName.valueOf(tableNameStr));
             // admin继承了AutoCloseable，在try-with-resources中不需要手动关闭。
         } catch (IOException e) {
             LOGGER.error("check table isExists failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         }
         return result;
     }
@@ -408,12 +495,13 @@ public class HBaseDaoImpl implements IHBaseDao {
     @Override
     public boolean isActive(String tableNameStr) {
         boolean result = false;
-        try (Admin admin = connection.getAdmin()) {
+        try (Admin admin = getConnection().getAdmin()) {
 //            admin.isTableAvailable(TableName.valueOf(tableNameStr))
             // 检查表是否启用
             result = admin.isTableEnabled(TableName.valueOf(tableNameStr));
         } catch (IOException e) {
             LOGGER.error("check table active failed! table: {}, network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
         }
         return result;
     }

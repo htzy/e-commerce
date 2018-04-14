@@ -141,6 +141,25 @@ public class FileKit {
         }
     }
 
+    /**
+     * 获取文件名，除去后缀.
+     *
+     * @param file 文件
+     * @return 文件名
+     */
+    public static String getFileNameStr(File file) {
+        if (file == null) {
+            return null;
+        }
+        if (file.exists() && file.isFile()) {
+            String name = file.getName();
+            name = name.substring(0, name.lastIndexOf("."));
+            return name;
+        }
+        return null;
+    }
+
+
     // 检查文件夹是否存在
 
     // 检查文件是否存在

@@ -16,20 +16,11 @@
 
     <packaging>jar</packaging>
 
-    <properties>
-        <hbase.version>1.2.6</hbase.version>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>com.huangshihe.ecommerce</groupId>
-            <artifactId>ecommerce-common</artifactId>
+            <groupId>com.huangshihe.ecommerce.ecommerce-hbase</groupId>
+            <artifactId>ec-hbase-service</artifactId>
             <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-client</artifactId>
-            <version>${hbase.version}</version>
         </dependency>
     </dependencies>
 

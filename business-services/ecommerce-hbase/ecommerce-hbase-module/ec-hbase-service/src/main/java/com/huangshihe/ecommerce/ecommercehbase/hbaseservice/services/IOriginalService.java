@@ -17,11 +17,11 @@ public interface IOriginalService {
     String getTodayTableName();
 
     /**
-     * 获取所有的familyNames.
+     * 获取所有的qualifiers.
      *
-     * @return familyNames
+     * @return qualifiers
      */
-    String[] getFamilyNames();
+    String[] getQualifiers();
 
     /**
      * 每日新建表.

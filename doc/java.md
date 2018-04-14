@@ -315,6 +315,13 @@ public class Main {
 
 ```
 
+# 流
+## 遇见的错误记录
+```shell
+# 报错：stream has already been operated upon or closed
+# 流只能使用一次！不能多次使用
+```
+
 
 # mvn
 ```shell
@@ -370,6 +377,6 @@ unzip *.jar -d 路径
 [Java随机生成Mac地址（GitHub源码下载）](https://blog.csdn.net/kyyee/article/details/72873148)  
 [JavaFX TextField文本域值改变监听事件](https://blog.csdn.net/qq_20336817/article/details/53213430)  
 [用MR生成HFile文件格式后，数据批量导入HBase](https://www.cnblogs.com/zhanggl/p/5562993.html)  
-
+[Java 8中10个不易察觉的错误](https://www.evget.com/article/2014/6/18/21196.html)  
 
 

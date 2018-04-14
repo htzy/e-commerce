@@ -17,7 +17,7 @@ public class OriginalConstant {
     public static final int TTL = 7 * 24 * 60 * 60;
 
 
-    // ----------cf info: name, offset and len---------------
+    // ----------qualifier info: name, offset and len---------------
 
     /**
      * ssid

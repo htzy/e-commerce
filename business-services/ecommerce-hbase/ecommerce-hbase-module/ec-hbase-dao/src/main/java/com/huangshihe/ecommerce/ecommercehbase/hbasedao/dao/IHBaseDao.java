@@ -2,6 +2,7 @@ package com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.Filter;
 
 import java.util.List;
@@ -24,6 +25,15 @@ public interface IHBaseDao {
      * @param ttl          老化时间，单位为秒
      */
     void createTable(String tableNameStr, String[] familyNames, int ttl);
+
+    /**
+     * 创建表.
+     *
+     * @param tableNameStr 表名
+     * @param familyName   列族名
+     * @param ttl          老化时间，单位为秒
+     */
+    void createTable(String tableNameStr, String familyName, int ttl);
 
     /**
      * 通过rowKey查询.
@@ -82,6 +92,13 @@ public interface IHBaseDao {
      * @return results
      */
     List<Result> query(String tableNameStr, Filter filter);
+
+    /**
+     * 获取Table.
+     * @param tableNameStr 表名
+     * @return table
+     */
+    Table getTable(String tableNameStr);
 
 
     /**

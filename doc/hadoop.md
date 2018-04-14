@@ -136,6 +136,14 @@ hadoop jar /opt/hadoop-mapreduce-examples-2.7.1.jar wordcount /tmp/1.txt /tmp/1_
 hadoop fs -cat /tmp/1_out/part-r-00000
 ```
 
+# 默认端口号
+```shell
+Hadoop: http://localhost:8088/
+DataNode: http://localhost:50070/
+
+
+```
+
 # 参考
 [Mac OS X 10.10 运用 Homebrew安装Hadoop 2.7.1](http://blog.csdn.net/u012336567/article/details/50778989)  
 [Mac 安装 hadoop+hive+hbase+spark](http://blog.csdn.net/hubin232/article/details/76769265)  

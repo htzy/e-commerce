@@ -5,6 +5,9 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -15,7 +18,9 @@ import java.io.IOException;
  *
  * @author huangshihe
  */
-public class HfileCreate {
+public class HFileCreate {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HFileCreate.class);
 
     class HFileImportMapper2 extends
             Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue> {

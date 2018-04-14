@@ -52,10 +52,13 @@ public class Simulation {
 
         _config = config;
 
-        build();
+        buildConfig();
     }
 
-    private void build() {
+    /**
+     * 构建配置.
+     */
+    private void buildConfig() {
         Properties properties = _config.getProperties();
         Enumeration en = properties.propertyNames();
         while (en.hasMoreElements()) {
@@ -82,7 +85,8 @@ public class Simulation {
         // 模拟时间，5秒5秒的过
         // key为rowkey，value为qualifier
         List<Pair<Pair<String, String>, Pair<String, String>>> pairs = new ArrayList<>(count);
-        for (int i = 0; i < count && i < (_end.getTime() / 1000 - _begin.getTime() / 1000); i++) {
+        // i模拟时间，模拟5秒5秒的增加过程，size表示当前数目
+        for (int i = 0, size = 0; size < count && i < (_end.getTime() / 1000 - _begin.getTime() / 1000); i++) {
             // 每5秒可能有1000条数据？
             int random = _random.nextInt(1000);
             for (int j = 0; j < random; j++) {
@@ -90,8 +94,10 @@ public class Simulation {
                 Pair<Pair<String, String>, Pair<String, String>> pair =
                         simulate(new Date(_begin.getTime() + i * 5000));
 
-                if (pair.getFirst() != null && pair.getFirst().getFirst() != null && count > pairs.size()) {
+                if (pair.getFirst() != null && pair.getFirst().getFirst() != null && i < count) {
                     pairs.add(pair);
+                    // size为当前条数，即pairs.size()
+                    size++;
                 }
             }
         }
@@ -244,25 +250,6 @@ class Record {
 
     public void setIndex(int index) {
         this._index = index;
-    }
-
-    /**
-     * 判断该数据是否保留.
-     *
-     * @return
-     */
-    @Deprecated
-    public Record isUsed() {
-        if (_type == RecordType.TIME) {
-            // 若不在Set里，则生成范围为24的随机数，如果生成的随机数在范围里，那么该数据将保留；否则返回空
-            int randomHour = _random.nextInt(24);
-            if (_timeRangeSet.contains(randomHour)) {
-                return this;
-            } else {
-                return null;
-            }
-        }
-        return this;
     }
 
     /**

@@ -3,6 +3,7 @@ package com.huangshihe.ecommerce.ecommercehbase.hbaseservice.services;
 import com.huangshihe.ecommerce.common.kits.TimeKit;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.IHBaseDao;
+import com.huangshihe.ecommerce.ecommercehbase.hbaseservice.constants.CommonConstant;
 import com.huangshihe.ecommerce.ecommercehbase.hbaseservice.constants.OriginalConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +33,12 @@ public class OriginalServiceImpl implements IOriginalService {
     }
 
     /**
-     * 获取所有的familyNames.
+     * 获取所有的qualifiers.
      *
-     * @return familyNames
+     * @return qualifiers
      */
     @Override
-    public String[] getFamilyNames() {
+    public String[] getQualifiers() {
         return new String[]{OriginalConstant.SSID, OriginalConstant.TYPE, OriginalConstant.CHANNEL,
                 OriginalConstant.RSSI, OriginalConstant.DETAIL_TYPE,
                 OriginalConstant.DELETE_FLAG, OriginalConstant.IS_ASSOCIATED};
@@ -52,7 +53,7 @@ public class OriginalServiceImpl implements IOriginalService {
         if (isTodayTableExists()) {
             throw new IllegalStateException("origin today table is exists! 当天表已存在！");
         } else {
-            hbaseDao.createTable(getTodayTableName(), getFamilyNames(), OriginalConstant.TTL);
+            hbaseDao.createTable(getTodayTableName(), CommonConstant.FAMILY_NAME, OriginalConstant.TTL);
         }
         LOGGER.info("created origin daily...");
     }
