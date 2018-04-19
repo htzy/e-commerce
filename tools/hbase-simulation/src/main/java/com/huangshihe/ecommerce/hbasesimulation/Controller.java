@@ -5,9 +5,11 @@ import com.huangshihe.ecommerce.common.configs.SimpleConfig;
 import com.huangshihe.ecommerce.common.constants.Constants;
 import com.huangshihe.ecommerce.common.kits.DigitKit;
 import com.huangshihe.ecommerce.common.kits.FileKit;
+import com.huangshihe.ecommerce.common.kits.TimeKit;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.HBaseDaoImpl;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.IHBaseDao;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager;
+import com.huangshihe.ecommerce.ecommercehbase.hbaseservice.constants.CommonConstant;
 import com.huangshihe.ecommerce.ecommercehbase.hbaseservice.constants.OriginalConstant;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,15 +20,15 @@ import javafx.scene.control.TextField;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
 import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.mapred.FileOutputFormat;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+//import org.apache.hadoop.mapred.FileOutputFormat;
 
 @SuppressWarnings("unchecked")
 public class Controller {
@@ -64,6 +68,8 @@ public class Controller {
     private Button createHFileButton;
 
     private Map<String, SimpleConfig> _map = new HashMap<>();
+
+    private Simulation _simulation;
 
     @FXML
     private void initialize() {
@@ -98,10 +104,11 @@ public class Controller {
                 // 按照配置文件生成数据到csv
                 LOGGER.debug("begin to simulation data...");
 
-                Simulation simulation = new Simulation(beginTime.getValue(), endTime.getValue(), config);
+                _simulation = new Simulation(beginTime.getValue(), endTime.getValue(), config);
+
                 int count = Integer.valueOf(recordCount.getText());
                 // List结果为：rowkey+qualifier组成的pair，其中rowkey/qualifier的key为明文，value为byte数组
-                List<Pair<Pair<String, String>, Pair<String, String>>> result = simulation.toSimulate(count);
+                List<Pair<Pair<String, String>, Pair<String, String>>> result = _simulation.toSimulate(count);
                 // 生成的是：byte数组，如：[0,1,2,-1]
                 // 将rowkey的key和qualifier的key写到csv文件中
                 saveToCsv(result);
@@ -120,6 +127,18 @@ public class Controller {
     @FXML
     private void createHFiles() {
         LOGGER.debug("sync to HBase...");
+        // 暂时需要先执行"启动"生成数据之后，才能导入数据
+        if (_simulation == null) {
+            LOGGER.warn("当前需要先'启动'生成数据后，才能导入数据！");
+            return;
+        } else {
+            // 将生成的配置传到类变量，供HFileCreate中的qualifier生成
+
+            // 设置HFileCreate中的配置
+            HFileCreate.buildSimulation(_simulation);
+
+        }
+
         // 禁用该键
         createHFileButton.setDisable(true);
         // 创建新的线程，将耗时任务放到子线程中运行
@@ -139,7 +158,9 @@ public class Controller {
                 String datFilePath = datFile.getAbsolutePath();
                 // 运行前，删除已存在的中间输出目录
                 try {
+                    LOGGER.debug("simulation file dir:{}", Constants.SIMULATION_HFILE_DIR);
                     FileSystem fs = FileSystem.get(URI.create(Constants.SIMULATION_HFILE_DIR), conf);
+
                     fs.delete(new Path(Constants.SIMULATION_HFILE_DIR), true);
                     fs.close();
                 } catch (IOException e) {
@@ -147,38 +168,77 @@ public class Controller {
                     throw new IllegalArgumentException(e);
                 }
 
+                // 如果表不存在，创建表
+                if (!hbaseDao.isExists(tableName)) {
+                    hbaseDao.createTable(tableName, CommonConstant.FAMILY_NAME, OriginalConstant.TTL);
+                }
+                // 获取表
                 Table table = hbaseDao.getTable(tableName);
 
-                // 生成Job
+                // 生成Job，注意以下的包别导错！
                 try {
+
+                    ///////////////////////////
+                    // 通过调试，发现默认添加的序列器只有三个，这里手动添加其他的
+                    // 其中Put.class用的是org.apache.hadoop.hbase.mapreduce.MutationSerialization，否则将报空指针
+                    conf.set("io.serializations","org.apache.hadoop.io.serializer.JavaSerialization,"
+                            + "org.apache.hadoop.io.serializer.WritableSerialization,"
+                            + "org.apache.hadoop.hbase.mapreduce.KeyValueSerialization,"
+                            + "org.apache.hadoop.hbase.mapreduce.MutationSerialization,"
+                            + "org.apache.hadoop.hbase.mapreduce.ResultSerialization"
+                    );
+                    ///////////////////////////
+
                     Job job = Job.getInstance(conf, "create HFile");
-                    job.setJarByClass(HFileCreate.class);
-                    job.setInputFormatClass(TextInputFormat.class);
+                    job.setJarByClass(Controller.class);
+                    // 设置mapper类
                     job.setMapperClass(HFileCreate.HFileImportMapper2.class);
+                    // 这里没有用到reduce，否则这里也需设置reducer类
 
+                    // 设置输出的key和value类
+                    job.setMapOutputKeyClass(ImmutableBytesWritable.class);
+                    job.setMapOutputValueClass(Put.class);
+
+                    // speculation
+                    job.setSpeculativeExecution(false);
+                    job.setReduceSpeculativeExecution(false);
+
+                    // in/out format
+                    job.setInputFormatClass(TextInputFormat.class);
+                    job.setOutputFormatClass(HFileOutputFormat2.class);
+
+                    // 设置输入/输出路径
                     FileInputFormat.setInputPaths(job, datFilePath);
-
-                    job.getConfiguration().set("mapred.mapoutput.key.class",
-                            "org.apache.hadoop.hbase.io.ImmutableBytesWritable");
-                    job.getConfiguration().set("mapred.mapoutput.value.class",
-                            "org.apache.hadoop.hbase.KeyValue");
-
-                    FileOutputFormat.setOutputPath(new JobConf(), new Path(Constants.SIMULATION_HFILE_DIR));
+                    FileOutputFormat.setOutputPath(job, new Path(Constants.SIMULATION_HFILE_DIR));
 
                     HFileOutputFormat2.configureIncrementalLoadMap(job, table);
 
+                    // 设置等待
                     job.waitForCompletion(true);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error("io exception... detail:{}", e);
+                    throw new IllegalArgumentException(e);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.error("interrupted exception... detail:{}", e);
+                    throw new IllegalArgumentException(e);
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    LOGGER.error("class not found! detail:{}", e);
+                    throw new IllegalArgumentException(e);
+                } catch (Exception e) {
+                    LOGGER.error("unknown error, detail:{}", e);
+                    throw new IllegalArgumentException(e);
+                } finally {
+                    try {
+                        if (table != null) {
+                            table.close();
+                        }
+                    } catch (IOException e) {
+                        LOGGER.error("close table error!");
+                    }
                 }
 
 
-                // 写到HFile文件中
-
+                // TODO 将HFile 导入到HBase表中
 
             }
             LOGGER.debug("end create HFiles...");
@@ -199,9 +259,10 @@ public class Controller {
         if (list == null) {
             return;
         }
-        String fileName = beginTime.getValue().getYear() + "-"
-                + beginTime.getValue().getMonthValue() + "-" +
-                beginTime.getValue().getDayOfMonth() + ".csv";
+        // 如果月份和日子不是两位，则需要加前缀0
+        String fileName = TimeKit.toDateStr(beginTime.getValue().getYear(),
+                beginTime.getValue().getMonthValue(), beginTime.getValue().getDayOfMonth()) + ".csv";
+
         // 创建文件，如果文件已存在，这里不会删除原文件，但是writer会覆盖写！
         FileKit.createFile(Constants.SIMULATION_DIR, fileName);
 
@@ -229,9 +290,10 @@ public class Controller {
         if (list == null) {
             return;
         }
-        String fileName = beginTime.getValue().getYear() + "-"
-                + beginTime.getValue().getMonthValue() + "-" +
-                beginTime.getValue().getDayOfMonth() + ".dat";
+        // 如果月份和日子不是两位，则需要加前缀0
+        String fileName = TimeKit.toDateStr(beginTime.getValue().getYear(),
+                beginTime.getValue().getMonthValue(), beginTime.getValue().getDayOfMonth()) + ".dat";
+
         // 创建文件，如果文件已存在，这里不会删除原文件，但是writer会覆盖写！
         FileKit.createFile(Constants.SIMULATION_HBASE_DIR, fileName);
 

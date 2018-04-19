@@ -59,6 +59,7 @@ public class HBaseDaoImpl implements IHBaseDao {
 
     /**
      * 这里检查connection，如果异常，则从HBaseConnectionManager中获取connect
+     *
      * @return connection
      */
     private Connection getConnection() {
@@ -357,7 +358,7 @@ public class HBaseDaoImpl implements IHBaseDao {
     }
 
     /**
-     * 获取Table.
+     * 获取Table，注意用完及时close表.
      *
      * @param tableNameStr 表名
      * @return table

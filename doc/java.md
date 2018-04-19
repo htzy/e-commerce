@@ -378,5 +378,12 @@ unzip *.jar -d 路径
 [JavaFX TextField文本域值改变监听事件](https://blog.csdn.net/qq_20336817/article/details/53213430)  
 [用MR生成HFile文件格式后，数据批量导入HBase](https://www.cnblogs.com/zhanggl/p/5562993.html)  
 [Java 8中10个不易察觉的错误](https://www.evget.com/article/2014/6/18/21196.html)  
+[如何在Java中使用正则表达式匹配多个内容?](https://ask.csdn.net/questions/646311?utm_source=debugrun&utm_medium=referral)  
+[调整Hbase中cell大小](https://blog.csdn.net/godspeedlaile9/article/details/36875391)  
+[hadoop(mapreduce):java.lang.NoSuchMethodException: ******Mapper.<init>()](https://blog.csdn.net/drhhyh/article/details/43407495)  
+[Bulk Load－HBase数据导入最佳实践](https://blog.csdn.net/opensure/article/details/47054861)  
+
+
+
 
 

@@ -32,6 +32,7 @@ public interface IHBaseDao {
      * @param tableNameStr 表名
      * @param familyName   列族名
      * @param ttl          老化时间，单位为秒
+     *                     TODO 老化时间的具体含义？当时间到了之后，能否把整个表删除，设置表的ttl？
      */
     void createTable(String tableNameStr, String familyName, int ttl);
 
@@ -95,6 +96,7 @@ public interface IHBaseDao {
 
     /**
      * 获取Table.
+     *
      * @param tableNameStr 表名
      * @return table
      */

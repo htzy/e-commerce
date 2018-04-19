@@ -55,6 +55,20 @@ public class Simulation {
         buildConfig();
     }
 
+
+    /**
+     * TODO 好好整理整理代码结构
+     * 获取qualifier的索引列表
+     *
+     * @return 索引列表
+     */
+    public List<String> getQualifierIndexs() {
+        return _qualifier.stream()
+                .map(Record::getIndex)
+                .sorted(String::compareTo) // 字典序排序
+                .collect(Collectors.toList());
+    }
+
     /**
      * 构建配置.
      */
@@ -135,7 +149,8 @@ public class Simulation {
 
         // 流只能用一次！
         List<Pair<String, byte[]>> list = records.stream()
-                .sorted(Comparator.comparingInt(Record::getIndex))
+//                .sorted(Comparator.comparingInt(Record::getIndex))
+                .sorted(Comparator.comparing(Record::getIndex)) // 字典序排序
                 .map(Record::getRandomValue).collect(Collectors.toList());
 
         StringBuilder key = new StringBuilder();
@@ -169,11 +184,11 @@ class Record {
 
     public static final String ILLEGAL_VALUE = "illegal value";
 
-    private String _name;
-    private int _index;
-    private int _len;
-    private int _range;//0即没有范围
-    private RecordType _type;
+    private String name;
+    private String index;   // index直接将index作为qualifier name，同时作为顺序
+    private int len;
+    private int range;//0即没有范围
+    private RecordType type;
     // 小时为单位
     private Set<Integer> _timeRangeSet;
     private Date _currentTime;
@@ -191,22 +206,22 @@ class Record {
         String[] keys = key.split("\\.");
         LOGGER.debug("keys:{}", Arrays.toString(keys));
 
-        _name = keys[1];
+        name = keys[1].trim();
         String[] values = value.split(",");
-        _index = Integer.valueOf(values[0]);
-        _len = Integer.valueOf(values[1]);
+        index = values[0].trim();
+        len = Integer.valueOf(values[1].trim());
         // 如果是时间，则_range表示的是范围：如：8-12;14-17;
 
-        String range = values[2];
+        String range = values[2].trim();
         if (DigitKit.isTenNum(range)) {
-            _range = Integer.valueOf(range);
+            this.range = Integer.valueOf(range);
         } else {
             // 如果不是数字，说明是范围，例：9-12;14-17
             _timeRangeSet = getTimeRange(range);
         }
 
         LOGGER.debug("_type:{}", values[3]);
-        _type = RecordType.valueOf(values[3].toUpperCase());
+        type = RecordType.valueOf(values[3].trim().toUpperCase());
     }
 
     public void setCurrentTime(Date currentTime) {
@@ -237,19 +252,19 @@ class Record {
     }
 
     public String getName() {
-        return _name;
+        return name;
     }
 
     public void setName(String name) {
-        this._name = name;
+        this.name = name;
     }
 
-    public int getIndex() {
-        return _index;
+    public String getIndex() {
+        return index;
     }
 
-    public void setIndex(int index) {
-        this._index = index;
+    public void setIndex(String index) {
+        this.index = index;
     }
 
     /**
@@ -261,29 +276,32 @@ class Record {
         Pair<String, byte[]> result = new Pair<>();
         byte[] bytes = new byte[0];
         String str = "";
-        switch (_type) {
+        switch (type) {
             case HASHCODE: {
-                if (_range == 0) {
-                    bytes = new byte[_len];
+                if (range == 0) {
+                    bytes = new byte[len];
                     str = "";
                 } else {
-                    int value = _random.nextInt(_range);
+                    int value = _random.nextInt(range);
+                    // 为了保证不同的数据项的hashcode不一样，这里要区分开，用index作为前缀
+                    // 如：tanantid和groupid就要保证是不一样的hashcode
+                    value = (index + value).hashCode();
                     bytes = Bytes.toBytes(value);
-                    bytes = DigitKit.adjustLen(bytes, _len);
+                    bytes = DigitKit.adjustLen(bytes, len);
                     str += value;
                 }
             }
             break;
             case MAC: {
-                if (_range == 0) {
-                    bytes = DigitKit.adjustLen(bytes, _len, (byte) 'F');
-                    str = StringKit.fillChar(_len, 'F');
+                if (range == 0) {
+                    bytes = DigitKit.adjustLen(bytes, len, (byte) 'F');
+                    str = StringKit.fillChar(len, 'F');
                 } else {
-                    int value = _random.nextInt(_range);
+                    int value = _random.nextInt(range);
                     bytes = Bytes.toBytes(value);
-                    bytes = DigitKit.adjustLen(bytes, _len, (byte) 'F');
+                    bytes = DigitKit.adjustLen(bytes, len, (byte) 'F');
                     str += value;
-                    str = StringKit.fillChar(str, _len, 'F');
+                    str = StringKit.fillChar(str, len, 'F');
                 }
             }
             break;
@@ -293,7 +311,7 @@ class Record {
                 // 如果该小时在List里，那么生成数据，
                 if (_timeRangeSet.contains(currentHour)) {
                     bytes = Bytes.toBytes(_currentTime.getTime());
-                    bytes = DigitKit.adjustLen(bytes, _len);
+                    bytes = DigitKit.adjustLen(bytes, len);
 
                     str += TimeKit.toTimeStr(_currentTime);
                 } else {
@@ -301,10 +319,10 @@ class Record {
                     int randomHour = _random.nextInt(24);
                     if (_timeRangeSet.contains(randomHour)) {
                         bytes = Bytes.toBytes(_currentTime.getTime());
-                        bytes = DigitKit.adjustLen(bytes, _len);
+                        bytes = DigitKit.adjustLen(bytes, len);
                         str += TimeKit.toTimeStr(_currentTime);
                     } else {
-                        bytes = DigitKit.adjustLen(bytes, _len);
+                        bytes = DigitKit.adjustLen(bytes, len);
                         // 若不在范围里，算为非法值
                         str += ILLEGAL_VALUE;
                     }
@@ -312,13 +330,13 @@ class Record {
             }
             break;
             case NUM: {
-                int value = _random.nextInt(_range);
+                int value = _random.nextInt(range);
                 bytes = Bytes.toBytes(value);
                 str += value;
             }
             break;
             case _NUM: {
-                int value = _random.nextInt(_range);
+                int value = _random.nextInt(range);
                 bytes = Bytes.toBytes(0 - value);
                 str += (-value);
             }

@@ -33,5 +33,5 @@ public class Constants {
     /**
      * 模拟数据生成的HFile文件在Hadoop上的保存位置.
      */
-    public static final String SIMULATION_HFILE_DIR = "hdfs://localhost:50070/data/simulate";
+    public static final String SIMULATION_HFILE_DIR = "hdfs://127.0.0.1:9000/data/simulate";
 }

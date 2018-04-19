@@ -90,6 +90,30 @@ public class TimeKit {
         return StringKit.emptyString;
     }
 
+
+    /**
+     * 年月日转为日期格式.
+     *
+     * @param year  年
+     * @param month 月
+     * @param day   日
+     * @return 日期格式
+     */
+    public static String toDateStr(int year, int month, int day) {
+        String result = "" + year;
+        if (month < 10) {
+            result += "-0" + month;
+        } else {
+            result += "-" + month;
+        }
+        if (day < 10) {
+            result += "-0" + day;
+        } else {
+            result += "-" + day;
+        }
+        return result;
+    }
+
     /**
      * 将时间格式的字符串转为毫秒.
      *
@@ -141,5 +165,6 @@ public class TimeKit {
     public static long getCurrentTime() {
         return System.currentTimeMillis();
     }
+
 
 }
