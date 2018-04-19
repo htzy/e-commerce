@@ -1,6 +1,7 @@
 package com.huangshihe.ecommerce.hbasesimulation;
 
 import com.huangshihe.ecommerce.ecommercehbase.hbaseservice.constants.CommonConstant;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -44,7 +46,7 @@ public class HFileCreate {
 
 
     public static class HFileImportMapper2 extends
-            Mapper<LongWritable, Text, ImmutableBytesWritable, Put> {
+            Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue> {
 
         private static final String regEx = "\"?(\\[([0-9 ,-]*)\\])\"?";
         private final Pattern pattern = Pattern.compile(regEx);
@@ -79,9 +81,10 @@ public class HFileCreate {
 
             // 拆解qualifier
             matcher = pattern.matcher(qualifierStr);
-            Put put = new Put(rowkeyByte);
+//            Put put = new Put(rowkeyByte);
             // 当前的qualifier坐标
             int qualifierIndex = 0;
+            List<KeyValue> kvList = new ArrayList<>(_qualifiers.size());
             while (matcher.find()) {
                 // 获取其中一个qualifier
                 String str = matcher.group(2);  // 由逗号分隔的字节数组
@@ -99,12 +102,21 @@ public class HFileCreate {
                     LOGGER.error("qualifiers不足！qualifiers:{}, qualifierIndex", _qualifiers, qualifierIndex);
                     throw new IllegalArgumentException("qualifiers不足！");
                 }
-                put.addColumn(Bytes.toBytes(CommonConstant.FAMILY_NAME), Bytes.toBytes(qualifier), b);
-//                KeyValue keyValue = new KeyValue(rowkeyByte, Bytes.toBytes(CommonConstant.FAMILY_NAME),
-//                        Bytes.toBytes(qualifier), b);
-//                context.write(rowkey, keyValue);
+//                put.addColumn(Bytes.toBytes(CommonConstant.FAMILY_NAME), Bytes.toBytes(qualifier), b);
+                KeyValue keyValue = new KeyValue(rowkeyByte, Bytes.toBytes(CommonConstant.FAMILY_NAME),
+                        Bytes.toBytes(qualifier), b);
+                kvList.add(keyValue);
             }
-            context.write(rowkey, put);
+            // 手动排序KeyValue
+            kvList.sort((o1, o2) ->  Bytes.compareTo(o2.getRowArray(), o1.getRowArray()));
+            for (KeyValue keyValue : kvList) {
+                context.write(rowkey, keyValue);
+                break;
+            }
+//            kvList.stream().sorted((o1, o2) -> ).map()
+
+//            context.write(rowkey, put);
+
         }
     }
 

@@ -20,6 +20,7 @@ import javafx.scene.control.TextField;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -197,7 +198,8 @@ public class Controller {
 
                     // 设置输出的key和value类
                     job.setMapOutputKeyClass(ImmutableBytesWritable.class);
-                    job.setMapOutputValueClass(Put.class);
+//                    job.setMapOutputValueClass(Put.class);
+                    job.setMapOutputValueClass(KeyValue.class);
 
                     // speculation
                     job.setSpeculativeExecution(false);

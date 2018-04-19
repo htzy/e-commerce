@@ -382,8 +382,8 @@ unzip *.jar -d 路径
 [调整Hbase中cell大小](https://blog.csdn.net/godspeedlaile9/article/details/36875391)  
 [hadoop(mapreduce):java.lang.NoSuchMethodException: ******Mapper.<init>()](https://blog.csdn.net/drhhyh/article/details/43407495)  
 [Bulk Load－HBase数据导入最佳实践](https://blog.csdn.net/opensure/article/details/47054861)  
-
-
+[使用Spark通过Bulkload的方式导数据到Hbase](https://www.2cto.com/net/201710/692437.html)  
+[笔记-MapReduce入门](https://blog.csdn.net/mr_zhuqiang/article/details/45013081)  
 
 
 
