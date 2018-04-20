@@ -16,19 +16,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.KeyValue;
-//import org.apache.hadoop.hbase.client.ConnectionManager;
-import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
+import org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles;
 import org.apache.hadoop.hbase.mapreduce.PutSortReducer;
 import org.apache.hadoop.hbase.util.Pair;
+import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -46,8 +46,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-//import org.apache.hadoop.mapred.FileOutputFormat;
 
 @SuppressWarnings("unchecked")
 public class Controller {
@@ -71,12 +69,19 @@ public class Controller {
     @FXML
     private Button createHFileButton;
 
+    @FXML
+    private Label infoLabel;
+
     private Map<String, SimpleConfig> _map = new HashMap<>();
 
     private Simulation _simulation;
 
+    private HBaseConnectionManager _manager = HBaseConnectionManager.getInstance();
+
     @FXML
     private void initialize() {
+
+        infoLabel.setWrapText(true);
 
         recordCount.textProperty().addListener((observable, oldValue, newValue) -> {
             LOGGER.debug("observable:{}, oldValue:{}, newValue:{}", observable, oldValue, newValue);
@@ -113,6 +118,7 @@ public class Controller {
                 int count = Integer.valueOf(recordCount.getText());
                 // List结果为：rowkey+qualifier组成的pair，其中rowkey/qualifier的key为明文，value为byte数组
                 List<Pair<Pair<String, String>, Pair<String, String>>> result = _simulation.toSimulate(count);
+                LOGGER.debug("simulate record count:{}", result.size());
                 // 生成的是：byte数组，如：[0,1,2,-1]
                 // 将rowkey的key和qualifier的key写到csv文件中
                 saveToCsv(result);
@@ -137,10 +143,8 @@ public class Controller {
             return;
         } else {
             // 将生成的配置传到类变量，供HFileCreate中的qualifier生成
-
             // 设置HFileCreate中的配置
             HFileCreate.buildSimulation(_simulation);
-
         }
 
         // 禁用该键
@@ -186,7 +190,7 @@ public class Controller {
                     ///////////////////////////
                     // 通过调试，发现默认添加的序列器只有三个，这里手动添加其他的
                     // 其中Put.class用的是org.apache.hadoop.hbase.mapreduce.MutationSerialization，否则将报空指针
-                    conf.set("io.serializations","org.apache.hadoop.io.serializer.JavaSerialization,"
+                    conf.set("io.serializations", "org.apache.hadoop.io.serializer.JavaSerialization,"
                             + "org.apache.hadoop.io.serializer.WritableSerialization,"
                             + "org.apache.hadoop.hbase.mapreduce.KeyValueSerialization,"
                             + "org.apache.hadoop.hbase.mapreduce.MutationSerialization,"
@@ -203,9 +207,8 @@ public class Controller {
 
                     // 设置mapper类
                     job.setMapperClass(HFileCreate.HFileImportMapper2.class);
-                    // 这里没有用到reduce，否则这里也需设置reducer类，Put默认为PutSortReducer
+                    // HFileOutputFormat2.configureIncrementalLoadMap 没有指定Put默认为PutSortReducer，所以这里手动指定
                     job.setReducerClass(PutSortReducer.class);
-
 
                     // 设置输出的key和value类
                     job.setMapOutputKeyClass(ImmutableBytesWritable.class);
@@ -237,25 +240,25 @@ public class Controller {
                     LOGGER.error("unknown error, detail:{}", e);
                     throw new IllegalArgumentException(e);
                 } finally {
-                    try {
-                        if (table != null) {
-                            table.close();
-                        }
-                    } catch (IOException e) {
-                        LOGGER.error("close table error!");
-                    }
+                    IOUtils.closeStream(table);
                 }
 
-
-                // TODO 将HFile 导入到HBase表中
-
+                // 将HFile 导入到HBase表中
+                LoadIncrementalHFiles load = null;
+                try {
+                    load = new LoadIncrementalHFiles(conf);
+                    load.doBulkLoad(new Path(Constants.SIMULATION_HFILE_DIR),
+                            _manager.getAdmin(), table, _manager.getRegionLocator(table));
+                } catch (Exception e) {
+                    LOGGER.error("unknown error, detail:{}", e);
+                    throw new IllegalArgumentException(e);
+                }
             }
             LOGGER.debug("end create HFiles...");
             // 执行完毕，将按键恢复
             createHFileButton.setDisable(false);
         });
         thread.start();
-
     }
 
 

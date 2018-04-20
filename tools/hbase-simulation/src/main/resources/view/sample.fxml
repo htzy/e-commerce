@@ -72,5 +72,10 @@
             <Insets bottom="30.0" />
          </GridPane.margin>
       </Button>
+      <Label fx:id="infoLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="104.0" prefWidth="210.0" text="'生成HFile'会覆盖HDFS上的模拟数据，在导入HBase之后，新生成的HFile也将自动删除！" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets bottom="30.0" />
+         </GridPane.margin>
+      </Label>
    </children>
 </GridPane>

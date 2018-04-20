@@ -21,7 +21,7 @@ public class Main extends Application {
     private GridPane rootLayout;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         initRootLayout();
         primaryStage.setTitle("模拟数据生成器");
@@ -41,7 +41,8 @@ public class Main extends Application {
 
         // 获取controller
         Controller controller = loader.getController();
-        String path = FileKit.getAbsolutePath("data");
+        // TODO 这里需要设置配置文件路径
+        String path = FileKit.getAbsolutePath("./data");
         // 加载配置文件
         List<File> configs = FileKit.getAllFiles(path, "(.*)\\.properties");
         // 将配置文件名作为item放入checkbox中待选

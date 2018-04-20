@@ -166,19 +166,4 @@ public interface IHBaseDao {
 //
 //    public void insert();
 
-    /**
-     * 获取table的regionLocator.
-     *
-     * @param tableNameStr 表名
-     * @return regionLocator
-     */
-    RegionLocator getRegionLocator(String tableNameStr);
-
-    /**
-     * 获取table的regionLocator.
-     *
-     * @param table 表
-     * @return regionLocator
-     */
-    RegionLocator getRegionLocator(Table table);
 }

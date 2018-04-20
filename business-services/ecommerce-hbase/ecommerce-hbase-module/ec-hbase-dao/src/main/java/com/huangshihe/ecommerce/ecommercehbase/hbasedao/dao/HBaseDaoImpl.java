@@ -508,34 +508,4 @@ public class HBaseDaoImpl implements IHBaseDao {
         return result;
     }
 
-    /**
-     * 获取table的regionLocator.
-     *
-     * @param tableNameStr 表名
-     * @return regionLocator
-     */
-    public RegionLocator getRegionLocator(String tableNameStr) {
-        try {
-            return getConnection().getRegionLocator(TableName.valueOf(tableNameStr));
-        } catch (IOException e) {
-            LOGGER.error("get regionLocator! tableNameStr: {}, network exception occurs? detail: {}", tableNameStr, e);
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    /**
-     * 获取table的regionLocator.
-     *
-     * @param table 表
-     * @return regionLocator
-     */
-    public RegionLocator getRegionLocator(Table table) {
-        try {
-            return getConnection().getRegionLocator(table.getName());
-        } catch (IOException e) {
-            LOGGER.error("get regionLocator! table: {}, network exception occurs? detail: {}", table, e);
-            throw new IllegalArgumentException(e);
-        }
-    }
-
 }

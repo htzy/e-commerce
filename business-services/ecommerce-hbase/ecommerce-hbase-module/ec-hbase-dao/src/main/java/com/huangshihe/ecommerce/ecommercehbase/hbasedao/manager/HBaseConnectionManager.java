@@ -3,8 +3,12 @@ package com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.HBaseDaoImpl;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.RegionLocator;
+import org.apache.hadoop.hbase.client.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +57,6 @@ public class HBaseConnectionManager {
     public static HBaseConnectionManager getInstance() {
         return INSTANCE;
     }
-
 
 
     /**
@@ -147,10 +150,55 @@ public class HBaseConnectionManager {
                     connection = createConnection(configuration);
                 } catch (IOException e) {
                     LOGGER.error("[HBaseConnectionManager] init failed! {}", e);
+                    throw new IllegalArgumentException("init failed!");
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
                 }
             }
+        }
+    }
+
+    /**
+     * 获取admin.
+     *
+     * @return admin
+     */
+    public Admin getAdmin() {
+        try {
+            return getConnection().getAdmin();
+        } catch (IOException e) {
+            LOGGER.error("get Admin! network exception occurs? detail: {}", e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * 获取table的regionLocator.
+     *
+     * @param tableNameStr 表名
+     * @return regionLocator
+     */
+    public RegionLocator getRegionLocator(String tableNameStr) {
+        try {
+            return getConnection().getRegionLocator(TableName.valueOf(tableNameStr));
+        } catch (IOException e) {
+            LOGGER.error("get regionLocator! tableNameStr: {}, network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * 获取table的regionLocator.
+     *
+     * @param table 表
+     * @return regionLocator
+     */
+    public RegionLocator getRegionLocator(Table table) {
+        try {
+            return getConnection().getRegionLocator(table.getName());
+        } catch (IOException e) {
+            LOGGER.error("get regionLocator! table: {}, network exception occurs? detail: {}", table, e);
+            throw new IllegalArgumentException(e);
         }
     }
 

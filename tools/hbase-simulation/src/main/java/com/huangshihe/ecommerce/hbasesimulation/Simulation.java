@@ -108,7 +108,7 @@ public class Simulation {
                 Pair<Pair<String, String>, Pair<String, String>> pair =
                         simulate(new Date(_begin.getTime() + i * 5000));
 
-                if (pair.getFirst() != null && pair.getFirst().getFirst() != null && i < count) {
+                if (pair.getFirst() != null && pair.getFirst().getFirst() != null && size < count) {
                     pairs.add(pair);
                     // size为当前条数，即pairs.size()
                     size++;
