@@ -13,6 +13,7 @@ import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
@@ -505,6 +506,36 @@ public class HBaseDaoImpl implements IHBaseDao {
             throw new IllegalArgumentException(e);
         }
         return result;
+    }
+
+    /**
+     * 获取table的regionLocator.
+     *
+     * @param tableNameStr 表名
+     * @return regionLocator
+     */
+    public RegionLocator getRegionLocator(String tableNameStr) {
+        try {
+            return getConnection().getRegionLocator(TableName.valueOf(tableNameStr));
+        } catch (IOException e) {
+            LOGGER.error("get regionLocator! tableNameStr: {}, network exception occurs? detail: {}", tableNameStr, e);
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * 获取table的regionLocator.
+     *
+     * @param table 表
+     * @return regionLocator
+     */
+    public RegionLocator getRegionLocator(Table table) {
+        try {
+            return getConnection().getRegionLocator(table.getName());
+        } catch (IOException e) {
+            LOGGER.error("get regionLocator! table: {}, network exception occurs? detail: {}", table, e);
+            throw new IllegalArgumentException(e);
+        }
     }
 
 }

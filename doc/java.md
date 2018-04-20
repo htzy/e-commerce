@@ -384,6 +384,6 @@ unzip *.jar -d 路径
 [Bulk Load－HBase数据导入最佳实践](https://blog.csdn.net/opensure/article/details/47054861)  
 [使用Spark通过Bulkload的方式导数据到Hbase](https://www.2cto.com/net/201710/692437.html)  
 [笔记-MapReduce入门](https://blog.csdn.net/mr_zhuqiang/article/details/45013081)  
-
+[使用BulkLoad快速向HBase导入数据](https://zhuanlan.zhihu.com/p/28841351)  
 
 

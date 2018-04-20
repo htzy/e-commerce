@@ -21,10 +21,13 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.KeyValue;
+//import org.apache.hadoop.hbase.client.ConnectionManager;
+import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
+import org.apache.hadoop.hbase.mapreduce.PutSortReducer;
 import org.apache.hadoop.hbase.util.Pair;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -176,6 +179,7 @@ public class Controller {
                 // 获取表
                 Table table = hbaseDao.getTable(tableName);
 
+
                 // 生成Job，注意以下的包别导错！
                 try {
 
@@ -192,29 +196,32 @@ public class Controller {
 
                     Job job = Job.getInstance(conf, "create HFile");
                     job.setJarByClass(Controller.class);
-                    // 设置mapper类
-                    job.setMapperClass(HFileCreate.HFileImportMapper2.class);
-                    // 这里没有用到reduce，否则这里也需设置reducer类
-
-                    // 设置输出的key和value类
-                    job.setMapOutputKeyClass(ImmutableBytesWritable.class);
-//                    job.setMapOutputValueClass(Put.class);
-                    job.setMapOutputValueClass(KeyValue.class);
-
-                    // speculation
-                    job.setSpeculativeExecution(false);
-                    job.setReduceSpeculativeExecution(false);
 
                     // in/out format
                     job.setInputFormatClass(TextInputFormat.class);
                     job.setOutputFormatClass(HFileOutputFormat2.class);
 
+                    // 设置mapper类
+                    job.setMapperClass(HFileCreate.HFileImportMapper2.class);
+                    // 这里没有用到reduce，否则这里也需设置reducer类，Put默认为PutSortReducer
+                    job.setReducerClass(PutSortReducer.class);
+
+
+                    // 设置输出的key和value类
+                    job.setMapOutputKeyClass(ImmutableBytesWritable.class);
+                    job.setMapOutputValueClass(Put.class);
+//                    job.setMapOutputValueClass(KeyValue.class);
+
+                    // speculation
+                    job.setSpeculativeExecution(false);
+                    job.setReduceSpeculativeExecution(false);
+
                     // 设置输入/输出路径
                     FileInputFormat.setInputPaths(job, datFilePath);
                     FileOutputFormat.setOutputPath(job, new Path(Constants.SIMULATION_HFILE_DIR));
 
+//                    HFileOutputFormat2.configureIncrementalLoad(job, table, hbaseDao.getRegionLocator(table));
                     HFileOutputFormat2.configureIncrementalLoadMap(job, table);
-
                     // 设置等待
                     job.waitForCompletion(true);
                 } catch (IOException e) {

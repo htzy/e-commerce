@@ -46,7 +46,7 @@ public class HFileCreate {
 
 
     public static class HFileImportMapper2 extends
-            Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue> {
+            Mapper<LongWritable, Text, ImmutableBytesWritable, Put> {
 
         private static final String regEx = "\"?(\\[([0-9 ,-]*)\\])\"?";
         private final Pattern pattern = Pattern.compile(regEx);
@@ -81,7 +81,9 @@ public class HFileCreate {
 
             // 拆解qualifier
             matcher = pattern.matcher(qualifierStr);
-//            Put put = new Put(rowkeyByte);
+
+            Put put = new Put(rowkeyByte);
+
             // 当前的qualifier坐标
             int qualifierIndex = 0;
             List<KeyValue> kvList = new ArrayList<>(_qualifiers.size());
@@ -102,20 +104,26 @@ public class HFileCreate {
                     LOGGER.error("qualifiers不足！qualifiers:{}, qualifierIndex", _qualifiers, qualifierIndex);
                     throw new IllegalArgumentException("qualifiers不足！");
                 }
-//                put.addColumn(Bytes.toBytes(CommonConstant.FAMILY_NAME), Bytes.toBytes(qualifier), b);
-                KeyValue keyValue = new KeyValue(rowkeyByte, Bytes.toBytes(CommonConstant.FAMILY_NAME),
-                        Bytes.toBytes(qualifier), b);
-                kvList.add(keyValue);
+
+//
+//
+                put.addColumn(Bytes.toBytes(CommonConstant.FAMILY_NAME), Bytes.toBytes(qualifier), b);
+//                KeyValue keyValue = new KeyValue(rowkeyByte, Bytes.toBytes(CommonConstant.FAMILY_NAME),
+//                        Bytes.toBytes(qualifier), b);
+//                kvList.add(keyValue);
             }
+            context.write(rowkey, put);
+
+            /*
             // 手动排序KeyValue
-            kvList.sort((o1, o2) ->  Bytes.compareTo(o2.getRowArray(), o1.getRowArray()));
+            kvList.sort((o1, o2) -> Bytes.compareTo(o2.getRowArray(), o1.getRowArray()));
+
             for (KeyValue keyValue : kvList) {
                 context.write(rowkey, keyValue);
                 break;
             }
-//            kvList.stream().sorted((o1, o2) -> ).map()
+            */
 
-//            context.write(rowkey, put);
 
         }
     }

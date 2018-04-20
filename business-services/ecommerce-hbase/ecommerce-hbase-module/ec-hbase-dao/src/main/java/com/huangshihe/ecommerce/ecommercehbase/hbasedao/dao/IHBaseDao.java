@@ -1,10 +1,13 @@
 package com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao;
 
 import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.Filter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -162,4 +165,20 @@ public interface IHBaseDao {
 //    public void deleteColumnFamily();
 //
 //    public void insert();
+
+    /**
+     * 获取table的regionLocator.
+     *
+     * @param tableNameStr 表名
+     * @return regionLocator
+     */
+    RegionLocator getRegionLocator(String tableNameStr);
+
+    /**
+     * 获取table的regionLocator.
+     *
+     * @param table 表
+     * @return regionLocator
+     */
+    RegionLocator getRegionLocator(Table table);
 }
