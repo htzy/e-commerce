@@ -7,6 +7,24 @@ brew install hbase
 # 安装目录：/usr/local/Cellar/hbase/1.2.6
 ```
 
+# 配置
+```shell
+cd /usr/local/opt/hbase/libexec/conf/
+vim hbase-site.xml 
+#
+#  <property>
+#    <name>hbase.rootdir</name>
+#    <value>hdfs://localhost:9000/hbase</value>
+#    <!--    <value>file:///usr/local/var/hbase</value>-->
+#  </property>
+
+vim hbase-env.sh
+
+export HBASE_MANAGES_ZK=false
+
+
+```
+
 # 常用命令
 ```shell
 # To have launchd start hbase now and restart at login:
@@ -46,6 +64,8 @@ import org.apache.hadoop.io.IOUtils;
 IOUtils.closeStream(table);
 // 也可以利用try-with-resources，自动关闭try(open table){}catch(){}
 ```
+
+
 
 
 # 禁用自带zookeeper
@@ -323,9 +343,15 @@ Failed after retry of OutOfOrderScannerNextException: was there a rpc timeout?
     基本可以确定为自定义的filter中存在错误，导致数据没有传输成功，可以在关键数据转换的地方加日志，注意修改日志级别，
     如果不方便修改，就直接加error级别日志，日志地址在启动hbase（start-hbase.sh）的时候会给出。
     本机的日志文件在：/usr/local/var/log/hbase/hbase-huangshihe-master-bogon.out，该配置项在hbase-env.sh文件中。
+    hbase启动日志：/usr/local/var/log/hbase/hbase-huangshihe-master-huangshihedeMacBook-Pro.local.log
     ```shell
     export HBASE_LOG_DIR="${HBASE_LOG_DIR:-/usr/local/var/log/hbase}"
     ```
+
+2. 启动时HMaster过几秒消失，日志中报错：Master exiting？  
+    参考：https://blog.csdn.net/liudi1993/article/details/77871303，
+    如果修复过程中报错，就删干净点（/usr/local/var下的），备份原有配置文件，直接重装吧。
+
 
 # 数据大小
 ```java

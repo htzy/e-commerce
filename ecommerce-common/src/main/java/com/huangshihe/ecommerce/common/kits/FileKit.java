@@ -162,6 +162,17 @@ public class FileKit {
 
     // 检查文件夹是否存在
 
+    /**
+     * 检查文件或文件夹是否存在.
+     *
+     * @param filePath 路径
+     * @return 是否存在
+     */
+    public static boolean isExists(String filePath) {
+        File file = new File(filePath);
+        return file.exists();
+    }
+
     // 检查文件是否存在
 
     // 新建文件
@@ -177,6 +188,10 @@ public class FileKit {
     public static void copyOrReplace(InputStream inputStream, File target) {
         if (inputStream == null || target == null) {
             return;
+        }
+        // 如果文件不存在，则创建文件
+        if (!target.exists() || !target.isFile()) {
+            createFile(target.getParent(), target.getName());
         }
         try {
             Files.copy(inputStream, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -262,6 +277,16 @@ public class FileKit {
         } finally {
             writer.close();
         }
+    }
+
+    /**
+     * 获取当前路径.
+     *
+     * @return path
+     */
+    public static String getCurrentPath() {
+        File directory = new File(".");
+        return directory.getAbsolutePath();
     }
 
 

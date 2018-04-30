@@ -9,6 +9,9 @@ DATA_ROOT="/usr/local/opt/ecommerce/data/"
 # 打包项目
 cd "$PROJECT_ROOT" && mvn clean install -Dmaven.test.skip=true
 
+# TODO 将hbase-dao等jar包上传到hbase依赖库中，这里暂时使用符号链接
+ln -s /Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-dao/0.0.1/ec-hbase-dao-0.0.1.jar /usr/local/opt/hbase/libexec/lib/ec-hbase-dao-0.0.1.jar
+
 #unzip *config-0.0.1.jar -d /usr/local/opt/ecommerce
 echo 'begin to deploy...'
 #find "$PROJECT_ROOT" -type f -name "\*.jar"

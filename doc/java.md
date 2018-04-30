@@ -334,6 +334,8 @@ mvn clean install -Dmaven.test.skip=true
 ```shell
 # 以下命令不可用：C只有在创建或者更新jar包时作用才是指定目录 
 # jar xvf *.jar -C 路径
+# 解压到当前目录下
+jar xvf *.jar
 
 unzip *.jar -d 路径
 

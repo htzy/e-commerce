@@ -110,7 +110,24 @@ TODO
 # 查看后台进程
 jps
 
-# hadoop namenode格式化
+# hadoop namenode格式化，格式化之前，删除原有数据（具体可参考：《重新格式化HDFS的方法》）：
+# 1.1 清除原有数据
+cd /usr/local/var/hadoop
+rm -rf *
+
+# datanode
+# cd /usr/local/var/hadoop/datanode
+# namenode
+# cd /usr/local/var/hadoop/hdfs?
+
+# 由于hbase的数据存储在hadoop上，所以必须也清空hbase中的数据hbase-site.xml
+cd /usr/local/var/zookeeper
+rm -rf *
+# 若遇到无法启动HMaster的情况，可以尝试如下命令
+hbase org.apache.hadoop.hbase.util.hbck.OfflineMetaRepair 
+# 如果报错，则直接备份hbase原有配置，删掉hbase（/usr/local/var下的）相关内容，直接重装hbase吧，别纠结了。
+
+# 1.2 格式化
 hadoop namenode -format
 
 # 启动hadoop，注意要到hadoop目录下执行
@@ -149,4 +166,4 @@ DataNode: http://localhost:50070/
 [Mac 安装 hadoop+hive+hbase+spark](http://blog.csdn.net/hubin232/article/details/76769265)  
 [hadoop_cluster搭建](https://www.jianshu.com/p/5f4be94630a3)  
 [如何在MacOSX上安装Hadoop(how to install hadoop on mac os x)](http://www.ifzer.com/2014/10/31/how_to_install_hadoop_on_mac_ox_x/)
-
+[重新格式化HDFS的方法](https://blog.csdn.net/yeruby/article/details/21542465)  

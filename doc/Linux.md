@@ -50,3 +50,10 @@ netstat -nr
 [brew安装指定版本的软件](https://www.jianshu.com/p/aadb54eac0a8)
 [mac中使用brew安装软件，下载太慢怎么办？](https://www.cnblogs.com/dormscript/p/5832669.html)
 [Getting the source directory of a Bash script from within](https://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within)
+[Linux下的压缩和解压缩命令——jar](https://www.cnblogs.com/vurtne-lu/p/6208459.html)
+
+
+
+
+
+
