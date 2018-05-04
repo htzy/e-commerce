@@ -6,12 +6,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Main extends Application {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     /**
      * stage.
@@ -41,13 +51,29 @@ public class Main extends Application {
 
         // 获取controller
         Controller controller = loader.getController();
-        // TODO 这里需要设置配置文件路径
-        String path = FileKit.getAbsolutePath("./data");
-        // 加载配置文件
-        List<File> configs = FileKit.getAllFiles(path, "(.*)\\.properties");
-        // 将配置文件名作为item放入checkbox中待选
+        LOGGER.debug("currentPath:{}", FileKit.getCurrentPath());
+        String path = FileKit.getCurrentPath() + "/simulation-data/";
+        // 如果路径不存在，则使用resources下的配置文件
+        if (!FileKit.isExists(path)) {
+            LOGGER.debug("simulation-data is missing, use inner data...");
+            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("data/origin.properties");
 
-        controller.buildItems(configs);
+            if (in != null) {
+                // 将内部文件拷到外面
+                File tmp = new File("simulation-data/origin.properties");
+                FileKit.copyOrReplace(in, tmp);
+                controller.buildItems(Collections.singletonList(tmp));
+            } else {
+                LOGGER.error("data in jar is missing...");
+                throw new IllegalArgumentException("data in jar is missing...");
+            }
+        } else {
+            // 加载配置文件
+            List<File> configs = FileKit.getAllFiles(path, "(.*)\\.properties");
+            // 将配置文件名作为item放入checkbox中待选
+            controller.buildItems(configs);
+        }
+
 
         // 都在controller中做：// 设置"启动"事件 // 读取配置文件
 
