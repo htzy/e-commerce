@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 /**
  * 数字工具类.
@@ -90,6 +91,34 @@ public class DigitKit {
      */
     public static boolean isUHexDigit(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+    }
+
+    /**
+     * 检查是否是10进制的数字.
+     *
+     * @param c 字符
+     * @return 是否是10进制的数字
+     */
+    public static boolean isTenDigit(char c) {
+        return (c >= '0' && c <= '9');
+    }
+
+    /**
+     * 检查是否是10进制的数字.
+     *
+     * @param num 数字
+     * @return 是否是10进制的数字
+     */
+    public static boolean isTenNum(String num) {
+        if (StringKit.isNotEmpty(num)) {
+            for (char c : num.toCharArray()) {
+                if (!isTenDigit(c)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -266,4 +295,59 @@ public class DigitKit {
         }
         return count;
     }
+
+
+    /**
+     * 调整字节数组的长度，短了只需要更换一个更长的数组即可；长了就将高位去掉.
+     *
+     * @param bytes  源字节数组
+     * @param newLen 长度
+     * @return 调整后字符
+     */
+    public static byte[] adjustLen(byte[] bytes, int newLen) {
+        if (newLen < 0) {
+            return null;
+        }
+        if (newLen == 0) {
+            return new byte[0];
+        }
+        if (bytes == null || bytes.length == 0) {
+            return new byte[newLen];
+        }
+        return Arrays.copyOf(bytes, newLen);
+    }
+
+    /**
+     * 调整字节数组的长度，短了只需要更换一个更长的数组即可，并填充fillByte；长了就将高位去掉.
+     *
+     * @param bytes  源字节数组
+     * @param newLen 长度
+     * @return 调整后字符
+     */
+    public static byte[] adjustLen(byte[] bytes, int newLen, byte fillByte) {
+        if (newLen < 0) {
+            return null;
+        }
+        if (newLen == 0) {
+            return new byte[0];
+        }
+        if (bytes == null || bytes.length == 0) {
+            byte[] result = new byte[newLen];
+            for (int i = 0; i < newLen; i++) {
+                result[i] = fillByte;
+            }
+            return result;
+        }
+        if (bytes.length < newLen) {
+            byte[] result = Arrays.copyOf(bytes, newLen);
+            byte[] fill = new byte[newLen - bytes.length];
+            for (int i = 0; i < fill.length; i++) {
+                fill[i] = fillByte;
+            }
+            System.arraycopy(fill, 0, result, bytes.length, fill.length);
+            return result;
+        }
+        return Arrays.copyOf(bytes, newLen);
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.huangshihe.ecommerce.common.aop;
 
-import com.huangshihe.ecommerce.common.kits.AopKit;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.InvocationTargetException;

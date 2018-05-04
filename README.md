@@ -57,8 +57,11 @@
 # 部署及启动
 - 先部署再启动
 - 部署
-    - 统一按层级解压每个组件下的配置jar到某一个目录下
+    - 统一按层级解压每个组件下的配置jar到（/usr/local/opt/ecommerce/data/configs/）目录下
     - 上传必要的jar包（如ec-hbase-dao）到集群上
+    - 所有的依赖jar包拷贝到：/usr/local/opt/ecommerce/lib目录下
+    - 配置文件jar包拷贝到：/usr/local/opt/ecommerce/configs/jar目录下
+    - 配置文件jar包将在部署代码中的java部分解压到数据目录下，如hbase配置文件目录：/usr/local/opt/ecommerce/data/configs/hbase/pub
     
 - 启动
     - 暂不引入bundle（osgi），当前成本太高

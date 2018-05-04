@@ -3,6 +3,7 @@ package com.huangshihe.ecommerce.pub.config.threadpool;
 import com.huangshihe.ecommerce.common.aop.Enhancer;
 import com.huangshihe.ecommerce.common.factory.ServicesFactory;
 import com.huangshihe.ecommerce.common.kits.AopKit;
+import com.huangshihe.ecommerce.common.kits.ClassKit;
 import com.huangshihe.ecommerce.common.kits.StringKit;
 import com.huangshihe.ecommerce.common.kits.TimeKit;
 import com.huangshihe.ecommerce.pub.config.Config;
@@ -38,7 +39,6 @@ public class ThreadPoolManager {
     private static ThreadPoolManager _instance = new ThreadPoolManager();
 
     private ThreadPoolManager() {
-        init();
     }
 
     public static ThreadPoolManager getInstance() {
@@ -56,7 +56,7 @@ public class ThreadPoolManager {
     /**
      * 初始化，获取threadPool的配置文件，并依此创建线程池
      */
-    private void init() {
+    public void init() {
         LOGGER.info("init ThreadPoolManager begin...");
         List<Config> configs = ConfigManager.getInstance().getThreadPoolConfig();
         configs.stream().map(Config::getConfigEntity).forEach(this::createPools);
@@ -113,19 +113,28 @@ public class ThreadPoolManager {
             Method method = null;
             try {
                 classType = Class.forName(task.getClassName());
-                method = classType.getMethod(task.getMethodName());
-
-                // 根据class，从ServiceFactory中获取对象，若为空，则新建一个增强对象
-                // 如果存在，则判断是否为增强对象，如果不是，则替换为增强对象；如果是增强对象，则根据新方法增强原有对象
                 Object object = _serviceFactory.getServiceObject(classType);
-                if (object == null) {
-                    object = Enhancer.enhance(classType, method, ThreadTaskInterceptor.class);
+                // 如果方法名为所有方法的话，则增强所有方法
+                if (ClassKit.isMeanAllMethod(task.getMethodName())) {
+                    if (object == null) {
+                        object = Enhancer.enhance(classType, ThreadTaskInterceptor.class);
+                    } else {
+                        object = Enhancer.enhance(object, ThreadTaskInterceptor.class);
+                    }
+                    addToMap(classType, serviceIdentity, executor);
                 } else {
-                    object = Enhancer.enhance(object, method, ThreadTaskInterceptor.class);
+                    // 根据class，从ServiceFactory中获取对象，若为空，则新建一个增强对象
+                    // 如果存在，则判断是否为增强对象，如果不是，则替换为增强对象；如果是增强对象，则根据新方法增强原有对象
+                    method = classType.getMethod(task.getMethodName());
+                    if (object == null) {
+                        object = Enhancer.enhance(classType, method, ThreadTaskInterceptor.class);
+                    } else {
+                        object = Enhancer.enhance(object, method, ThreadTaskInterceptor.class);
+                    }
+                    addToMap(classType, method, serviceIdentity, executor);
                 }
                 _serviceFactory.addServiceObject(classType, object);
 
-                addToMap(classType, method, serviceIdentity, executor);
             } catch (ClassNotFoundException e) {
                 LOGGER.error("class not found! detail:{}", e);
                 throw new IllegalArgumentException("class not found!");
@@ -157,10 +166,17 @@ public class ThreadPoolManager {
             LOGGER.debug("initDelay1:{}", initDelay);
             initDelay = initDelay >= 0 ? initDelay : TimeKit.ONE_DAY + initDelay;
             LOGGER.debug("initDelay2:{}", initDelay);
-            ThreadTask threadTask = new ThreadTask(task);
-            executor.scheduleAtFixedRate(threadTask, initDelay, pool.getPeriod(), TimeUnit.MILLISECONDS);
+            // 这里不允许使用方法通配符，只有静态方法才能支持定期执行，且定期执行很占用线程池空间，所以必须手动指定，确保无误。
+            // 需要注意：这里的定期任务返回值都是空，null！
+            if (!ClassKit.isMeanAllMethod(task.getMethodName())) {
+                ThreadTask threadTask = new ThreadTask(task);
+                executor.scheduleAtFixedRate(threadTask, initDelay, pool.getPeriod(), TimeUnit.MILLISECONDS);
 
-            addToMap(threadTask.getMethodIdentity(), serviceIdentity, executor);
+                addToMap(threadTask.getMethodIdentity(), serviceIdentity, executor);
+            } else {
+                LOGGER.error("all_method is not allowed used in scheduled thread pool!");
+                throw new IllegalArgumentException("all_method is not allowed used in scheduled thread pool!");
+            }
         }
     }
 
@@ -171,6 +187,17 @@ public class ThreadPoolManager {
         String methodIdentity = AopKit.getMethodIdentity(cls, method);
         LOGGER.debug("methodIdentity:{}", methodIdentity);
         addToMap(methodIdentity, executorIdentity, executor);
+    }
+
+    private void addToMap(Class<?> cls, String executorIdentity, ExecutorService executor) {
+        LOGGER.debug("add to map, cls:{}, executorIdentity:{}, executor:{}",
+                cls, executorIdentity, executor);
+
+        for (Method method : ClassKit.getMethods(cls)) {
+            String methodIdentity = AopKit.getMethodIdentity(cls, method);
+            LOGGER.debug("methodIdentity:{}", methodIdentity);
+            addToMap(methodIdentity, executorIdentity, executor);
+        }
     }
 
     private void addToMap(String methodIdentity, String executorIdentity, ExecutorService executor) {

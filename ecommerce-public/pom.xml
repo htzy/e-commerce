@@ -53,9 +53,15 @@
             <artifactId>cglib-nodep</artifactId>
             <version>3.1</version>
         </dependency>
+        <!--依赖本项目的所有jar-->
         <dependency>
             <groupId>com.huangshihe.ecommerce</groupId>
             <artifactId>ecommerce-common</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.huangshihe.ecommerce.ecommerce-hbase</groupId>
+            <artifactId>ec-hbase-service</artifactId>
             <version>0.0.1</version>
         </dependency>
 

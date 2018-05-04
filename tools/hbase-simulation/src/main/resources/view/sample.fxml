@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.huangshihe.ecommerce.hbasesimulation.Controller">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="60.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="-Infinity" minHeight="50.0" prefHeight="100.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Button fx:id="activeButton" mnemonicParsing="false" onAction="#onActive" text="启动" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets bottom="30.0" />
+         </GridPane.margin>
+      </Button>
+      <DatePicker fx:id="beginTime" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets right="2.0" />
+         </GridPane.margin>
+      </DatePicker>
+      <DatePicker fx:id="endTime" prefHeight="30.0" prefWidth="185.0" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets right="8.0" />
+         </GridPane.margin>
+      </DatePicker>
+      <Label text="开始时间" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </Label>
+      <Label text="结束时间" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="8.0" />
+         </GridPane.margin>
+      </Label>
+      <ChoiceBox fx:id="configCb" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+         <GridPane.margin>
+            <Insets bottom="30.0" right="20.0" />
+         </GridPane.margin>
+      </ChoiceBox>
+      <Label text="模拟数据生成器" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Label text="当前配置项" GridPane.columnIndex="2">
+         <GridPane.margin>
+            <Insets bottom="30.0" left="10.0" />
+         </GridPane.margin>
+      </Label>
+      <Label text="记录数" GridPane.columnIndex="2">
+         <GridPane.margin>
+            <Insets left="20.0" top="50.0" />
+         </GridPane.margin>
+      </Label>
+      <TextField fx:id="recordCount" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="120.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets left="70.0" top="50.0" />
+         </GridPane.margin>
+      </TextField>
+      <Button fx:id="createHFileButton" mnemonicParsing="false" onAction="#createHFiles" text="生成HFile" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets bottom="30.0" />
+         </GridPane.margin>
+      </Button>
+      <Label fx:id="infoLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="104.0" prefWidth="210.0" text="'生成HFile'会覆盖HDFS上的模拟数据，在导入HBase之后，新生成的HFile也将自动删除！" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets bottom="30.0" />
+         </GridPane.margin>
+      </Label>
+   </children>
+</GridPane>

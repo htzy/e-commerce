@@ -64,6 +64,16 @@ public class TimeKit {
     }
 
     /**
+     * date转为时间格式的字符串.
+     *
+     * @param time date
+     * @return 时间格式
+     */
+    public static String toTimeStr(Date time) {
+        return _timePattern.format(time);
+    }
+
+    /**
      * 时间戳转为时间格式.
      *
      * @param timestamp 时间戳
@@ -78,6 +88,30 @@ public class TimeKit {
             return toTimeStr(lt);
         }
         return StringKit.emptyString;
+    }
+
+
+    /**
+     * 年月日转为日期格式.
+     *
+     * @param year  年
+     * @param month 月
+     * @param day   日
+     * @return 日期格式
+     */
+    public static String toDateStr(int year, int month, int day) {
+        String result = "" + year;
+        if (month < 10) {
+            result += "-0" + month;
+        } else {
+            result += "-" + month;
+        }
+        if (day < 10) {
+            result += "-0" + day;
+        } else {
+            result += "-" + day;
+        }
+        return result;
     }
 
     /**
@@ -131,5 +165,6 @@ public class TimeKit {
     public static long getCurrentTime() {
         return System.currentTimeMillis();
     }
+
 
 }

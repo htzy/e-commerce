@@ -1,9 +1,9 @@
 package com.huangshihe.ecommerce.ecommercespark.task.tasks;
 
+import com.huangshihe.ecommerce.common.configs.SimpleConfig;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager;
-import com.huangshihe.ecommerce.ecommercespark.commonconfig.entity.ECConfiguration;
-import com.huangshihe.ecommerce.ecommercespark.commonconfig.manager.ECConfigurationManager;
 import com.huangshihe.ecommerce.ecommercespark.task.constants.SparkConstants;
+import com.huangshihe.ecommerce.ecommercespark.task.util.TaskUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
@@ -14,7 +14,6 @@ import org.apache.hadoop.hbase.protobuf.generated.ClientProtos;
 import org.apache.hadoop.hbase.util.Base64;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.spark.SparkConf;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -50,12 +49,13 @@ public class DemoTask {
     public static void main(String[] args) {
         // 先统一写到main方法里，实现功能再优化代码
         // TODO 这里的配置，使用common包中的ConfigKit来调用
-        ECConfiguration demoConf = ECConfigurationManager.getConfiguration(SparkConstants.DEMO_CONF_FILENAME);
+        // 这里没有必要将配置文件缓存起来，创建上下文之后，就可以直接使用该上下文即可
+        SimpleConfig demoConf = new SimpleConfig(SparkConstants.DEMO_CONF_FILENAME);
         final String master = demoConf.getProperty(SparkConstants.CONF_SPARK_MASTER);
         LOGGER.info("master:{}", master);
         SparkConf conf = new SparkConf().setAppName(SparkConstants.DEMO_APP_NAME).setMaster(master);
         JavaSparkContext sc = new JavaSparkContext(conf);
-        SQLContext sqlContext = getSqlContext(sc.sc());
+        SQLContext sqlContext = TaskUtil.getSqlContext(demoConf, sc.sc());
 
         createTestData(sc, sqlContext);
         queryFromHBaseDemo(sc, sqlContext);
@@ -63,17 +63,6 @@ public class DemoTask {
         // 关闭上下文
         sc.close();
 
-    }
-
-    public static SQLContext getSqlContext(SparkContext sparkContext) {
-        ECConfiguration demoConf = ECConfigurationManager.getConfiguration(SparkConstants.DEMO_CONF_FILENAME);
-        if (demoConf.getBoolean(SparkConstants.CONF_SPARK_LOCAL)) {
-            // 这里是单机模式，所以使用最简单的SQLContext
-            return new SQLContext(sparkContext);
-        } else {
-            // TODO 如果是生产环境，数据来源为HBase，那么需要对应的上下文。
-            return null;
-        }
     }
 
     public static void createTestData(JavaSparkContext sc, SQLContext sqlContext) {

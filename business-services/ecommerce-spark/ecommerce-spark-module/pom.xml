@@ -16,7 +16,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>ec-spark-common-config</module>
         <module>ec-spark-task</module>
         <module>ec-spark-task-manager</module>
     </modules>

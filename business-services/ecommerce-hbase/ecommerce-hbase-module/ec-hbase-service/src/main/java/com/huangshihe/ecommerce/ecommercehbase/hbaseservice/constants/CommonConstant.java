@@ -8,4 +8,10 @@ package com.huangshihe.ecommerce.ecommercehbase.hbaseservice.constants;
  * @author huangshihe
  */
 public class CommonConstant {
+
+    /**
+     * 建议只使用一个列族，且只用一个字符t来表示.
+     */
+    public static final String FAMILY_NAME = "t";
+
 }

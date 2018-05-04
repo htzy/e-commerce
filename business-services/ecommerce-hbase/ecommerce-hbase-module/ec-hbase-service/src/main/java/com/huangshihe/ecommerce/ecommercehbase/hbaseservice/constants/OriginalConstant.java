@@ -9,7 +9,7 @@ package com.huangshihe.ecommerce.ecommercehbase.hbaseservice.constants;
  */
 public class OriginalConstant {
 
-    public static final String TABLE_NAME_PRE = "t_performance_";
+    public static final String TABLE_NAME_PRE = "t_performance_original_";
 
     /**
      * ttl为一周，即数据保存一周，7天，ps:单位为秒。
@@ -17,7 +17,7 @@ public class OriginalConstant {
     public static final int TTL = 7 * 24 * 60 * 60;
 
 
-    // ----------cf info: name, offset and len---------------
+    // ----------qualifier info: name, offset and len---------------
 
     /**
      * ssid

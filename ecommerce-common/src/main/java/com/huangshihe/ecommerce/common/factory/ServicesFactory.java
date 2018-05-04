@@ -9,9 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 服务工厂类.
  * 服务使用工厂方式获取实例，首先到manager中找，如果没有的话，再创建实例，不要直接显式的创建实例。
- * 这里的Service全局只会有一个！并不需要多个！
- * TODO 若在配置文件中多次指定，同一个类，然后不同的方法，放入线程池，那么这种情况下，工厂中是有一个service还是对应多个呢？
- * TODO 解决方法：class对应的service还是只有一个，如果说之后配置多个method，那么将在对应的service中存储多个，追加需要拦截的方法
+ * 存放在_servicesMap中的Object只有一个，若在配置文件中多次指定同一个类且不同的方法，则可以采取更新Object的方法（实际为更新Object对应Method数组）
  * <p>
  * Create Date: 2018-03-17 23:39
  *

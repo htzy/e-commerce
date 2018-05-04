@@ -5,6 +5,7 @@ build/
 *.jar
 *.class
 target/
+*.log.*
 *.log
 logs/
 .DS_Store

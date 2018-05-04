@@ -101,6 +101,60 @@ public final class StringKit {
         return Integer.valueOf(param);
     }
 
+    /**
+     * 用char填充长度为len的字符串.
+     *
+     * @param len 长度
+     * @param c   填充字符
+     * @return 字符串
+     */
+    public static String fillChar(int len, char c) {
+        if (len < 0) {
+            return null;
+        } else if (len == 0) {
+            return emptyString;
+        }
+        StringBuilder result = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            result.append(c);
+        }
+        return result.toString();
+    }
+
+    /**
+     * 用char 填充长度为len的字符串.
+     *
+     * @param origin 原始字符串
+     * @param len    长度
+     * @param c      填充字符
+     * @return 字符串
+     */
+    public static String fillChar(String origin, int len, char c) {
+        if (len < 0) {
+            return null;
+        } else if (len == 0) {
+            return emptyString;
+        }
+        // 如果原始字符串为空
+        if (isEmpty(origin)) {
+            StringBuilder result = new StringBuilder(len);
+            for (int i = 0; i < len; i++) {
+                result.append(c);
+            }
+            return result.toString();
+        }
+        // 如果原始字符串长度比len的要长
+        if (origin.length() >= len) {
+            // 去掉后面多余的长度
+            return origin.substring(0, len - 1);
+        }
+        StringBuilder result = new StringBuilder(origin);
+        for (int i = 0; i < len - origin.length(); i++) {
+            result.append(c);
+        }
+        return result.toString();
+    }
+
 
     /**
      * 空字符串.

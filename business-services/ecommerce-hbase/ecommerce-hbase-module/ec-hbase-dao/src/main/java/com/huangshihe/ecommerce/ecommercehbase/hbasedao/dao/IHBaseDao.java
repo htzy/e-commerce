@@ -1,9 +1,13 @@
 package com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao;
 
 import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.Filter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +28,16 @@ public interface IHBaseDao {
      * @param ttl          老化时间，单位为秒
      */
     void createTable(String tableNameStr, String[] familyNames, int ttl);
+
+    /**
+     * 创建表.
+     *
+     * @param tableNameStr 表名
+     * @param familyName   列族名
+     * @param ttl          老化时间，单位为秒
+     *                     TODO 老化时间的具体含义？当时间到了之后，能否把整个表删除，设置表的ttl？
+     */
+    void createTable(String tableNameStr, String familyName, int ttl);
 
     /**
      * 通过rowKey查询.
@@ -83,6 +97,14 @@ public interface IHBaseDao {
      */
     List<Result> query(String tableNameStr, Filter filter);
 
+    /**
+     * 获取Table.
+     *
+     * @param tableNameStr 表名
+     * @return table
+     */
+    Table getTable(String tableNameStr);
+
 
     /**
      * 根据rowKey插入值，即只有一个rowKey.
@@ -125,6 +147,14 @@ public interface IHBaseDao {
      * @return 是否存在
      */
     boolean isExists(String tableNameStr);
+
+    /**
+     * 检查表是否启动.
+     *
+     * @param tableNameStr 表名
+     * @return 是否启动
+     */
+    boolean isActive(String tableNameStr);
 //
 //    public void deleteByRowKey();
 //
@@ -135,4 +165,5 @@ public interface IHBaseDao {
 //    public void deleteColumnFamily();
 //
 //    public void insert();
+
 }
