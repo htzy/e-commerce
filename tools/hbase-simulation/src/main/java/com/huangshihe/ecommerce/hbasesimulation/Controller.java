@@ -119,8 +119,11 @@ public class Controller {
                 // List结果为：rowkey+qualifier组成的pair，其中rowkey/qualifier的key为明文，value为byte数组
                 List<Pair<Pair<String, String>, Pair<String, String>>> result = _simulation.toSimulate(count);
                 LOGGER.debug("simulate record count:{}", result.size());
+                // TODO bug，当数据量少时低优先级，数据量大后，可能产生多天数据，而这里保存到了命名为一天的文件中
                 // 生成的是：byte数组，如：[0,1,2,-1]
                 // 将rowkey的key和qualifier的key写到csv文件中
+
+                // TODO bug，当数据量少时低优先级，数据量大后，这里一次性把所有数据写到文件，而数据都在内存中，容易GC
                 saveToCsv(result);
                 // 这里将内容写到文件，另外再开一个线程去写HFile文件
                 saveToDat(result);

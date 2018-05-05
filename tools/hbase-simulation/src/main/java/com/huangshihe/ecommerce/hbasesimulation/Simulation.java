@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
@@ -99,15 +100,30 @@ public class Simulation {
         // 模拟时间，5秒5秒的过
         // key为rowkey，value为qualifier
         List<Pair<Pair<String, String>, Pair<String, String>>> pairs = new ArrayList<>(count);
+
+        Set<Integer> timeRange = _rowkey.stream()
+                .filter(record -> record.getType().equals(RecordType.TIME))
+                .findFirst()
+                .orElseThrow(NullPointerException::new).getTimeRange();
+        LOGGER.debug("timeRange:{}", timeRange);
+
         // i模拟时间，模拟5秒5秒的增加过程，size表示当前数目
         for (int i = 0, size = 0; size < count && i < (_end.getTime() / 1000 - _begin.getTime() / 1000); i++) {
-            // 每5秒可能有1000条数据？
-            int random = _random.nextInt(1000);
-            for (int j = 0; j < random; j++) {
-                // 这里删除key为null的pair
-                Pair<Pair<String, String>, Pair<String, String>> pair =
-                        simulate(new Date(_begin.getTime() + i * 5000));
 
+            Date tmpDate = new Date(_begin.getTime() + i * 5000);
+            //            if (Calendar.get(Calendar.HOUR_OF_DAY)
+
+            // 低峰时期，每5秒可能有10条数据？
+            int random = _random.nextInt(10);
+            if (timeRange.contains(tmpDate.getHours())) {
+                // 高峰时期，每5秒可能有100~1000条数据？
+                random = _random.nextInt(900) + 100;
+            }
+
+            for (int j = 0; j < random; j++) {
+                Pair<Pair<String, String>, Pair<String, String>> pair = simulate(tmpDate);
+
+                // 这里删除key为null的pair
                 if (pair.getFirst() != null && pair.getFirst().getFirst() != null && size < count) {
                     pairs.add(pair);
                     // size为当前条数，即pairs.size()
@@ -190,7 +206,7 @@ class Record {
     private int range;//0即没有范围
     private RecordType type;
     // 小时为单位
-    private Set<Integer> _timeRangeSet;
+    private Set<Integer> timeRange;
     private Date _currentTime;
 
     private Random _random = new Random();
@@ -210,14 +226,13 @@ class Record {
         String[] values = value.split(",");
         index = values[0].trim();
         len = Integer.valueOf(values[1].trim());
-        // 如果是时间，则_range表示的是范围：如：8-12;14-17;
 
         String range = values[2].trim();
         if (DigitKit.isTenNum(range)) {
             this.range = Integer.valueOf(range);
         } else {
             // 如果不是数字，说明是范围，例：9-12;14-17
-            _timeRangeSet = getTimeRange(range);
+            timeRange = buildTimeRange(range);
         }
 
         LOGGER.debug("_type:{}", values[3]);
@@ -234,7 +249,7 @@ class Record {
      * @param timeRange 时间范围
      * @return set
      */
-    private Set<Integer> getTimeRange(String timeRange) {
+    private Set<Integer> buildTimeRange(String timeRange) {
         Set<Integer> result = new HashSet<>();
         if (StringKit.isEmpty(timeRange)) {
             return result;
@@ -251,21 +266,23 @@ class Record {
         return result;
     }
 
+    protected Set<Integer> getTimeRange() {
+        return timeRange;
+    }
+
+    // TODO 低优先级，可用来写csv头
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public RecordType getType() {
+        return type;
     }
 
     public String getIndex() {
         return index;
     }
 
-    public void setIndex(String index) {
-        this.index = index;
-    }
 
     /**
      * 生成当前Record的随机值，key为明文，value为byte数组.
@@ -292,6 +309,7 @@ class Record {
                 }
             }
             break;
+            // TODO 低优先级，将租户Id带入MAC的random，免得出现多站点下出现同一个MAC的情况，那么random的范围就是指定mac range/租户数
             case MAC: {
                 if (range == 0) {
                     bytes = DigitKit.adjustLen(bytes, len, (byte) 'F');
@@ -308,8 +326,9 @@ class Record {
             case TIME: {
                 // 传进来的时间Str取小时
                 int currentHour = _currentTime.getHours();
-                // 如果该小时在List里，那么生成数据，
-                if (_timeRangeSet.contains(currentHour)) {
+                // 如果该小时在List里，那么生成数据
+
+                if (timeRange.contains(currentHour)) {
                     bytes = Bytes.toBytes(_currentTime.getTime());
                     bytes = DigitKit.adjustLen(bytes, len);
 
@@ -317,7 +336,7 @@ class Record {
                 } else {
                     // 若不在Set里，则生成范围为24的随机数，如果生成的随机数在范围里，那么则放当前时间；否则返回空
                     int randomHour = _random.nextInt(24);
-                    if (_timeRangeSet.contains(randomHour)) {
+                    if (timeRange.contains(randomHour)) {
                         bytes = Bytes.toBytes(_currentTime.getTime());
                         bytes = DigitKit.adjustLen(bytes, len);
                         str += TimeKit.toTimeStr(_currentTime);
