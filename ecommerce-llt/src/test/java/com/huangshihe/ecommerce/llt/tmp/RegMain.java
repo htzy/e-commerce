@@ -49,11 +49,22 @@ public class RegMain {
 //        String str = "";
     }
 
+    private static void test1() {
+        String dat = "157100159800801FFF201804230FFFFF";
+        String regEx = "[0-9]{6}[0-9]{6}[0-9A-Za-z]{6}([0-9]{8})[0-9A-Za-z]{6}";
+        Pattern pattern = Pattern.compile(regEx);
+        Matcher matcher = pattern.matcher(dat);
+        while (matcher.find()) {
+            String time = matcher.group(1);
+            System.out.println(time);
+        }
+    }
+
 
     public static void main(String[] args) {
 
-        test();
-
+//        test();
+        test1();
         /*
         String str = "\"[1,2,3,4,5][2,3,4,5,6]\",\"[5,4,3,2,1][6,5,4,3,2]\"";
         // 首先把它分开成两段

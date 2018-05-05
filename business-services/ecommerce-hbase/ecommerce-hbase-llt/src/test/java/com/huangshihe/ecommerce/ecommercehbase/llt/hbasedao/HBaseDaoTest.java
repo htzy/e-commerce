@@ -48,6 +48,7 @@ public class HBaseDaoTest {
     private static long stopTime;
     private static String prefix;
     private static long insertTime;
+    private static String suffix;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HBaseDaoTest.class);
@@ -249,6 +250,12 @@ public class HBaseDaoTest {
         LOGGER.debug("prefix-row:{}, len:{}", row, row.length);
         row = Bytes.add(row, Bytes.toBytes(insertTime));
         LOGGER.debug("time-row:{}, len:{}", row, row.length);
+        if (suffix != null) {
+            row = Bytes.add(row, Bytes.toBytes(suffix));
+            LOGGER.debug("suffix-row:{}, len:{}", row, row.length);
+            // 用后置空
+            suffix = null;
+        }
         for (String familyName : familyNames) {
             Map<String, String> qualifierValues = new HashMap<>(qualifiers.length);
             for (String qualifier : qualifiers) {
@@ -257,6 +264,7 @@ public class HBaseDaoTest {
             // 对于不同的rowKey插入相同的qualifierValues，仅测试。
             hBaseDao.insert(tableNameStr, row, familyName, qualifierValues);
         }
+
     }
 
     @And("^要查询的startTime为\"([^\"]*)\"$")
@@ -288,4 +296,8 @@ public class HBaseDaoTest {
         }
     }
 
+    @And("^要创建数据的rowKeys的后缀为\"([^\"]*)\"$")
+    public void 要创建数据的rowkeys的后缀为(String arg0) throws Throwable {
+        suffix = arg0;
+    }
 }
