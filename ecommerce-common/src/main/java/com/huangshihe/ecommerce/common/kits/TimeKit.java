@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -120,6 +121,7 @@ public class TimeKit {
      * @param timeStr 时间格式的字符串
      * @return 毫秒
      */
+    @Deprecated
     public static long toTimeSec(String timeStr) {
         if (StringKit.isNotEmpty(timeStr)) {
             if (timeStr.trim().equalsIgnoreCase(NOW)) {
@@ -134,6 +136,34 @@ public class TimeKit {
         }
         // 返回格林威治时间.
         return ZERO_TIME;
+    }
+
+    /**
+     * 将时间格式的字符串转为毫秒.
+     *
+     * @param timeStr 时间格式的字符串
+     * @return 毫秒
+     */
+    public static long toTimeMillSec(String timeStr) {
+        return toTimeSec(timeStr);
+    }
+
+    /**
+     * 生成时间，并转为毫秒.
+     *
+     * @param year   year
+     * @param month  1-12
+     * @param day    1-31？
+     * @param hour   0-23
+     * @param minute 0-59
+     * @param second 0-59
+     * @return 毫秒
+     */
+    public static long toTimeMillSec(int year, int month, int day, int hour, int minute, int second) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, day, hour, minute, second);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
     }
 
 

@@ -1,34 +1,29 @@
 package com.huangshihe.ecommerce.ecommercespark.task.tasks;
 
-import com.huangshihe.ecommerce.common.kits.DigitKit;
-import com.huangshihe.ecommerce.common.kits.StringKit;
+import com.huangshihe.ecommerce.common.kits.TimeKit;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.HBaseDaoImpl;
+import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.IHBaseDao;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.filter.PrefixFuzzyAndTimeFilter;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.util.HBaseDaoUtil;
 import com.huangshihe.ecommerce.ecommercespark.task.util.TaskUtil;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.FuzzyRowFilter;
-import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat;
+import org.apache.hadoop.hbase.mapreduce.TableOutputFormat;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.PairFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.tools.cmd.gen.AnyVals;
+import scala.Tuple2;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 分钟表汇聚任务.
@@ -48,6 +43,8 @@ public class PerformanceMinuteTask implements ISparkTask {
      * 配置.
      */
     private Configuration configuration = null;
+
+    private IHBaseDao dao = new HBaseDaoImpl();
 
     /**
      * 获取查询条件.
@@ -70,7 +67,7 @@ public class PerformanceMinuteTask implements ISparkTask {
 
 
         FuzzyRowFilter filter = new FuzzyRowFilter();
-        */
+
         String rowPrefixStr = "??????????????????";
         byte[] rowPrefixByte = Bytes.toBytes(rowPrefixStr);
 
@@ -90,58 +87,11 @@ public class PerformanceMinuteTask implements ISparkTask {
         }
 
         scan.setFilter(new FuzzyRowFilter(pairs));
-
-        return scan;
-    }
-
-    private Scan test() {
-        // \x00\x00\x01b\xEF\xF2\x1E\xC8   => 1524444045000
-        // 2018-04-23 08:40:45
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2018, 3, 23, 8, 40, 45);
-
-        String rowPre = StringKit.fillChar(6 + 6 + 6, '?');
-
-        byte[] rowPreByte = Bytes.toBytes(rowPre);
-        String rowSuf = StringKit.fillChar(6, '?');
-        byte[] rowSufByte = Bytes.toBytes(rowSuf);
-        byte[] row = Bytes.add(rowPreByte, Bytes.toBytes(calendar.getTimeInMillis()), rowSufByte);
-        System.out.println("1111:" + row.length);
-        String infoHexStr = "010101010101" + "010101010101" + "010101010101" +"0000000000000000" + "010101010101";
-        byte[] info = Bytes.fromHex(infoHexStr) ;
-
-        Scan scan = new Scan();
-        scan.setFilter(new FuzzyRowFilter(Collections.singletonList(Pair.newPair(row, info))));
-        return scan;
-    }
-
-    public Scan test2() {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2018, 3, 22, 0, 0, 0);
-        long start = calendar.getTimeInMillis();
-//        calendar.add(Calendar.SECOND, 5);
-        calendar.set(2018, 3, 23, 0, 0, 0);
-        calendar.set(Calendar.MILLISECOND, 0); // 1524412800000
-        try {
-            Thread.sleep(100); // 加了sleep之后：end：1524412800347
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        long end = calendar.getTimeInMillis();
-        System.out.println("end:"+end); //1524412800031
-        PrefixFuzzyAndTimeFilter filter = new PrefixFuzzyAndTimeFilter(18, start, end);
-
-        Scan scan = new Scan();
-        scan.setFilter(filter);     // scan可以查出来2条，属于
-//\x01b\xEE\x15\x5C\x00
+        */
         // \x01b\xEE\x15\x5C\x00 => 1524412800000  => 2018-04-23 00:00:00
-        // 因为查询时：包头不包尾，标注结果为23号凌晨，为什么会把凌晨的结果带出来？
-        // 因为后面还有值，所以这里会把00:00:00的结果带出来
-        // 这样理解不对！因为在过滤器里，是直接判断的时间啊！
-        // WOCAO! 查询条件指定的end结果是：1524412800031，而数据库中的1524412800000，当然可以查出来了！
-        // WOCAO! 为啥这里会多31ms啊！
-        // 当sleep之后，ms还会增加，在指定ms为0之后，稳定！
+        long startTime = TimeKit.toTimeMillSec(2018, 4, 23, 0, 0, 0);
+        long stopTime = TimeKit.toTimeMillSec(2018, 4, 23, 0, 5, 0);
+        scan.setFilter(new PrefixFuzzyAndTimeFilter(6 + 6 + 6, startTime, stopTime));
         return scan;
     }
 
@@ -152,8 +102,7 @@ public class PerformanceMinuteTask implements ISparkTask {
      */
     @Override
     public void buildQueryConfiguration() throws IOException {
-//        final Scan scan = getQueryScanCondition();
-        final Scan scan = test2();
+        final Scan scan = getQueryScanCondition();
         configuration = HBaseConnectionManager.getInstance().getNewConfiguration();
         // 输入表:原始表
         configuration.set(TableInputFormat.INPUT_TABLE, "t_performance_original_2018-04-23");
@@ -163,6 +112,7 @@ public class PerformanceMinuteTask implements ISparkTask {
 
     /**
      * 汇聚.
+     * hBaseRDD的key是rowkey，而Result则是整个row（keyvalues）
      *
      * @param hBaseRDD rdd
      */
@@ -171,19 +121,55 @@ public class PerformanceMinuteTask implements ISparkTask {
         if (hBaseRDD == null) {
             LOGGER.error("hBaseRDD is null");
         } else {
-            System.out.println("hBaseRDD count:" + hBaseRDD.count());
+            // count涉及到合并操作，不能随便打印
+//            LOGGER.debug("hBaseRDD count:{}", hBaseRDD.count());
 
-            System.out.println(hBaseRDD.take(10));
+            configuration.set(TableOutputFormat.OUTPUT_TABLE, "t_temp");
+            try {
+                Job job = Job.getInstance(configuration, "create HFile");
+                job.setOutputKeyClass(ImmutableBytesWritable.class);
+                job.setOutputValueClass(Result.class);
+                job.setOutputFormatClass(TableOutputFormat.class);
 
+                if (!dao.isExists("t_temp")) {
+                    dao.createTable("t_temp", "t", 7 * 24 * 60 * 60);
+                }
+                //---------begin，下面的方法，会将rdd写成HFile文件，并将HFile文件到hdfs上
+                // InvalidJobConfException: Output directory not set.
+                //FileOutputFormat.setOutputPath(job, new Path(Constants.SIMULATION_HFILE_DIR + File.separator + "tmp"));
+                //hBaseRDD.saveAsNewAPIHadoopDataset(job.getConfiguration());
+                //---------end
+//                hBaseRDD.saveAsHadoopDataset(job);
+
+                JavaPairRDD<ImmutableBytesWritable, Put> rdd = hBaseRDD.mapToPair(new TempMap());
+                rdd.saveAsNewAPIHadoopDataset(job.getConfiguration());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    // 必须定义为static，否则将报：task not serializable
+    static class TempMap implements PairFunction<Tuple2<ImmutableBytesWritable, Result>, ImmutableBytesWritable, Put> {
+
+        @Override
+        public Tuple2<ImmutableBytesWritable, Put> call(Tuple2<ImmutableBytesWritable, Result> tuple2) throws Exception {
+            Put put = new Put(tuple2._1().copyBytes());
+            put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("1"), Bytes.toBytes("123"));
+            return new Tuple2<>(tuple2._1(), put);
+        }
+    }
+
 
     /**
      * 任务主体.
      */
     @Override
     public void spark() {
+        // 指定spark序列化类
         System.setProperty("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+
         try (JavaSparkContext sc = TaskUtil.createSCEnv("minute")) {
             buildQueryConfiguration();
             final JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
@@ -193,6 +179,7 @@ public class PerformanceMinuteTask implements ISparkTask {
             e.printStackTrace();
         }
     }
+
 
     public static void main(String[] args) {
         new PerformanceMinuteTask().spark();
