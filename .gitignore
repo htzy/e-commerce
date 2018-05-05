@@ -10,3 +10,4 @@ target/
 logs/
 .DS_Store
 classes/
+simulation-data

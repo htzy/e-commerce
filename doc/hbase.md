@@ -351,6 +351,71 @@ Failed after retry of OutOfOrderScannerNextException: was there a rpc timeout?
 2. 启动时HMaster过几秒消失，日志中报错：Master exiting？  
     参考：https://blog.csdn.net/liudi1993/article/details/77871303，
     如果修复过程中报错，就删干净点（/usr/local/var下的），备份原有配置文件，直接重装吧。
+    
+3. 启动HMaster失败，日志中报错：Master exiting
+```log
+2018-05-05 09:00:00,550 ERROR [main] master.HMasterCommandLine: Master exiting
+java.lang.RuntimeException: Failed construction of Master: class org.apache.hadoop.hbase.master.HMasterCommandLine$LocalHMaster
+	at org.apache.hadoop.hbase.util.JVMClusterUtil.createMasterThread(JVMClusterUtil.java:143)
+	at org.apache.hadoop.hbase.LocalHBaseCluster.addMaster(LocalHBaseCluster.java:220)
+	at org.apache.hadoop.hbase.LocalHBaseCluster.<init>(LocalHBaseCluster.java:155)
+	at org.apache.hadoop.hbase.master.HMasterCommandLine.startMaster(HMasterCommandLine.java:222)
+	at org.apache.hadoop.hbase.master.HMasterCommandLine.run(HMasterCommandLine.java:137)
+	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:70)
+	at org.apache.hadoop.hbase.util.ServerCommandLine.doMain(ServerCommandLine.java:126)
+	at org.apache.hadoop.hbase.master.HMaster.main(HMaster.java:2522)
+Caused by: java.lang.NoSuchMethodError: org.apache.hadoop.util.StringUtils.toLowerCase(Ljava/lang/String;)Ljava/lang/String;
+	at org.apache.hadoop.hdfs.server.common.HdfsServerConstants$RollingUpgradeStartupOption.getAllOptionString(HdfsServerConstants.java:80)
+	at org.apache.hadoop.hdfs.server.namenode.NameNode.<clinit>(NameNode.java:264)
+	at org.apache.hadoop.hdfs.NameNodeProxies.createProxy(NameNodeProxies.java:176)
+	at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:678)
+	at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:619)
+	at org.apache.hadoop.hdfs.DistributedFileSystem.initialize(DistributedFileSystem.java:149)
+	at org.apache.hadoop.fs.FileSystem.createFileSystem(FileSystem.java:2591)
+	at org.apache.hadoop.fs.FileSystem.access$200(FileSystem.java:89)
+	at org.apache.hadoop.fs.FileSystem$Cache.getInternal(FileSystem.java:2625)
+	at org.apache.hadoop.fs.FileSystem$Cache.get(FileSystem.java:2607)
+	at org.apache.hadoop.fs.FileSystem.get(FileSystem.java:368)
+	at org.apache.hadoop.fs.Path.getFileSystem(Path.java:296)
+	at org.apache.hadoop.hbase.util.FSUtils.getRootDir(FSUtils.java:1003)
+	at org.apache.hadoop.hbase.regionserver.HRegionServer.initializeFileSystem(HRegionServer.java:609)
+	at org.apache.hadoop.hbase.regionserver.HRegionServer.<init>(HRegionServer.java:564)
+	at org.apache.hadoop.hbase.master.HMaster.<init>(HMaster.java:412)
+	at org.apache.hadoop.hbase.master.HMasterCommandLine$LocalHMaster.<init>(HMasterCommandLine.java:312)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.hadoop.hbase.util.JVMClusterUtil.createMasterThread(JVMClusterUtil.java:139)
+	... 7 more
+Sat May  5 09:01:10 CST 2018 Starting master on huangshihedeMacBook-Pro.local
+```
+方法不存在？很奇怪？定位原因为：自有的ec-hbase-dao包在打包时有问题，
+可使用的两种解决：
+- 删除/usr/local/opt/hbase/libexec/lib/ec-hbase-dao-0.0.1.jar软连接后启动成功
+- 将ec-hbase-dao中的打包plugin插件删除，具体需要删除的插件如下：
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-shade-plugin</artifactId>
+    <version>3.1.1</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>shade</goal>
+            </goals>
+            <configuration>
+                <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                </transformers>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+
+```
+
+
 
 
 # 数据大小
