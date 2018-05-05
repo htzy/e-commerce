@@ -31,11 +31,13 @@ public class TaskUtil {
 
     /**
      * 获取sqlContext.
+     * TODO 数据来源：统一使用HBase.
      *
      * @param config       配置
      * @param sparkContext sparkContext
      * @return sqlContext
      */
+    @Deprecated
     public static SQLContext getSqlContext(SimpleConfig config, SparkContext sparkContext) {
         SimpleConfig basicConf = new SimpleConfig(SparkConstants.BASIC_CONF_FILENAME);
         if (basicConf.getBoolean(SparkConstants.CONF_SPARK_LOCAL)) {
@@ -46,5 +48,18 @@ public class TaskUtil {
             return null;
         }
     }
+
+    /**
+     * 获取sqlContext.
+     * 本地测试环境下使用。
+     *
+     * @param config       配置
+     * @param sparkContext sparkContext
+     * @return sqlContext
+     */
+    public static SQLContext getLocalSqlContext(SimpleConfig config, SparkContext sparkContext) {
+        return new SQLContext(sparkContext);
+    }
+
 
 }

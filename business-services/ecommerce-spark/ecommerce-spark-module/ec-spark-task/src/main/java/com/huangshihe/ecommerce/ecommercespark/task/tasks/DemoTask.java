@@ -55,7 +55,7 @@ public class DemoTask {
         LOGGER.info("master:{}", master);
         SparkConf conf = new SparkConf().setAppName(SparkConstants.DEMO_APP_NAME).setMaster(master);
         JavaSparkContext sc = new JavaSparkContext(conf);
-        SQLContext sqlContext = TaskUtil.getSqlContext(demoConf, sc.sc());
+        SQLContext sqlContext = TaskUtil.getLocalSqlContext(demoConf, sc.sc());
 
         createTestData(sc, sqlContext);
         queryFromHBaseDemo(sc, sqlContext);
@@ -65,7 +65,7 @@ public class DemoTask {
 
     }
 
-    public static void createTestData(JavaSparkContext sc, SQLContext sqlContext) {
+    private static void createTestData(JavaSparkContext sc, SQLContext sqlContext) {
         List<Row> rows = new ArrayList<Row>();
         Row row1 = RowFactory.create(12345678L, "alian", 18, "", "alian is not my name.");
         Row row2 = RowFactory.create(2345678L, "alian2", 12, null, "alian2 is not my name.");
@@ -87,7 +87,7 @@ public class DemoTask {
         dataset.show(1);
     }
 
-    public static void queryFromHBaseDemo(JavaSparkContext sc, SQLContext sqlContext) {
+    private static void queryFromHBaseDemo(JavaSparkContext sc, SQLContext sqlContext) {
         Configuration configuration = HBaseConnectionManager.getInstance().getNewConfiguration();
 
         Scan scan = new Scan();

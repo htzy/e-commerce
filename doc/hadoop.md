@@ -151,6 +151,9 @@ hadoop fs -ls /tmp
 hadoop jar /opt/hadoop-mapreduce-examples-2.7.1.jar wordcount /tmp/1.txt /tmp/1_out
 # 在hdfs上查看文件内容，（cat命令：将文件内容打印出来）
 hadoop fs -cat /tmp/1_out/part-r-00000
+
+# 删除hdfs上的目录
+hdfs dfs -rm -r /data/simulate
 ```
 
 # 默认端口号
