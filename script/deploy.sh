@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# 设置hadoop环境变量 重启生效
+#HADOOP_HOME=/usr/local/Cellar/hadoop/2.7.3/libexec/
+#launchctl setenv HADOOP_HOME $HADOOP_HOME
+
 PROJECT_ROOT=".."
 SOURCE_ROOT="/Users/huangshihe/.m2/repository/com/huangshihe/ecommerce"
 INSTALL_JAR_ROOT="/usr/local/opt/ecommerce/lib/"

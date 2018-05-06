@@ -36,11 +36,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.huangshihe.ecommerce.ecommerce-spark</groupId>
-            <artifactId>ec-spark-common-config</artifactId>
-            <version>0.0.1</version>
-        </dependency>
     </dependencies>
 
     <build>

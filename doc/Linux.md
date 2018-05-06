@@ -52,6 +52,9 @@ netstat -nr
 [Getting the source directory of a Bash script from within](https://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within)
 [Linux下的压缩和解压缩命令——jar](https://www.cnblogs.com/vurtne-lu/p/6208459.html)
 
+# mac参考
+[Environment variables in Mac OS X](https://stackoverflow.com/questions/603785/environment-variables-in-mac-os-x)
+[Mac下Eclipse读取不到环境变量](https://blog.csdn.net/zhzdeng/article/details/64921967)
 
 
 
