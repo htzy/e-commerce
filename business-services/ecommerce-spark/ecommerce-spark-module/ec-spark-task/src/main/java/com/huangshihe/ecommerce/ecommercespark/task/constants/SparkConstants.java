@@ -18,6 +18,7 @@ public class SparkConstants {
     /**
      * master地址值.
      */
+    @Deprecated
     public static final String CONF_SPARK_MASTER = "spark.master";
 
 
@@ -26,6 +27,7 @@ public class SparkConstants {
     /**
      * basic.
      */
+    @Deprecated
     public static final String BASIC_CONF_FILENAME = "basic.properties";
 
     /**

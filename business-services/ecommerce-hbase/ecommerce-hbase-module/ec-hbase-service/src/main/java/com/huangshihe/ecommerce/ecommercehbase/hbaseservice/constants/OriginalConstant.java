@@ -22,7 +22,7 @@ public class OriginalConstant {
     /**
      * ssid
      */
-    public static final String SSID = "6";
+    public static final String SSID = "1";
 
     /**
      * ssid offset
@@ -37,7 +37,7 @@ public class OriginalConstant {
     /**
      * type 终端类型
      */
-    public static final String TYPE = "7";
+    public static final String TYPE = "2";
 
     /**
      * type offset
@@ -52,7 +52,7 @@ public class OriginalConstant {
     /**
      * channel 信道
      */
-    public static final String CHANNEL = "8";
+    public static final String CHANNEL = "3";
 
     /**
      * channel offset
@@ -67,7 +67,7 @@ public class OriginalConstant {
     /**
      * Rssi 场强
      */
-    public static final String RSSI = "9";
+    public static final String RSSI = "4";
 
     /**
      * Rssi offset
@@ -82,7 +82,7 @@ public class OriginalConstant {
     /**
      * detailType 终端具体类型
      */
-    public static final String DETAIL_TYPE = "A";
+    public static final String DETAIL_TYPE = "5";
 
     /**
      * detailType offset
@@ -97,7 +97,7 @@ public class OriginalConstant {
     /**
      * deleteFlag 老化标识
      */
-    public static final String DELETE_FLAG = "B";
+    public static final String DELETE_FLAG = "6";
 
     /**
      * deleteFlag offset
@@ -112,7 +112,7 @@ public class OriginalConstant {
     /**
      * isAssociate 设备是否通过认证
      */
-    public static final String IS_ASSOCIATED = "C";
+    public static final String IS_ASSOCIATED = "7";
 
     /**
      * isAssociated offset

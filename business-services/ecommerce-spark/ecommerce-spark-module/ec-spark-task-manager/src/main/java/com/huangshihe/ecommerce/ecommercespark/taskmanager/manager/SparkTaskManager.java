@@ -1,5 +1,10 @@
 package com.huangshihe.ecommerce.ecommercespark.taskmanager.manager;
 
+import com.huangshihe.ecommerce.common.configs.SimpleConfig;
+import com.huangshihe.ecommerce.ecommercespark.taskmanager.constants.SparkEnvConstant;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,4 +48,32 @@ public class SparkTaskManager {
      */
     private SparkTaskManager() {
     }
+
+    /**
+     * 根据appName获取sql上下文.
+     *
+     * @param appName name
+     * @return sqlContext
+     */
+    public SQLContext getSqlContext(String appName) {
+        SimpleConfig basicConf = new SimpleConfig(SparkEnvConstant.BASIC_CONF_FILENAME);
+        final String master = basicConf.getProperty(SparkEnvConstant.CONF_SPARK_MASTER);
+        SparkSession session = SparkSession.builder().appName(appName).master(master)
+                // 指定spark序列化类
+                .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                .getOrCreate();
+
+        return new SQLContext(session);
+    }
+
+    /**
+     * 根据appName获取JavaSpark上下文.
+     *
+     * @param appName name
+     * @return JavaSparkContext
+     */
+    public JavaSparkContext getJavaSparkContext(String appName) {
+        return new JavaSparkContext(getSqlContext(appName).sparkContext());
+    }
+
 }

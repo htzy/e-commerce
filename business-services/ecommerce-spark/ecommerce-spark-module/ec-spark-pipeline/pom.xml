@@ -17,6 +17,16 @@
             <name>Scala-Tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
         </repository>
+
+        <!--<repository>-->
+            <!--<id>central</id>-->
+            <!--<name>Central Repository</name>-->
+            <!--<url>http://repo.maven.apache.org/maven2</url>-->
+            <!--<layout>default</layout>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
     </repositories>
 
     <pluginRepositories>
@@ -33,12 +43,25 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
+
         <!--<dependency>-->
             <!--<groupId>org.specs</groupId>-->
             <!--<artifactId>specs</artifactId>-->
             <!--<version>1.2.5</version>-->
             <!--<scope>test</scope>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>com.huangshihe.ecommerce.ecommerce-hbase</groupId>
+            <artifactId>ec-hbase-service</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.huangshihe.ecommerce.ecommerce-spark</groupId>
+            <artifactId>ec-spark-task-manager</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

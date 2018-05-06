@@ -4,6 +4,7 @@ import com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionM
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.util.HBaseDaoUtil;
 import com.huangshihe.ecommerce.ecommercespark.task.constants.SparkConstants;
 import com.huangshihe.ecommerce.ecommercespark.task.util.TaskUtil;
+import com.huangshihe.ecommerce.ecommercespark.taskmanager.tasks.ISparkTask;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;

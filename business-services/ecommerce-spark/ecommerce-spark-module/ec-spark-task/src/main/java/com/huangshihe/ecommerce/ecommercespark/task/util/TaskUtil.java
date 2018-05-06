@@ -6,14 +6,17 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.SparkSession;
 
 /**
  * 任务工具类.
+ * // TODO 应该放入manager中
  * <p>
  * Create Date: 2018-01-01 15:14
  *
  * @author huangshihe
  */
+@Deprecated
 public class TaskUtil {
 
     /**
@@ -28,6 +31,9 @@ public class TaskUtil {
         SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
         return new JavaSparkContext(conf);
     }
+
+
+
 
     /**
      * 获取sqlContext.
@@ -53,11 +59,10 @@ public class TaskUtil {
      * 获取sqlContext.
      * 本地测试环境下使用。
      *
-     * @param config       配置
      * @param sparkContext sparkContext
      * @return sqlContext
      */
-    public static SQLContext getLocalSqlContext(SimpleConfig config, SparkContext sparkContext) {
+    public static SQLContext getLocalSqlContext(SparkContext sparkContext) {
         return new SQLContext(sparkContext);
     }
 

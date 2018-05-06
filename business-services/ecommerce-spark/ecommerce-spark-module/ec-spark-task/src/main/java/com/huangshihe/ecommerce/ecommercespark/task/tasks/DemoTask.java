@@ -55,7 +55,7 @@ public class DemoTask {
         LOGGER.info("master:{}", master);
         SparkConf conf = new SparkConf().setAppName(SparkConstants.DEMO_APP_NAME).setMaster(master);
         JavaSparkContext sc = new JavaSparkContext(conf);
-        SQLContext sqlContext = TaskUtil.getLocalSqlContext(demoConf, sc.sc());
+        SQLContext sqlContext = TaskUtil.getLocalSqlContext(sc.sc());
 
         createTestData(sc, sqlContext);
         queryFromHBaseDemo(sc, sqlContext);

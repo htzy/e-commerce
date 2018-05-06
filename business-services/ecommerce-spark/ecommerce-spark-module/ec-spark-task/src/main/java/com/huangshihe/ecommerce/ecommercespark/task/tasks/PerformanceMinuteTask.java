@@ -6,7 +6,9 @@ import com.huangshihe.ecommerce.ecommercehbase.hbasedao.dao.IHBaseDao;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.filter.PrefixFuzzyAndTimeFilter;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.manager.HBaseConnectionManager;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.util.HBaseDaoUtil;
-import com.huangshihe.ecommerce.ecommercespark.task.util.TaskUtil;
+import com.huangshihe.ecommerce.ecommercespark.pipeline.MinutePipeline;
+import com.huangshihe.ecommerce.ecommercespark.taskmanager.manager.SparkTaskManager;
+import com.huangshihe.ecommerce.ecommercespark.taskmanager.tasks.ISparkTask;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
@@ -38,6 +40,11 @@ public class PerformanceMinuteTask implements ISparkTask {
      * 日志.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceMinuteTask.class);
+
+    /**
+     * task管理.
+     */
+    private static final SparkTaskManager sparkTaskManager = SparkTaskManager.getInstance();
 
     /**
      * 配置.
@@ -107,7 +114,6 @@ public class PerformanceMinuteTask implements ISparkTask {
         // 输入表:原始表
         configuration.set(TableInputFormat.INPUT_TABLE, "t_performance_original_2018-04-23");
         configuration.set(TableInputFormat.SCAN, HBaseDaoUtil.convertScanToString(scan));
-
     }
 
     /**
@@ -124,6 +130,8 @@ public class PerformanceMinuteTask implements ISparkTask {
             // count涉及到合并操作，不能随便打印
 //            LOGGER.debug("hBaseRDD count:{}", hBaseRDD.count());
 
+
+
             configuration.set(TableOutputFormat.OUTPUT_TABLE, "t_temp");
             try {
                 Job job = Job.getInstance(configuration, "create HFile");
@@ -134,15 +142,17 @@ public class PerformanceMinuteTask implements ISparkTask {
                 if (!dao.isExists("t_temp")) {
                     dao.createTable("t_temp", "t", 7 * 24 * 60 * 60);
                 }
-                //---------begin，下面的方法，会将rdd写成HFile文件，并将HFile文件到hdfs上
+                //---------begin，// TODO 论文 下面的方法，会将rdd写成HFile文件，并将HFile文件到hdfs上
                 // InvalidJobConfException: Output directory not set.
                 //FileOutputFormat.setOutputPath(job, new Path(Constants.SIMULATION_HFILE_DIR + File.separator + "tmp"));
                 //hBaseRDD.saveAsNewAPIHadoopDataset(job.getConfiguration());
                 //---------end
 //                hBaseRDD.saveAsHadoopDataset(job);
 
-                JavaPairRDD<ImmutableBytesWritable, Put> rdd = hBaseRDD.mapToPair(new TempMap());
-                rdd.saveAsNewAPIHadoopDataset(job.getConfiguration());
+
+                MinutePipeline.pipeline(hBaseRDD);
+//                JavaPairRDD<ImmutableBytesWritable, Put> rdd = hBaseRDD.mapToPair(new TempMap());
+//                rdd.saveAsNewAPIHadoopDataset(job.getConfiguration());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -152,7 +162,6 @@ public class PerformanceMinuteTask implements ISparkTask {
 
     // 必须定义为static，否则将报：task not serializable
     static class TempMap implements PairFunction<Tuple2<ImmutableBytesWritable, Result>, ImmutableBytesWritable, Put> {
-
         @Override
         public Tuple2<ImmutableBytesWritable, Put> call(Tuple2<ImmutableBytesWritable, Result> tuple2) throws Exception {
             Put put = new Put(tuple2._1().copyBytes());
@@ -168,9 +177,9 @@ public class PerformanceMinuteTask implements ISparkTask {
     @Override
     public void spark() {
         // 指定spark序列化类
-        System.setProperty("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+//        System.setProperty("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
 
-        try (JavaSparkContext sc = TaskUtil.createSCEnv("minute")) {
+        try (JavaSparkContext sc = sparkTaskManager.getJavaSparkContext("minute")) {
             buildQueryConfiguration();
             final JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
                     configuration, TableInputFormat.class, ImmutableBytesWritable.class, Result.class);

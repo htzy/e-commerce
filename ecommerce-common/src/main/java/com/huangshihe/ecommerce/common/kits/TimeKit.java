@@ -166,6 +166,30 @@ public class TimeKit {
         return calendar.getTimeInMillis();
     }
 
+    /**
+     * 根据millis获取指定天的小时数.
+     *
+     * @param millis 毫秒
+     * @return 小时
+     */
+    public static int getHour(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    /**
+     * 根据millis获取指定小时的分钟数.
+     *
+     * @param millis 毫秒
+     * @return 分钟
+     */
+    public static int getMinute(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar.get(Calendar.MINUTE);
+    }
+
 
     /**
      * 获取今天日期.

@@ -28,10 +28,11 @@
             <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.huangshihe.ecommerce.ecommerce-spark</groupId>
-            <artifactId>ec-spark-task</artifactId>
+            <groupId>com.huangshihe.ecommerce.ecommerce-hbase</groupId>
+            <artifactId>ec-hbase-dao</artifactId>
             <version>0.0.1</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.apache.spark</groupId>

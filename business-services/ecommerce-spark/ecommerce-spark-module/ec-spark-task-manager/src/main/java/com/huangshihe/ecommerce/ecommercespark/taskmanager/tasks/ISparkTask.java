@@ -1,4 +1,4 @@
-package com.huangshihe.ecommerce.ecommercespark.task.tasks;
+package com.huangshihe.ecommerce.ecommercespark.taskmanager.tasks;
 
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
