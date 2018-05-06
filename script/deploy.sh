@@ -3,6 +3,12 @@
 # 设置hadoop环境变量 重启生效
 #HADOOP_HOME=/usr/local/Cellar/hadoop/2.7.3/libexec/
 #launchctl setenv HADOOP_HOME $HADOOP_HOME
+# mac下列出java_home
+#/usr/libexec/java_home -V
+# 设置java环境变量，重启生效
+#JAVA_HOME=$(/usr/libexec/java_home)
+#launchctl setenv JAVA_HOME $JAVA_HOME
+
 
 PROJECT_ROOT=".."
 SOURCE_ROOT="/Users/huangshihe/.m2/repository/com/huangshihe/ecommerce"
@@ -15,6 +21,10 @@ cd "$PROJECT_ROOT" && mvn clean install -Dmaven.test.skip=true
 
 # TODO 将hbase-dao等jar包上传到hbase依赖库中，这里暂时使用符号链接
 ln -s /Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-dao/0.0.1/ec-hbase-dao-0.0.1.jar /usr/local/opt/hbase/libexec/lib/ec-hbase-dao-0.0.1.jar
+# spark on yarn(cluster)模式下，拷贝文件到该目录下
+ln -s /Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-dao/0.0.1/ec-hbase-dao-0.0.1.jar /usr/local/Cellar/hadoop/2.7.3/libexec/share/hadoop/common/lib/ec-hbase-dao-0.0.1.jar
+# 将hbase-到等jar包上传到spark依赖库中
+#ln -s /Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-dao/0.0.1/ec-hbase-dao-0.0.1.jar /usr/local/opt/apache-spark/libexec/jars/ec-hbase-dao-0.0.1.jar
 
 #unzip *config-0.0.1.jar -d /usr/local/opt/ecommerce
 echo 'begin to deploy...'
