@@ -73,7 +73,31 @@ public class SparkTaskManager {
      * @return JavaSparkContext
      */
     public JavaSparkContext getJavaSparkContext(String appName) {
-        return new JavaSparkContext(getSqlContext(appName).sparkContext());
+//        new JavaSparkContext(getSqlContext(appName).sparkContext()).jars();
+//        new JavaSparkContext()
+        JavaSparkContext context = new JavaSparkContext(getSqlContext(appName).sparkContext());
+
+//        LOGGER.debug("spark.executor.extraClassPath:{}", context.getConf().get("spark.executor.extraClassPath"));
+//        LOGGER.debug("spark.driver.extraClassPath:{}", context.getConf().get("spark.driver.extraClassPath"));
+        LOGGER.error("context jars:{}", context.jars());    //[]
+
+//        context.addJar("/Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-dao/0.0.1/ec-hbase-dao-0.0.1.jar");
+//        context.addJar("/Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-hbase/ec-hbase-service/0.0.1/ec-hbase-service-0.0.1.jar");
+//        context.addJar("/Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-spark/ec-spark-pipeline/0.0.1/ec-spark-pipeline-0.0.1.jar");
+//        context.addJar("/Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-spark/ec-spark-task/0.0.1/ec-spark-task-0.0.1.jar");
+//        context.addJar("/Users/huangshihe/.m2/repository/com/huangshihe/ecommerce/ecommerce-spark/ec-spark-task-manager/0.0.1/ec-spark-task-manager-0.0.1.jar");
+//
+//        context.addJar("/usr/local/opt/hbase/libexec/lib/hbase-client-1.2.6.jar");
+//        context.addJar("/usr/local/opt/hbase/libexec/lib/hbase-common-1.2.6.jar");
+//        context.addJar("/usr/local/opt/hbase/libexec/lib/hbase-server-1.2.6.jar");
+//        context.addJar("/usr/local/opt/hbase/libexec/lib/zookeeper-3.4.6.jar");
+//        context.addJar("/usr/local/opt/hbase/libexec/lib/hbase-protocol-1.2.6.jar");
+//        context.addJar("/usr/local/opt/hbase/libexec/lib/htrace-core-3.1.0-incubating.jar");
+//        context.addJar("/usr/local/opt/hbase/libexec/lib/metrics-core-2.2.0.jar");
+
+// /usr/local/opt/hbase/libexec/lib/hbase-client-1.2.6.jar:/usr/local/opt/hbase/libexec/lib/hbase-common-1.2.6.jar:/usr/local/opt/hbase/libexec/lib/hbase-server-1.2.6.jar:/usr/local/opt/hbase/libexec/lib/zookeeper-3.4.6.jar:/usr/local/opt/hbase/libexec/lib/hbase-protocol-1.2.6.jar:/usr/local/opt/hbase/libexec/lib/htrace-core-3.1.0-incubating.jar:/usr/local/opt/hbase/libexec/lib/metrics-core-2.2.0.jar
+
+        return context;
     }
 
 }

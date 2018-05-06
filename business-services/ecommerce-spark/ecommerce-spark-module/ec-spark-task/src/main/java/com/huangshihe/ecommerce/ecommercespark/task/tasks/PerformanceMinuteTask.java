@@ -149,10 +149,12 @@ public class PerformanceMinuteTask implements ISparkTask {
                 //---------end
 //                hBaseRDD.saveAsHadoopDataset(job);
 
+                String home = System.getenv("HADOOP_CLASSPATH");
+                LOGGER.debug("home::{}", home);
 
-                MinutePipeline.pipeline(hBaseRDD);
 //                JavaPairRDD<ImmutableBytesWritable, Put> rdd = hBaseRDD.mapToPair(new TempMap());
-//                rdd.saveAsNewAPIHadoopDataset(job.getConfiguration());
+                JavaPairRDD<ImmutableBytesWritable, Put> rdd = MinutePipeline.pipeline(hBaseRDD);
+                rdd.saveAsNewAPIHadoopDataset(job.getConfiguration());
 
             } catch (Exception e) {
                 e.printStackTrace();

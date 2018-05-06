@@ -179,6 +179,21 @@ public class TimeKit {
     }
 
     /**
+     * 根据mills获取单位为小时，即丢弃分钟，秒，毫秒
+     *
+     * @param millis 毫秒
+     * @return millis
+     */
+    public static long getHours(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
+    }
+
+    /**
      * 根据millis获取指定小时的分钟数.
      *
      * @param millis 毫秒
