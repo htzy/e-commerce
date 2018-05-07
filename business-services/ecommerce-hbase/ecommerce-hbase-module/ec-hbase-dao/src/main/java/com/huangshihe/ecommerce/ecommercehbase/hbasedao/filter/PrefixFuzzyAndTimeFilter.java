@@ -51,6 +51,7 @@ public class PrefixFuzzyAndTimeFilter extends FilterBase {
     }
 
     // TODO ?????原意是解析rowkey，如果rowkey不满足要求，则把整个rowkey干掉，而这里实际是Cell，会不会影响性能？
+    // TODO 高优先级 尝试使用：filterRowKey
     @Override
     public ReturnCode filterKeyValue(Cell ignored) throws IOException {
         try {
