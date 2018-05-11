@@ -84,7 +84,7 @@ which pyspark
 # /usr/local/bin/pyspark
 
 
-# pip install toree 默认下载的是0.1x，适用于spark1.6，所有不适用于当前环境
+# pip install toree 默认下载的是0.1x，适用于spark1.6，所以不适用于当前环境
 # ref https://github.com/apache/incubator-toree/tree/master
 pip install https://dist.apache.org/repos/dist/dev/incubator/toree/0.2.0/snapshots/dev1/toree-pip/toree-0.2.0.dev1.tar.gz
 

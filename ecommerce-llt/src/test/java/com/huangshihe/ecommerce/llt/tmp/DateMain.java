@@ -26,5 +26,13 @@ public class DateMain {
         calendar.add(Calendar.SECOND, 5);
         timeStr = TimeKit.toTimeStr(calendar.getTime());//2018-04-23 00:00:05
         System.out.println(timeStr);
+
+        calendar.set(2018, 4, 23, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        for (int i = 0; i < 100; i++) {
+            calendar.add(Calendar.HOUR_OF_DAY, 1);
+            System.out.println(calendar.getTimeInMillis());
+        }
+
     }
 }
