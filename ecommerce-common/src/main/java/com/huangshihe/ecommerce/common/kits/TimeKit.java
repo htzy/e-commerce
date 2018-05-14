@@ -46,6 +46,11 @@ public class TimeKit {
     public static final long ONE_DAY = 24 * 60 * 60 * 1000;
 
     /**
+     * 时间字节长度.
+     */
+    public static final int TIME_BYTE_LEN = 8;
+
+    /**
      * 时间格式.
      */
     private static final SimpleDateFormat _timePattern = new SimpleDateFormat(TIME_PATTERN);

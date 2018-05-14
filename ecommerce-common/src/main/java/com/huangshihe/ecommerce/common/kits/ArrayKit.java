@@ -16,7 +16,6 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class ArrayKit {
 
-
     /**
      * 合并数组，并去重.
      * eg: ArrayKit.mergeWithNoSame(result, new Interceptor[]{interceptor});
@@ -69,6 +68,7 @@ public class ArrayKit {
 //        System.arraycopy(set.toArray(), 0, result, 0, set.size());
     }
 
+
     /**
      * 元素转为数组，当元素为null，则返回长度为0的数组.
      *
@@ -86,7 +86,6 @@ public class ArrayKit {
             return (T[]) Array.newInstance(type.getComponentType(), 0);
         }
     }
-
 
     /**
      * 数组是否不为空.

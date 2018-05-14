@@ -1,17 +1,16 @@
 package com.huangshihe.ecommerce.ecommercehbase.hbasedao.filter;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.huangshihe.ecommerce.common.kits.TimeKit;
 import com.huangshihe.ecommerce.ecommercehbase.hbasedao.proto.PrefixFuzzyAndTimeFilterProto;
-import com.huangshihe.ecommerce.ecommercehbase.hbasedao.util.DebugUtil;
 import org.apache.hadoop.hbase.Cell;
-import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.exceptions.DeserializationException;
 import org.apache.hadoop.hbase.filter.FilterBase;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * 前缀模糊和时间范围过滤器，包头不包尾.
@@ -46,27 +45,52 @@ public class PrefixFuzzyAndTimeFilter extends FilterBase {
      * {@inheritDoc}
      */
     @Override
-    public void reset() throws IOException {
+    public void reset() {
         filterRow = true;
     }
 
-    // TODO ?????原意是解析rowkey，如果rowkey不满足要求，则把整个rowkey干掉，而这里实际是Cell，会不会影响性能？
-    // TODO 高优先级 尝试使用：filterRowKey
+    /**
+     * 保留所有的cell.
+     *
+     * @param ignored ignored
+     * @return code
+     */
     @Override
-    public ReturnCode filterKeyValue(Cell ignored) throws IOException {
+    public ReturnCode filterKeyValue(Cell ignored) {
+        // 保留筛选之后rowkey对应的所有的cell
+        filterRow = false;
+        return ReturnCode.INCLUDE;
+    }
+
+    /**
+     * Filters that do not filter by row key can inherit this implementation that
+     * never filters anything. (ie: returns false).
+     * 如果rowkey不满足要求，则把整个rowkey干掉
+     * <p>
+     * {@inheritDoc}
+     *
+     * @param buffer
+     * @param offset
+     * @param length
+     */
+    @Override
+    public boolean filterRowKey(byte[] buffer, int offset, int length) {
+        if (prefixFuzzyLength + TimeKit.TIME_BYTE_LEN > length) {
+            byte[] rowByte = Bytes.copy(buffer, offset, length);
+            LOGGER.error("wrong argument, rowkey:{}, detail:{}", Arrays.toString(rowByte));
+            return true;
+        }
         try {
-            byte[] row = CellUtil.cloneRow(ignored);
             // time: [0, 0, 1, 96, -96, -106, 104, -32] 十进制：1514522700000
-            byte[] time = Bytes.copy(row, prefixFuzzyLength, 8);
+            byte[] time = Bytes.copy(buffer, offset + prefixFuzzyLength, TimeKit.TIME_BYTE_LEN);
             long timeStamp = Bytes.toLong(time);
             if (timeStamp >= startTimeStamp && timeStamp < stopTimeStamp) {
-                filterRow = false;
+                return false;
             }
         } catch (IllegalArgumentException e) {
-            LOGGER.error("wrong argument, cell info:{}, detail:{}", DebugUtil.cellInfo(ignored), e);
-            filterRow = true;
+            LOGGER.error("wrong argument, rowkey:{}, detail:{}", Arrays.toString(buffer), e);
         }
-        return ReturnCode.INCLUDE;
+        return true;
     }
 
     /**
@@ -77,7 +101,7 @@ public class PrefixFuzzyAndTimeFilter extends FilterBase {
      * {@inheritDoc}
      */
     @Override
-    public boolean filterRow() throws IOException {
+    public boolean filterRow() {
         return filterRow;
     }
 

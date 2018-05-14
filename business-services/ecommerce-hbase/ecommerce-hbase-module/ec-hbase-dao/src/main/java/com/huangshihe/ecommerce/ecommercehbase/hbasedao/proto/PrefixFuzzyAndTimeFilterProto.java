@@ -663,9 +663,10 @@ public final class PrefixFuzzyAndTimeFilterProto {
       "\n#PrefixFuzzyAndTimeFilterProto.proto\022\005p" +
       "roto\"d\n\030PrefixFuzzyAndTimeFilter\022\031\n\021pref" +
       "ixFuzzyLength\030\001 \002(\005\022\026\n\016startTimeStamp\030\002 " +
-      "\002(\003\022\025\n\rstopTimeStamp\030\003 \002(\003BV\n-com.huangs" +
-      "hihe.ecommerce.ecommercehbase.protoB\035Pre" +
-      "fixFuzzyAndTimeFilterProtoH\001\210\001\001\240\001\001"
+      "\002(\003\022\025\n\rstopTimeStamp\030\003 \002(\003B_\n6com.huangs" +
+      "hihe.ecommerce.ecommercehbase.hbasedao.p" +
+      "rotoB\035PrefixFuzzyAndTimeFilterProtoH\001\210\001\001" +
+      "\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
