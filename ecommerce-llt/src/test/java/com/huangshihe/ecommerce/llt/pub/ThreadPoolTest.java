@@ -1,11 +1,13 @@
 package com.huangshihe.ecommerce.llt.pub;
 
+import com.huangshihe.ecommerce.common.aop.InterceptorManager;
 import com.huangshihe.ecommerce.common.factory.ServicesFactory;
 import com.huangshihe.ecommerce.common.kits.XmlKit;
 import com.huangshihe.ecommerce.llt.common.Simple;
 import com.huangshihe.ecommerce.llt.pub.threadpool.SimpleService1;
 import com.huangshihe.ecommerce.pub.config.ConfigEntity;
 import com.huangshihe.ecommerce.pub.config.threadpool.ThreadPoolManager;
+import cucumber.api.java.After;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -33,12 +35,12 @@ public class ThreadPoolTest {
     private static int resultInt;
 
     @Given("^待转换的xml文件名为\"([^\"]*)\"$")
-    public void 待转换的xml文件名为(String arg0) throws Throwable {
+    public void 待转换的xml文件名为(String arg0) {
         xmlFileName = arg0;
     }
 
     @When("^线程池xml转bean$")
-    public void 线程池xml转bean() throws Throwable {
+    public void 线程池xml转bean() {
         String threadPoolXmlFile = "data" + File.separator + "pub" + File.separator + "threadpool" +
                 File.separator + xmlFileName;
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(threadPoolXmlFile);
@@ -46,17 +48,17 @@ public class ThreadPoolTest {
     }
 
     @Then("^线程池xml转bean成功$")
-    public void 线程池xml转bean成功() throws Throwable {
+    public void 线程池xml转bean成功() {
         Assert.assertNotNull(configEntity);
     }
 
     @And("^新建线程池$")
-    public void 新建线程池() throws Throwable {
+    public void 新建线程池() {
         ThreadPoolManager.getInstance().createPools(configEntity);
     }
 
     @And("^显式调用任务$")
-    public void 显式调用任务() throws Throwable {
+    public void 显式调用任务() {
         // 获取加强对象，服务使用工厂方式获取实例，首先到manager中找，如果没有的话，再创建实例，不要直接显式的创建实例
         // 这里没有设置线程池拦截器，只需要配置就可以将任务放到线程池中运行，若之后还有新的拦截器，同样可以生效
         SimpleService1 service = ServicesFactory.getInstance().getServiceObject(SimpleService1.class);
@@ -65,7 +67,7 @@ public class ThreadPoolTest {
     }
 
     @Then("^任务运行在线程池中$")
-    public void 任务运行在线程池中() throws Throwable {
+    public void 任务运行在线程池中() {
 
     }
 
@@ -91,13 +93,14 @@ public class ThreadPoolTest {
         int count = SimpleService1.getCount();
         for (int i = 0; i < 2; i++) {
             Thread.sleep(1000);
-            Assert.assertTrue(count == SimpleService1.getCount());
+            Assert.assertEquals(count, SimpleService1.getCount());
         }
     }
 
     @And("^调用有返回值的方法$")
-    public void 调用有返回值的方法() throws Throwable {
+    public void 调用有返回值的方法() {
         Simple simple = ServicesFactory.getInstance().getServiceObject(Simple.class);
+
         simple.setName("hello llt");
         simple.setId(668);
 
@@ -107,8 +110,17 @@ public class ThreadPoolTest {
     }
 
     @Then("^任务运行在线程池中并可以获取正确返回值$")
-    public void 任务运行在线程池中并可以获取正确返回值() throws Throwable {
+    public void 任务运行在线程池中并可以获取正确返回值() {
         Assert.assertEquals(resultStr, "hello llt");
-        Assert.assertTrue(resultInt == 668);
+        Assert.assertEquals(668, resultInt);
+    }
+
+    @After
+    public void 清理测试环境() {
+        LOGGER.debug("running... after");
+        ServicesFactory.getInstance().clearForTest();
+        InterceptorManager.getInstance().clearForTest();
+        resultInt = 0;
+        resultStr = null;
     }
 }

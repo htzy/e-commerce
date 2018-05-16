@@ -17,17 +17,17 @@ public class AOPTest {
     private static Simple simple;
 
     @Given("^对简单类进行增强$")
-    public void 对简单类进行增强() throws Throwable {
+    public void 对简单类进行增强() {
         simple = Enhancer.enhance(Simple.class, SimpleInterceptor.class);
     }
 
     @When("^调用简单类的方法$")
-    public void 调用简单类的方法() throws Throwable {
+    public void 调用简单类的方法() {
         simple.setName("bob");
     }
 
     @Then("^方法被拦截$")
-    public void 方法被拦截() throws Throwable {
-        Assert.assertTrue(simple.getName().equals("tom"));
+    public void 方法被拦截() {
+        Assert.assertEquals("tom", simple.getName());
     }
 }

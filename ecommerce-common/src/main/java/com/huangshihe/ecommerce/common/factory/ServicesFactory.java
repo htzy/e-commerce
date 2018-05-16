@@ -68,4 +68,11 @@ public class ServicesFactory extends Factory {
         // 若该类对应的object已存在则更新
         _servicesMap.put(serviceClass, serviceObject);
     }
+
+    /**
+     * 清空数据，仅供测试用。
+     */
+    public void clearForTest() {
+        _servicesMap.clear();
+    }
 }

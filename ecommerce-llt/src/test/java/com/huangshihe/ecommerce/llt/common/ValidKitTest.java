@@ -25,52 +25,52 @@ public class ValidKitTest {
     private static boolean actualResult;
 
     @Given("^param和data数据已存在$")
-    public void param和data数据已存在() throws Throwable {
+    public void param和data数据已存在() {
 
     }
 
     @And("^json数据为\"([^\"]*)\"$")
-    public void json数据为(String arg0) throws Throwable {
+    public void json数据为(String arg0) {
         jsonData = arg0;
     }
 
     @And("^数据项为\"([^\"]*)\"$")
-    public void 数据项为(String arg0) throws Throwable {
+    public void 数据项为(String arg0) {
         dataField = arg0;
     }
 
     @And("^json参数为\"([^\"]*)\"$")
-    public void json参数为(String arg0) throws Throwable {
+    public void json参数为(String arg0) {
         jsonParam = arg0;
     }
 
     @And("^参数数据项为\"([^\"]*)\"$")
-    public void 参数数据项为(String arg0) throws Throwable {
+    public void 参数数据项为(String arg0) {
         paramField = arg0;
     }
 
     @When("^判断是否存在$")
-    public void 判断是否存在() throws Throwable {
+    public void 判断是否存在() {
         actualResult = ValidKit.in(jsonData, dataField, jsonParam, paramField);
     }
 
     @Then("^结果为\"([^\"]*)\"$")
-    public void 结果为(String arg0) throws Throwable {
+    public void 结果为(String arg0) {
         Assert.assertEquals(Boolean.valueOf(arg0), actualResult);
     }
 
     @And("^参数起始数据项为\"([^\"]*)\"$")
-    public void 参数起始数据项为(String arg0) throws Throwable {
+    public void 参数起始数据项为(String arg0) {
         startParamField = arg0;
     }
 
     @And("^参数终止数据项为\"([^\"]*)\"$")
-    public void 参数终止数据项为(String arg0) throws Throwable {
+    public void 参数终止数据项为(String arg0) {
         stopParamField = arg0;
     }
 
     @When("^判断是否在范围内$")
-    public void 判断是否在范围内() throws Throwable {
+    public void 判断是否在范围内() {
         actualResult = ValidKit.between(jsonData, dataField, jsonParam, startParamField, stopParamField);
     }
 }

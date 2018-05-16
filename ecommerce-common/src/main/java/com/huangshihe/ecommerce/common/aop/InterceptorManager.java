@@ -227,4 +227,12 @@ public class InterceptorManager {
             throw new IllegalArgumentException("create interceptorClasses error");
         }
     }
+
+    /**
+     * 清空数据，仅用于测试。
+     */
+    public void clearForTest() {
+        _intersMap.clear();
+        _serviceMethodInters.clear();
+    }
 }

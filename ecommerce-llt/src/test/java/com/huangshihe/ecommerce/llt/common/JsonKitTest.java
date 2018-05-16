@@ -27,34 +27,34 @@ public class JsonKitTest {
     private JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
 
     @Given("^待转换对象已存在$")
-    public void 待转换对象已存在() throws Throwable {
+    public void 待转换对象已存在() {
         simple = new Simple();
         simple.setId(666);
         simple.setName("htzy");
     }
 
     @When("^对象转字符串$")
-    public void 对象转字符串() throws Throwable {
+    public void 对象转字符串() {
         simpleStr = JsonKit.objToStr(simple);
     }
 
     @Then("^转换字符串正确$")
-    public void 转换字符串正确() throws Throwable {
+    public void 转换字符串正确() {
         Assert.assertEquals("{\"id\":666,\"name\":\"htzy\"}", simpleStr);
     }
 
     @Given("^待转换json字符串已存在$")
-    public void 待转换json字符串已存在() throws Throwable {
+    public void 待转换json字符串已存在() {
         simpleStr = "{\"id\":666,\"name\":\"htzy\"}";
     }
 
     @When("^字符串转对象$")
-    public void 字符串转对象() throws Throwable {
+    public void 字符串转对象() {
         simple = JsonKit.strToObj(simpleStr, Simple.class);
     }
 
     @Then("^转换对象正确$")
-    public void 转换对象正确() throws Throwable {
+    public void 转换对象正确() {
         Simple right = new Simple();
         right.setId(666);
         right.setName("htzy");
@@ -63,23 +63,23 @@ public class JsonKitTest {
     }
 
     @When("^字符串转Tree$")
-    public void 字符串转tree() throws Throwable {
+    public void 字符串转tree() {
         jsonNode = JsonKit.strToTree(simpleStr);
     }
 
     @Then("^转换Tree正确$")
-    public void 转换tree正确() throws Throwable {
+    public void 转换tree正确() {
         Assert.assertTrue(jsonNode.path("id").asInt() == 666);
         Assert.assertEquals("htzy", jsonNode.path("name").asText());
     }
 
     @When("^对象转Tree$")
-    public void 对象转tree() throws Throwable {
+    public void 对象转tree() {
         jsonNode = JsonKit.objToTree(simple);
     }
 
     @Given("^待转换Tree已存在$")
-    public void 待转换tree已存在() throws Throwable {
+    public void 待转换tree已存在() {
         ObjectNode rootNode = jsonNodeFactory.objectNode();
         rootNode.put("id", 666);
         rootNode.put("name", "htzy");
@@ -87,7 +87,7 @@ public class JsonKitTest {
     }
 
     @When("^Tree转字符串$")
-    public void tree转字符串() throws Throwable {
+    public void tree转字符串() {
         simpleStr = JsonKit.treeToStr(jsonNode);
     }
 
