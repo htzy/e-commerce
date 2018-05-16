@@ -15,6 +15,6 @@ pyplot.ylabel(u"中文y坐标")
 # 参考
 [matplotlib图例中文乱码?](https://www.zhihu.com/question/25404709)  
 [numpy读写文件](https://blog.csdn.net/qq_24330285/article/details/51576912)  
-
-
+[python 操作 hbase](https://www.cnblogs.com/xjh713/p/7092235.html)    
+[用Python操作HBase之HBase-Thrift](https://blog.csdn.net/y472360651/article/details/79055875)  
 

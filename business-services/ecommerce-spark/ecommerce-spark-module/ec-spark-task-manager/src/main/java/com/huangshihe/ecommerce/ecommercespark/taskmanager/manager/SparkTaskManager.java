@@ -58,6 +58,8 @@ public class SparkTaskManager {
     public SQLContext getSqlContext(String appName) {
         SimpleConfig basicConf = new SimpleConfig(SparkEnvConstant.BASIC_CONF_FILENAME);
         final String master = basicConf.getProperty(SparkEnvConstant.CONF_SPARK_MASTER);
+        final String hadoopHome = basicConf.getProperty(SparkEnvConstant.CONF_HADOOP_HOME);
+        System.setProperty(SparkEnvConstant.CONF_HADOOP_HOME, hadoopHome);
         SparkSession session = SparkSession.builder().appName(appName).master(master)
                 // 指定spark序列化类
                 .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")

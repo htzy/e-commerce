@@ -314,7 +314,7 @@ class MyFilter{
     public Cell transformCell(Cell v) throws IOException {
         return v;
     }
-    // 以下方法暂时未用到
+    
     /**
      * Filters that do not filter by row key can inherit this implementation that
      * never filters anything. (ie: returns false).
@@ -328,8 +328,8 @@ class MyFilter{
     @Override
     public boolean filterRowKey(byte[] buffer, int offset, int length) throws IOException {
         // false保留，true丢弃
-        // str为整个row，length为rowkey的长度，offset为length+1
-        // 也就是0~length为rowkey，后面的为column+value，每个元素之间有特殊符号分隔
+        // str为整个row，length为rowkey的长度，offset为rowkey的起始位置
+        // 也就是offset~length为rowkey，后面的为column+value，每个元素之间有特殊符号分隔
         LOGGER.debug("buffer to Str: {}, offset:{}, length:{}", Bytes.toString(buffer), offset, length);
         return super.filterRowKey(buffer, offset, length);
     }

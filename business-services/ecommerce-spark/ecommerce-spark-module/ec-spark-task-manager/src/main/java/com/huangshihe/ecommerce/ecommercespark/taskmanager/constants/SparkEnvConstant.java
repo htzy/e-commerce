@@ -19,4 +19,9 @@ public class SparkEnvConstant {
      */
     public static final String CONF_SPARK_MASTER = "spark.master";
 
+    /**
+     * mac中环境变量设置后若丢失，则可从配置文件中获取hadoop home
+     */
+    public static final String CONF_HADOOP_HOME = "hadoop.home.dir";
+
 }
