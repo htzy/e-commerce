@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../lib/highcharts.js"></script>
+    <script src="../lib/exporting.js"></script>
+    <script src="../lib/data.js"></script>
+    <script src="../lib/highcharts-more.js"></script>
+</head>
+<body>
+<div id="container" style="min-width:400px;height:400px"></div>
+</body>
+</html>
+
+<script>
+
+    var chart = Highcharts.chart('container', {
+        chart: {
+            zoomType: 'xy'
+        },
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: ''
+        },
+        plotOptions: {
+            spline: {
+                dataLabels: {
+                    align: 'center',
+                    enabled: true,
+                    rotation: 0,
+                    borderWidth: 1,
+                    format: '{y}%',
+                    x: 0,
+                    y: -6
+                }
+            },
+            column: {
+                dataLabels: {
+                    align: 'center',
+                    enabled: true,
+                    rotation: 0,
+                    borderWidth: 1,
+                    format: '{y}',
+                    x: 0,
+                    y: -6
+                }
+            }
+        },
+        xAxis: [{
+            categories: ['2015年', '2016年', '2017年', '2018年', '2019年', '2020年', '2021年'],
+            crosshair: true,
+            labels:{
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            }
+        }],
+        yAxis: [{ // Primary yAxis
+            softMax: 55,// 如果可以的最大值
+            title: {
+                text: '市场规模（亿元）',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            },
+            labels: {
+                format: '{value}',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            }
+
+        }, { // Secondary yAxis
+            softMax: 60,// 如果可以的最大值
+            softMin: 0,// 如果可以的最小值
+            title: {
+                text: '增长率',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            },
+            labels: {
+                format: '{value}%',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            },
+            opposite: true// 对面显示
+        }],
+        tooltip: {
+            shared: true
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            x: 120,
+            verticalAlign: 'top',
+            y: 100,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+        },
+        series: [{
+            name: '市场规模',
+            type: 'column',
+            data: [5.5, 7.2, 9.7, 13.9, 20.5, 30.8, 46.7],
+            tooltip: {
+                valueSuffix: ''
+            }
+        }, {
+            name: '增长率',
+            yAxis: 1,
+            type: 'spline',
+            data: [25.1, 30.9, 34.7, 43.3, 47.5, 50.2, 51.6],
+            tooltip: {
+                valueSuffix: '%'
+            }
+        }]
+    });
+</script>

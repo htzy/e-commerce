@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../lib/highcharts.js"></script>
+    <script src="../lib/exporting.js"></script>
+    <script src="../lib/data.js"></script>
+    <script src="../lib/highcharts-more.js"></script>
+</head>
+<body>
+<div id="container" style="min-width:400px;height:400px"></div>
+</body>
+</html>
+
+<script>
+
+
+    var chart = Highcharts.chart('container', {
+        title: {
+            text: ''
+        },
+        tooltip: {
+            headerFormat: '{series.name}<br>',
+            pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,  // 可以被选择
+                cursor: 'pointer',       // 鼠标样式
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: '浏览器访问量占比',
+            data: [
+                ['其他', 27.8],
+                ['新华三', 23.6],
+                {
+                    name: '华为',
+                    y: 20.8,
+                    sliced: true,  // 默认突出
+                    selected: true // 默认选中
+                },
+                ['贝尔', 11.1],
+                ['赛特斯', 9.7],
+                ['中兴', 6.9]
+            ]
+        }]
+    });
+</script>
