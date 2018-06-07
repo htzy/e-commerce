@@ -388,7 +388,7 @@ unzip *.jar -d 路径
 [笔记-MapReduce入门](https://blog.csdn.net/mr_zhuqiang/article/details/45013081)  
 [使用BulkLoad快速向HBase导入数据](https://zhuanlan.zhihu.com/p/28841351)  
 [Mac OS X 下查看和设置JAVA_HOME](https://blog.csdn.net/done58/article/details/51138057)  
-
-
+[通过反射，如何操作私有成员变量（取/赋值），如何调用私有方法？](https://www.cnblogs.com/jiangyi-uestc/p/5689771.html)  
+[Java 反射 调用私有构造方法](https://www.cnblogs.com/WJQ2017/p/7762292.html)  
 
 
