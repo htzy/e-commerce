@@ -38,6 +38,11 @@ netstat -nr
 
 ```
 
+## 外接设备路径
+```shell
+/Volumes/
+```
+
 ## homebrew
 ### 常见错误
 1. Error: Calling Formula.sha1 is disabled!

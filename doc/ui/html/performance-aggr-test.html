@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../lib/highcharts.js"></script>
+    <script src="../lib/exporting.js"></script>
+    <script src="../lib/data.js"></script>
+    <script src="../lib/highcharts-more.js"></script>
+</head>
+<body>
+<div id="container" style="min-width:400px;height:400px"></div>
+</body>
+</html>
+<script>
+
+    var chart = Highcharts.chart('container',{
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            categories: [
+                '10k','50k','100k'
+            ],
+            crosshair: true,
+            labels:{
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '运行时间(s)',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            },
+            labels: {
+                format: '{value}',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            }
+        },
+        tooltip: {
+            // head + 每个 point + footer 拼接成完整的 table
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: '汇聚分钟表',
+            data: [67, 182, 191]
+        }, {
+            name: '汇聚小时表',
+            data: [45, 89, 97]
+        }, {
+            name: '汇聚天表',
+            data: [43, 76, 82]
+        }]
+    });
+</script>

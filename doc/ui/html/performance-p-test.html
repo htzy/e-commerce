@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../lib/highcharts.js"></script>
+    <script src="../lib/exporting.js"></script>
+    <script src="../lib/data.js"></script>
+    <script src="../lib/highcharts-more.js"></script>
+</head>
+<body>
+<div id="container" style="min-width:400px;height:400px"></div>
+</body>
+</html>
+<script>
+
+    var chart = Highcharts.chart('container', {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            categories: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12','13','14','15'],
+            title: {
+                text: '时间',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            },
+            labels:{
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                text: '硬盘（Mb）',
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            },
+            labels:{
+                style: {
+                    color: '#000000',
+                    fontSize:'12px',
+                    fontWeight:'bold'
+                }
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    // 开启数据标签
+                    // enabled: true
+                },
+                // 关闭鼠标跟踪，对应的提示框、点击事件会失效
+                enableMouseTracking: false
+            }
+        },
+        series: [{
+            name: '基础商业环境',
+            data: [20847, 42086, 42409, 42823, 43241, 43621, 44025, 44526, 44923, 45218, 45613,
+                46049.6, 46441, 46895, 47253]
+        }]
+    });
+
+</script>

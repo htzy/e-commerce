@@ -43,6 +43,13 @@ export HBASE_MANAGES_ZK=false
   campact 'tableName'
 # TODO 删除表后，是否需要刷新？如何刷新？
 
+
+# 查看表大小&在HDFS中的具体信息
+## 所有regionServer中所有表大小
+hadoop fs -du /hbase
+## 当前regionServer中所有表大小
+hadoop fs -dus /hbase
+
 ```
 
 
@@ -508,4 +515,4 @@ A -> A的ASCII码16进制 为 0x41
 [大数据性能调优之HBase的RowKey设计](https://www.cnblogs.com/yaohaitao/p/6821321.html)  
 [HBase自定义Filter](http://www.zhyea.com/2016/12/19/hbase-custom-filter.html)  
 [一个自定义 HBase Filter -“通过RowKeys来高性能获取数据”](https://www.cnblogs.com/wgp13x/p/4196466.html)  
-
+[HBase查看表大小&在Hdfs中的具体信息](https://blog.csdn.net/zhuyu_deng/article/details/44655007)  
