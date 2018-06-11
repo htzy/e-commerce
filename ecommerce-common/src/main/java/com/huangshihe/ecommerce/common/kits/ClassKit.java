@@ -131,6 +131,7 @@ public class ClassKit {
             Class[] paramsClass = new Class[objects.length];
             // 获取所有的构造方法，逐一筛选
             Constructor[] constructors = clazz.getConstructors();
+            LOGGER.debug("all constructors:{}", Arrays.toString(constructors));
             for (Constructor c : constructors) {
                 // 获取构造方法的所有参数类类型
                 Class[] parameterTypes = c.getParameterTypes();
@@ -155,7 +156,9 @@ public class ClassKit {
                     throw new IllegalArgumentException(e);
                 }
             } else {
-                throw new IllegalArgumentException("class:" + clazz + " params:" + ArrayKit.toString(Arrays.asList(objects)));
+                LOGGER.error("paramsClass:{}", Arrays.toString(paramsClass));
+                throw new IllegalArgumentException("new instance failed! class:" + clazz + " params:"
+                        + ArrayKit.toString(Arrays.asList(objects)));
             }
         }
         // 检查该构造方法的可访问性，若不可访问，则强制置为可访问状态
