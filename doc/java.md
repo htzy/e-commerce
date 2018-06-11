@@ -390,5 +390,8 @@ unzip *.jar -d 路径
 [Mac OS X 下查看和设置JAVA_HOME](https://blog.csdn.net/done58/article/details/51138057)  
 [通过反射，如何操作私有成员变量（取/赋值），如何调用私有方法？](https://www.cnblogs.com/jiangyi-uestc/p/5689771.html)  
 [Java 反射 调用私有构造方法](https://www.cnblogs.com/WJQ2017/p/7762292.html)  
+[Class的isAssignableFrom方法](https://www.cnblogs.com/hzhuxin/p/7536671.html)  
+[java中不常见的关键字：strictfp，transient](https://blog.csdn.net/basenet855x/article/details/6691040)  
+
 
 

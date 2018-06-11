@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -119,5 +120,18 @@ public class ArrayKit {
             return null;
         }
         return array.clone();
+    }
+
+    /**
+     * 将list转为String.
+     *
+     * @param list list
+     * @return string
+     */
+    public static String toString(List<Object> list) {
+        if (list == null || list.isEmpty()) {
+            return "[]";
+        }
+        return Arrays.toString(list.toArray());
     }
 }
