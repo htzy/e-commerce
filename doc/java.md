@@ -342,6 +342,22 @@ unzip *.jar -d 路径
 
 ```
 
+# 反射
+## 修饰符
+例子：
+```java
+import java.lang.reflect.Modifier;
+class Foo{
+    void foo(Class<T> clazz){
+        if (!Modifier.isPublic(clazz.getModifiers())) {
+        }    
+    }
+}
+
+```
+在处理修饰符时，具体的值是十六进制组合而成，如final为0x10，而public为0x01，则public final的类为0x11即17
+
+
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
 [Java 7 新的 try-with-resources 语句，自动资源释放](http://www.oschina.net/question/12_10706)  
