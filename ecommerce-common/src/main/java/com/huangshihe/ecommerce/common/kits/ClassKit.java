@@ -55,7 +55,6 @@ public class ClassKit {
 //                filter(method -> method.getModifiers() == Modifier.PUBLIC).toArray();
     }
 
-
     /**
      * 生成Class自带的所有作用域修饰符修饰的方法（即：private、protected、default、public；不含继承的）
      *
@@ -103,19 +102,71 @@ public class ClassKit {
         return false;
     }
 
+    /**
+     * 通过基本类型的包装类获取基本类型，即：对基本类型进行手动拆箱。
+     * 参考：
+     * http://commons.apache.org/proper/commons-beanutils/apidocs/src-html/org/apache/commons/beanutils/MethodUtils.html#line.1195
+     *
+     * @param wrapperType 基本类型的包装类
+     * @return 基本类型
+     */
+    public static Class<?> getPrimitiveType(final Class<?> wrapperType) {
+        if (Boolean.class.equals(wrapperType)) {
+            return boolean.class;
+        } else if (Float.class.equals(wrapperType)) {
+            return float.class;
+        } else if (Long.class.equals(wrapperType)) {
+            return long.class;
+        } else if (Integer.class.equals(wrapperType)) {
+            return int.class;
+        } else if (Short.class.equals(wrapperType)) {
+            return short.class;
+        } else if (Byte.class.equals(wrapperType)) {
+            return byte.class;
+        } else if (Double.class.equals(wrapperType)) {
+            return double.class;
+        } else if (Character.class.equals(wrapperType)) {
+            return char.class;
+        } else {
+            LOGGER.warn("Not a known primitive wrapper class:{}", wrapperType);
+            return null;
+        }
+    }
+
+    /**
+     * 判断是否为类
+     *
+     * @param object object
+     * @return 是否为类。
+     */
+    public static boolean isClass(Object object) {
+        return object instanceof Class;
+    }
+
 
     /**
      * 强行通过构造方法创建新实例.
+     * 构造方法参数中可能存在基本类型，但传入的实际的值会自动封装为包装类，因此需要手动拆箱。
+     * 这里不考虑隐式转换，即int值可自动转为long类型，如：
+     * Foo(long param); new Foo(123);
+     * 这时使用newInstance方法可能会报错：找不到方法，因为直接传入数值：123，jvm会自动包装为Integer类，应该使用如下方法调用：
+     * Foo(long param); long param=123; new Foo(param);
+     * 若考虑隐式转换，可能导致因自动装箱、拆箱机制导致出现实际参数可以匹配多个构造方法的问题，如上，可能匹配到int和long两类。
      *
      * @param clazz      实例类
-     * @param initParams 构造方法入参
+     * @param initParams 构造方法实际入参对象，若值为null，则需传入指定的类类型，如String.class
      * @param <T>        类类型
      * @return 实例
      */
-    public static <T> T newInstance(Class<T> clazz, Object... initParams) {
+    public static <T> T newInstance(final Class<T> clazz, final Object... initParams) {
         if (clazz == null) {
             LOGGER.warn("class is null! objects:{}", initParams);
             throw new IllegalArgumentException("class is null!");
+        }
+        // 拷贝一份，TODO 区分深复制和浅复制
+        Object[] paramsObject = null;
+        if (initParams != null) {
+            paramsObject = initParams.clone();
         }
         // TODO 如果该类是非public，是否需要特殊处理？
         // 在处理修饰符时，具体的值是十六进制组合而成，如final为0x10，而public为0x01，则public final的类为0x11即17
@@ -124,22 +175,24 @@ public class ClassKit {
             LOGGER.warn("new instance class:{} is not public, unsafe!", clazz);
             throw new IllegalArgumentException("new instance class is not public, unsafe!");
         }
-
         Constructor<T> constructor;
         // 参数为空，则寻找该类的无参构造方法
-        if (ArrayKit.isEmpty(initParams)) {
+        if (ArrayKit.isEmpty(paramsObject)) {
             try {
-                // TODO 两个问题：第一个：无参的时候，这里是否可以成功？
-                // TODO 第二个：为什么调用scala中的私有构造方法，通过getConstructors可以成功？应该是失败，而通过getDelcar成功才对
-                // TODO 第三个：当类为非public时，所有场景下是否有异常？
+                // TODO 为什么调用scala中的私有构造方法，通过getConstructors可以成功？应该是失败，而通过getDeclaredConstructors成功才对
                 constructor = clazz.getDeclaredConstructor();
             } catch (NoSuchMethodException e) {
                 LOGGER.error("NoSuchMethodException, constructor of empty param...");
                 throw new IllegalArgumentException(e);
             }
         } else {
-            // 创建参数类类型数组
-            Class[] paramsClass = new Class[initParams.length];
+            // 检查传入的实际参数中是否有null
+            if (ArrayKit.isContainEmpty(paramsObject)) {
+                LOGGER.error("new instance fail! initParams:{} contains null!", paramsObject);
+                throw new IllegalArgumentException("new instance fail! initParams contains null!");
+            }
+            // 创建实际参数类类型数组
+            Class[] paramsClass = new Class[paramsObject.length];
             // 获取所有的构造方法，逐一筛选
             Constructor[] constructors = clazz.getDeclaredConstructors();
             LOGGER.debug("all constructors:{}", Arrays.toString(constructors));
@@ -150,35 +203,44 @@ public class ClassKit {
                 if (ArrayKit.isNotEmpty(parameterTypes)) {
                     // 逐个判断传入的参数与已有的构造方法参数是否一致，或传入的参数类型是构造参数的子类或实现类
                     for (int i = 0; i < parameterTypes.length; i++) {
-                        // TODO 可能存在基本类型，即传入的实际的值会自动封装为包装类，而方法中指定的类型为基本类型
-                        // TODO 还需要判断转换优先级？
-                        // TODO 在这里增加手动拆箱方法，
-                        if (parameterTypes[i].isPrimitive() && parameterTypes[i].isInstance(initParams[i].getClass())) {
-                            LOGGER.info("123");
+                        // 判断实际的值的类型与当前构造方法的类型是否一致
+                        // 1. 基本类型的值不允许是null，所以判断基本类型在前；
+                        // 当构造方法中的参数类型是基本类型时，对实际参数执行拆箱，并检查是否参数类型是否匹配，这里不考虑隐式转换的优先级
+                        if (parameterTypes[i].isPrimitive()
+                                && parameterTypes[i].equals(getPrimitiveType(paramsObject[i].getClass()))) {
+                            paramsClass[i] = parameterTypes[i];
                         }
-
-                        if (parameterTypes[i].isAssignableFrom(initParams[i].getClass())) {
+                        // 2. 如果传入实际参数为类类型，则判断该类类型与实际参数是否一致，若是，则将值置为null
+                        else if (isClass(paramsObject[i]) && parameterTypes[i].equals(paramsObject[i])) {
+                            paramsClass[i] = (Class) paramsObject[i];
+                            paramsObject[i] = null;
+                        }
+                        // 3. 检查实际参数是否为构造方法中参数的子类或实现类
+                        else if (parameterTypes[i].isAssignableFrom(paramsObject[i].getClass())) {
                             paramsClass[i] = parameterTypes[i];
                         } else {
                             break;
                         }
                     }
+                    // 如果已匹配到，则不再遍历下一个构造方法
+                    if (paramsClass[paramsClass.length - 1] != null) {
+                        break;
+                    }
                 }
             }
             // 如果参数类数组最后元素不为空，则匹配上了，进而用于获取构造方法
-            // TODO 若由于自动装箱、拆箱机制导致出现实际参数可以匹配多个构造方法，则以上会取最后一个？不合适吧？
-            // TODO 如果参数类数组最后本来就是null，咋整？那样的话，类型也不知道，当要创建的值的null时，则需要传入参数的类类型
-            if (paramsClass[initParams.length - 1] != null) {
+            if (paramsClass[paramsClass.length - 1] != null) {
                 try {
                     constructor = clazz.getDeclaredConstructor(paramsClass);
                 } catch (NoSuchMethodException e) {
-                    LOGGER.error("NoSuchMethodException, objects:{}", initParams);
+                    LOGGER.error("NoSuchMethodException, objects:{}", paramsObject);
                     throw new IllegalArgumentException(e);
                 }
             } else {
-                LOGGER.error("paramsClass:{}", Arrays.toString(paramsClass));
-                throw new IllegalArgumentException("new instance failed! class:" + clazz + " params:"
-                        + ArrayKit.toString(Arrays.asList(initParams)));
+                LOGGER.error("NoSuchMethodException paramsClass:{}, paramsObject:{}", Arrays.toString(paramsClass),
+                        Arrays.toString(paramsObject));
+                throw new IllegalArgumentException("new instance failed! noSuch method, class:" + clazz + " params:"
+                        + ArrayKit.toString(Arrays.asList(paramsObject)));
             }
         }
         // 检查该构造方法的可访问性，若不可访问，则强制置为可访问状态
@@ -187,7 +249,7 @@ public class ClassKit {
         }
         try {
             // 通过参数构造实例
-            return constructor.newInstance(initParams);
+            return constructor.newInstance(paramsObject);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             LOGGER.error("constructor newInstance fail! detail:{}", e);
             throw new IllegalArgumentException(e);
@@ -195,28 +257,3 @@ public class ClassKit {
     }
 
 }
-
-class Foo {
-
-    Foo(int id) {
-        System.out.println("int");
-    }
-
-    Foo(short id) {
-        System.out.println("short");
-    }
-
-    Foo(long id) {
-        System.out.println("long");
-    }
-
-    public static void main(String[] args) {
-        // 由变量传入之后，可以带入类型
-        short i = 1;
-        new Foo(i);         // short
-        // 若直接传值，则默认为int
-        new Foo(2);     // int
-    }
-
-}
-

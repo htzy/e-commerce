@@ -358,6 +358,52 @@ class Foo{
 在处理修饰符时，具体的值是十六进制组合而成，如final为0x10，而public为0x01，则public final的类为0x11即17
 
 
+# 隐式转换
+```java
+// int无法隐式转为short；long无法隐式转为int，即隐式转换时不允许造成数据丢失。
+class Foo{
+    Foo(int id) {
+        System.out.println("int");
+    }
+
+    Foo(short id) {
+        System.out.println("short");
+    }
+
+    Foo(long id) {
+        System.out.println("long");
+    }
+
+    public static void main(String[] args) {
+        // 由变量传入之后，可以带入类型
+        short i = 1;
+        new Foo(i);         // short
+        // 若直接传值，则默认为int
+        new Foo(2);         // int
+    }
+}
+
+class Foo{
+
+    Foo(short id) {
+        System.out.println("short");
+    }
+
+    Foo(long id) {
+        System.out.println("long");
+    }
+
+    public static void main(String[] args) {
+        // 由变量传入之后，可以带入类型
+        short i = 1;
+        new Foo(i);         // short
+        // 若不存在int，则先转long，这里不允许隐式转为short。
+        new Foo(2);         // long
+    }
+}
+
+```
+
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
 [Java 7 新的 try-with-resources 语句，自动资源释放](http://www.oschina.net/question/12_10706)  
@@ -408,6 +454,6 @@ class Foo{
 [Java 反射 调用私有构造方法](https://www.cnblogs.com/WJQ2017/p/7762292.html)  
 [Class的isAssignableFrom方法](https://www.cnblogs.com/hzhuxin/p/7536671.html)  
 [java中不常见的关键字：strictfp，transient](https://blog.csdn.net/basenet855x/article/details/6691040)  
-
-
+[深入剖析Java中的装箱和拆箱](http://www.cnblogs.com/dolphin0520/p/3780005.html)  
+[关于自动装箱与拆箱在反射调用中引起的注意](https://www.cnblogs.com/leodaxin/p/9084428.html)  
 

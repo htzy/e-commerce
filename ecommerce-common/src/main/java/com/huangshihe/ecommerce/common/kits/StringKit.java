@@ -70,7 +70,7 @@ public final class StringKit {
      */
     public static boolean isAllNotEmpty(String... params) {
         if (params == null) {
-            return true;
+            return false;
         }
         for (String param : params) {
             if (isEmpty(param)) {

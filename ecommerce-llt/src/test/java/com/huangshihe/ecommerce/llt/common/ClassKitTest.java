@@ -6,6 +6,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -16,6 +18,8 @@ import java.util.Arrays;
  * @author huangshihe
  */
 public class ClassKitTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassKitTest.class);
 
     static Object obj;
 
@@ -32,6 +36,7 @@ public class ClassKitTest {
 
     @Then("^创建类实例成功$")
     public void 创建类实例成功() {
+        LOGGER.debug("obj:{}", obj);
         Assert.assertNotNull(obj);
     }
 
@@ -42,38 +47,27 @@ public class ClassKitTest {
 
     @When("^通过无参私有构造方法创建类实例$")
     public void 通过无参私有构造方法创建类实例() {
-        obj = ClassKit.newInstance(SimpleConstructorA.class, String.class);
+        obj = ClassKit.newInstance(SimpleConstructorA.class);
     }
 
-
-    class A {
-        private int id;
-
-        private A() {
-            id = (int) (Math.random() * 1000);
-        }
-
-        public int getId() {
-            return id;
-        }
+    @When("^通过多参（含空值）私有构造方法创建类实例$")
+    public void 通过多参含空值私有构造方法创建类实例() {
+        obj = ClassKit.newInstance(SimpleConstructorA.class, 123, Simple.class);
     }
 
-    class B {
-        private A a;
-        private String name;
-
-        private B(A a, String name) {
-            this.a = a;
-            this.name = name;
-        }
-
-        public A getA() {
-            return a;
-        }
-
-        public String getName() {
-            return name;
-        }
+    @When("^通过多参（含隐式转换）私有构造方法创建类实例$")
+    public void 通过多参含隐式转换私有构造方法创建类实例() {
+        short param = 128;
+        obj = ClassKit.newInstance(SimpleConstructorA.class, param, Simple.class);
     }
 
+    @Then("^创建类实例失败$")
+    public void 创建类实例失败() {
+        Assert.assertNull(obj);
+    }
+
+    @When("^通过多参（含基本类型为空）私有构造方法创建类实例$")
+    public void 通过多参含基本类型为空私有构造方法创建类实例() {
+        obj = ClassKit.newInstance(SimpleConstructorA.class, int.class, Simple.class);
+    }
 }

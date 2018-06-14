@@ -99,6 +99,24 @@ public class ArrayKit {
     }
 
     /**
+     * 是否包含空.
+     *
+     * @param params 参数
+     * @return 是否包含空，若params为null，则也返回true
+     */
+    public static boolean isContainEmpty(Object[] params) {
+        if (isEmpty(params)) {
+            return true;
+        }
+        for (Object param : params) {
+            if (param == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 数组是否为空.
      *
      * @param arr 数组
