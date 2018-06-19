@@ -1,7 +1,6 @@
 package com.huangshihe.ecommerce.llt.common;
 
 import com.huangshihe.ecommerce.common.kits.ClassKit;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -21,7 +20,7 @@ public class ClassKitTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassKitTest.class);
 
-    static Object obj;
+    private static Object obj;
 
     @Given("^简单类已存在且构造方法存在多个参数$")
     public void 简单类已存在且构造方法存在多个参数() {

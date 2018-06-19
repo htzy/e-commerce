@@ -404,6 +404,17 @@ class Foo{
 
 ```
 
+# 处理键值对
+```java
+
+import org.apache.hadoop.hbase.util.Pair;
+
+// java.util.Map.Entry<Key, Value>
+// java.util.AbstractMap.SimpleEntry<Key, Value>
+
+```
+
+
 # 参考
 [The "Double-Checked Locking is Broken" Declaration](http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html)  
 [Java 7 新的 try-with-resources 语句，自动资源释放](http://www.oschina.net/question/12_10706)  
